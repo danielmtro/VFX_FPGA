@@ -13,6 +13,7 @@
 - Microphone working
   Make sure that appropriate filtering is done to detect things in the human voice range.
   Determine the max frequency based on sampling frequency. Then filter out everything above that using a low pass filter.
+  When using the fft in the IP's don't worry about the imaginary components (just enter them as zero)
   
     - implement an FFT
     - output the peak frequency (and hopefully amplitude of signal)
