@@ -4,7 +4,7 @@ Delay is set to 50 us (based on a 50 MHz clock)
 */
 
 module debounce #(
-  parameter DELAY_COUNTS = 2500
+  parameter DELAY_COUNTS = 2500     // For a 50MHz clock this is 50us
 ) (
     input clk, button,
     output reg button_pressed
