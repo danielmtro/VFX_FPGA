@@ -9,7 +9,7 @@
 5. Read documentation before using a module
 
 ## Branch Naming Convention
-<name>.<date>.<whatever tf you're trying to do>
+name.date.whatever tf you're trying to do
 
 ## Things to Do:
 
