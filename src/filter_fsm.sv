@@ -17,7 +17,6 @@ Filter type is a 2 bit state output
 
 module filter_fsm(
     input           		  clk,
-    input           		  button_edge,
     input        [3:0]        key,
     output logic [1:0]        filter_type
 );
