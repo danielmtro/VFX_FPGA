@@ -15,7 +15,7 @@ Filter type is a 2 bit state output
 11: EDGES
 */
 
-module difficulty_fsm(
+module filter_fsm(
     input           		  clk,
     input           		  button_edge,
     input        [3:0]        key,
