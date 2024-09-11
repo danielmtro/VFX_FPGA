@@ -11,6 +11,7 @@
 ## Things to Do:
 
 - Microphone working
+  Make sure that appropriate filtering is done to detect things in the human voice range.
     - implement an FFT
     - output the peak frequency (and hopefully amplitude of signal)
 
