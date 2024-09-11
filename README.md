@@ -12,6 +12,8 @@
 
 - Microphone working
   Make sure that appropriate filtering is done to detect things in the human voice range.
+  Determine the max frequency based on sampling frequency. Then filter out everything above that using a low pass filter.
+  
     - implement an FFT
     - output the peak frequency (and hopefully amplitude of signal)
 
