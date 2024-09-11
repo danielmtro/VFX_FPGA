@@ -7,6 +7,7 @@
 4. Document your module in this README including all important info incl. clock cycles required for initialisation and/or functional use
     1. This was an issue for the debounce module. Noone making the main testbench understood it's clock cycle requirements (50,000) and tried to use it anyway
 5. Read documentation before using a module
+6. 
 
 ## Branch Naming Convention
 name.date.whatever tf you're trying to do
