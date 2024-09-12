@@ -13,7 +13,6 @@ module video_data_expander #(
     output logic        valid,           // Data valid signal
     input  logic        ready      // Data ready signal from VGA Module
 );
-    typedef enum logic [1:0] {Happy=2'd0, Neutral=2'd1, Angry=2'd2} face_t; // Define an enum type for readability (optional).
 
 //    localparam NumPixels     = 12 * 12; // Total number of pixels on the 640x480 screen
 //    localparam NumColourBits = 3;         // We are using a 3-bit colour space to fit 3 images within the 3.888 Mbits of BRAM on our FPGA.
