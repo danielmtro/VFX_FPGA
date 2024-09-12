@@ -10,13 +10,13 @@ module lcd_top_level (
 		output wire       LCD_RW      //                   .RW
 	);
 	 
-	wire       address;     //   avalon_lcd_slave.address
-	wire       chipselect;  //                   .chipselect
-	wire       read;        //                   .read
-	wire       write;       //                   .write
-	wire [7:0] writedata;   //                   .writedata
-	wire [7:0] readdata;    //                   .readdata
-	wire       waitrequest; //                   .waitrequest
+	logic       address;     //   avalon_lcd_slave.address
+	logic       chipselect;  //                   .chipselect
+	logic       read;        //                   .read
+	logic       write;       //                   .write
+	logic [7:0] writedata;   //                   .writedata
+	logic [7:0] readdata;    //                   .readdata
+	logic       waitrequest; //                   .waitrequest
 
 
     // make sure that we don't reset whatever is on the boad
@@ -24,121 +24,131 @@ module lcd_top_level (
     // determine if we have a new state incoming
 
     // A 8 x 4 array for the different write data values stored
-    logic [7:0] writeDataArray [3:0];
-    logic [3:0] writeArray;
+	logic [3:0]  address_i;     //   avalon_lcd_slave.address
+	logic  [3:0] chipselect_i;  //                   .chipselect
+	logic [3:0]  read_i;        //                   .read
+	logic  [3:0] write_i;       //                   .write
 
-    // variable to store the different value of addresse
-    logic [3:0] addressArray;
-	 
-	 logic [1:0] state_q0;
-	 
-	 // store the current state in a flip flop 
-	 always_ff @(posedge clk) begin
-		state_q0 <= current_state;
-	 end
-	 assign new_state = (state_q0 != current_state);
+    logic [7:0] writedata0;   //                   .writedata
+    logic [7:0] writedata1;
+    logic [7:0] writedata2;
+    logic [7:0] writedata3;
 
-	COLOUR_lcd (
-		 .clk(clk),
-		 .reset(new_state),
-		 // Avalon-MM signals to LCD_Controller slave
-		 .address(addressArray[0]),          // Address line for LCD controller
-		 .chipselect(),
-		 .byteenable(),
-		 .read(),
-		 .write(writeArray[0]),
-		 .waitrequest(waitrequest),
-		 .readdata(),
-		 .response(),
-		 .writedata(writeDataArray[0])
-	);
-
-	BLUR_lcd (
-		 .clk(clk),
-		 .reset(new_state),
-		 // Avalon-MM signals to LCD_Controller slave
-		 .address(addressArray[1]),          // Address line for LCD controller
-		 .chipselect(),
-		 .byteenable(),
-		 .read(),
-		 .write(writeArray[1]),
-		 .waitrequest(waitrequest),
-		 .readdata(),
-		 .response(),
-		 .writedata(writeDataArray[1])
-	);
-
-	BRIGHTNESS_lcd (
-		 .clk(clk),
-		 .reset(new_state),
-		 // Avalon-MM signals to LCD_Controller slave
-		 .address(addressArray[2]),          // Address line for LCD controller
-		 .chipselect(),
-		 .byteenable(),
-		 .read(),
-		 .write(writeArray[2]),
-		 .waitrequest(waitrequest),
-		 .readdata(),
-		 .response(),
-		 .writedata(writeDataArray[2])
-	);
-
-	EDGE_DETECT_lcd (
-		 .clk(clk),
-		 .reset(new_state),
-		 // Avalon-MM signals to LCD_Controller slave
-		 .address(addressArray[3]),          // Address line for LCD controller
-		 .chipselect(),
-		 .byteenable(),
-		 .read(),
-		 .write(writeArray[3]),
-		 .waitrequest(waitrequest),
-		 .readdata(),
-		 .response(),
-		 .writedata(writeDataArray[3])
-	);
-
-
+    logic [1:0] state_q0 = 2'b11, state_q1 = 2'b11;
+    // store the current state in a flip flop 
     always_ff @(posedge clk) begin
+
+        // double buffer changes
+        state_q0 <= current_state;
+        state_q1 <= state_q0;
+    end
+    assign new_state = (state_q1 != current_state);
+
+
+	COLOUR_lcd c_lcd (
+		 .clk(clk),
+		 .reset(new_state),
+		 // Avalon-MM signals to LCD_Controller slave
+		 .address(address_i[0]),          // Address line for LCD controller
+		 .chipselect(chipselect_i[0]),
+		 .byteenable(),
+		 .read(),
+		 .write(write_i[0]),
+		 .waitrequest(waitrequest),
+		 .readdata(),
+		 .response(),
+		 .writedata(writedata0)
+	);
+
+    BLUR_lcd  b_lcd (
+		 .clk(clk),
+		 .reset(new_state),
+		 // Avalon-MM signals to LCD_Controller slave
+		 .address(address_i[1]),          // Address line for LCD controller
+		 .chipselect(chipselect_i[1]),
+		 .byteenable(),
+		 .read(),
+		 .write(write_i[1]),
+		 .waitrequest(waitrequest),
+		 .readdata(),
+		 .response(),
+		 .writedata(writedata1)
+    );
+	 
+	 BRIGHTNESS_lcd br_lcd (
+		 .clk(clk),
+		 .reset(new_state),
+		 // Avalon-MM signals to LCD_Controller slave
+		 .address(address_i[2]),          // Address line for LCD controller
+		 .chipselect(chipselect_i[2]),
+		 .byteenable(),
+		 .read(),
+		 .write(write_i[2]),
+		 .waitrequest(waitrequest),
+		 .readdata(),
+		 .response(),
+		 .writedata(writedata2)
+    );
+	 
+
+	 EDGE_DETECT_lcd e_lcd (
+		 .clk(clk),
+		 .reset(new_state),
+		 // Avalon-MM signals to LCD_Controller slave
+		 .address(address_i[3]),          // Address line for LCD controller
+		 .chipselect(chipselect_i[3]),
+		 .byteenable(),
+		 .read(),
+		 .write(write_i[3]),
+		 .waitrequest(waitrequest),
+		 .readdata(),
+		 .response(),
+		 .writedata(writedata3)
+    );
+
+
+    always_comb begin
         
         case(current_state)
 
             2'b00: begin
-                write <= writeArray[0];
-                writedata <= writeDataArray[0];
-                address <= addressArray[0];
+                write = write_i[0];
+                chipselect = chipselect_i[0];
+                address = address_i[0];
+                writedata = writedata0;
             end
 
             2'b01: begin
-                write <= writeArray[1];
-                writedata <= writeDataArray[1];
-                address <= addressArray[1]; 
+                write = write_i[1];
+                chipselect = chipselect_i[1];
+                address = address_i[1];
+                writedata = writedata1;
             end
 
             2'b10: begin
-                write <= writeArray[2];
-                writedata <= writeDataArray[2];
-                address <= addressArray[2];
+                write = write_i[2];
+                chipselect = chipselect_i[2];
+                address = address_i[2];
+                writedata = writedata2;
             end
 
             2'b11: begin
-                write <= writeArray[3];
-                writedata <= writeDataArray[3];
-                address <= addressArray[3];
+                write = write_i[3];
+                chipselect = chipselect_i[3];
+                address = address_i[3];
+                writedata = writedata3;
             end
 
-            // default set it to the colour
-            default: begin
-                write <= writeArray[0];
-                writedata <= writeDataArray[0];
-                address <= addressArray[0];
-            end
+			// default set it to the colour
+			default: begin
+				write = write_i[0];
+				chipselect = chipselect_i[0];
+				address = address_i[0];
+				writedata = writedata0;
+			end
         endcase
     end
 
-    assign chipselect = write;
-    assign byteenable = write;
-    assign read = 1'b0;
 
 	char_display u_char_display (
 		.clk         (clk),         //                clk.clk

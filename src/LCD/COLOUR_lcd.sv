@@ -70,6 +70,9 @@ module COLOUR_lcd (
             WRITE_OP: begin
                 write = 1'b1;
             end
+				default: begin
+					write = 1'b0;
+				end
         endcase
     end
 

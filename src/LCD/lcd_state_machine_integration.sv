@@ -1,22 +1,24 @@
-
-
+`timescale 1 ps / 1 ps
 module lcd_state_machine_integration(
-    input       [3:0] KEY
+    input       [3:0] KEY,
     input  wire       CLOCK2_50,         //                clk.clk
     inout  wire [7:0] LCD_DATA,    // external_interface.DATA
     output wire       LCD_ON,      //                   .ON
     output wire       LCD_BLON,    //                   .BLON
     output wire       LCD_EN,      //                   .EN
     output wire       LCD_RS,      //                   .RS
-    output wire       LCD_RW      //                   .RW
+    output wire       LCD_RW,      //                   .RW
+	 output wire [17:0] LEDR
 );
 
     // initialise FSM functionality
     logic [1:0] filter_type;
-    filter_fsm(.clk(CLOCK2_50),
+    filter_fsm(.clk(CLOCK2_50), 
                .key(KEY),
                .filter_type(filter_type));
-
+	
+	 assign LEDR[0] = filter_type[0];
+	 assign LEDR[1] = filter_type[1];
 
     // iniate top level for the lcd control module
     lcd_top_level(.clk(CLOCK2_50),
@@ -27,7 +29,7 @@ module lcd_state_machine_integration(
                   .LCD_EN      (LCD_EN),      //                   .export
                   .LCD_RS      (LCD_RS),      //                   .export
                   .LCD_RW      (LCD_RW)       //                   .export)
-    )
+    );
 
 
 endmodule
