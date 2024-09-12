@@ -7,6 +7,8 @@
 4. Document your module in this README including all important info incl. clock cycles required for initialisation and/or functional use
     1. This was an issue for the debounce module. Noone making the main testbench understood it's clock cycle requirements (50,000) and tried to use it anyway
 5. Read documentation before using a module
+6. 
+7. 
 
 ## Branch Naming Convention
 name.date.whatever tf you're trying to do
@@ -44,3 +46,16 @@ name.date.whatever tf you're trying to do
 ## Responsibilities
 
 ## General Ideas:
+### Adam
+1. receive data in buffer. 320x240 pixels.
+2. each pixel is 12 bits RGB
+3. turn 12 bit RGB (4R, 4G, 4B) into 30 bit RGB - repeat each twice with 00 padding in between
+
+# Modules
+
+## video_data_expander.sv
+This module takes a static image from BRAM of which has AxB pixels and where each pixel is represented by 3 bit RGB value. 
+It takes the number of pixels as an input parameter as well as the number of bits representing each pixel. However it is currently only configured for 3 bit GRB values and is not smart enough to change yet.
+It is always outputting VALID unless a reset signal is received.
+It is receives a ready signal and will only output a new value if the ready signal is received!!
+It has a pulse to indicate the beginning and end of a packet (a frame, an image etc.)
