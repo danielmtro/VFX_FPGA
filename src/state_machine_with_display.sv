@@ -36,5 +36,4 @@ module state_machine_with_display(
                   .LCD_RW      (LCD_RW)       //                   .export)
     );
 
-
 endmodule
