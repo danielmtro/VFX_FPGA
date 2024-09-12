@@ -15,28 +15,39 @@ Filter type is a 2 bit state output
 11: EDGES
 */
 
-module filter_fsm(
+module filter_fsm#(
+  parameter DELAY_COUNTS = 2500     // Parameter for the debouncing module
+)(
     input           		  clk,
     input        [3:0]        key,
-    output logic [1:0]        filter_type
+    output logic [1:0]       filter_type
 );
 
     // Stores the debounced signals and edge detect signals 
-    logic [3:0] debounce, edges;
-
-    // Debounce the key input
-    for(i=0; i<4; i++) begin  : debounce_keys
-        debounce d_i (.clk(clk),
-                        .button(key[i]),
-                        .button_pressed(debounce[i]));
+    logic [3:0] db;
+	 logic [3:0] edges;
+	
+	
+	 genvar i;
+	 generate 
+		 // Debounce the key input
+		 for(i=0; i<4; i++) begin  : debounce_keys
+			  debounce #(.DELAY_COUNTS(DELAY_COUNTS)) d_i (.clk(clk),
+																		  .button(key[i]),
+																		  .button_pressed(db[i]));
+		 end
+	 endgenerate
+	
+		
+	 genvar j;
+	 generate
+		 // edge detect all the key inputs
+		 for(j = 0; j < 4; ++j) begin : edge_detect_keys
+			  edge_detect e_i (.clk(clk),
+									 .button(db[j]),
+									 .button_edge(edges[j]));
     end
-
-    // edge detect all the key inputs
-    for(i = 0; i < 4; ++i) begin : edge_detect_keys
-        edge_detect e_i (.clk(clk),
-                          .button(debounce[i]),
-                          .button_edge(edges[i]));
-    end
+	 endgenerate
 
 
     // State teypedef enum used here
