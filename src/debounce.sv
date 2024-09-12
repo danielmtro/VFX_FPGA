@@ -4,11 +4,13 @@ Delay is set to 50 us (based on a 50 MHz clock)
 */
 
 module debounce #(
-  parameter DELAY_COUNTS = 2500
+  parameter DELAY_COUNTS = 2500     // For a 50MHz clock this is 50us and stuff
 ) (
     input clk, button,
     output reg button_pressed
 );
+
+  initial button_pressed = 0;
 
   // Use a synchronizer to synchronize `button`.
   wire button_sync; // Output of the synchronizer. Input to your debounce logic.
@@ -17,8 +19,8 @@ module debounce #(
   // Note: Use the synchronized `button_sync` wire as the input signal to the debounce logic.
   
   // Create a register for the delay counts
-  reg [$clog2(DELAY_COUNTS) -1:0] count;
-  reg prev_button;
+  reg [$clog2(DELAY_COUNTS):0] count = 0;
+  reg prev_button = 0;
 
   // Set the count flip-flop:
   always @(posedge clk) begin
