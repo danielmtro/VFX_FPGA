@@ -10,6 +10,8 @@ module debounce #(
     output reg button_pressed
 );
 
+  initial button_pressed = 0;
+
   // Use a synchronizer to synchronize `button`.
   wire button_sync; // Output of the synchronizer. Input to your debounce logic.
   synchroniser button_synchroniser (.clk(clk), .x(button), .y(button_sync));
@@ -17,8 +19,8 @@ module debounce #(
   // Note: Use the synchronized `button_sync` wire as the input signal to the debounce logic.
   
   // Create a register for the delay counts
-  reg [$clog2(DELAY_COUNTS) -1:0] count;
-  reg prev_button;
+  reg [$clog2(DELAY_COUNTS):0] count = 0;
+  reg prev_button = 0;
 
   // Set the count flip-flop:
   always @(posedge clk) begin
