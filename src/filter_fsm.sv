@@ -25,7 +25,7 @@ module filter_fsm#(
 
     // Stores the debounced signals and edge detect signals 
     logic [3:0] db;
-	 logic [3:0] edges;
+	logic [3:0] edges;
 	
 	
 	 genvar i;
