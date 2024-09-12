@@ -21,11 +21,12 @@ module video_data_expander #(
 	 // The ram_init_file is a Quartus-only directive
 	//specifying the name of the initialisation file,
 	//and Verilator will ignore it.
-    /*(* ram_init_file = "linear-gradient.mif" *) */  logic [NumColourBits-1:0] linear_grad   [NumPixels];
 
+    (* ram_init_file = "linear-gradient.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
 
+   
     
-    initial begin : memset /* The 'ifdef VERILATOR' means this initial block is ignored in Quartus */
+	 initial begin : memset /* The 'ifdef VERILATOR' means this initial block is ignored in Quartus */
         $readmemh("linear-gradient.hex", linear_grad);
     end
     
