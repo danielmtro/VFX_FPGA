@@ -1,37 +1,32 @@
 /*
-THIS MODULE IS TO BE USED AS A INTEGRATION TEST ON THE BOARD ITSELF
-
 This module integrates both the filter fsm and the lcd display.
 It takes in the key, clock and relevant LCD outputs.
 
-This can be used as a top level to verify that lcd_top_level 
-is working as intended on the board
+It creates the FSM and allows for visualisation of the current state
+on the LCD.
+
+We output the current state from this module.
 */
 
 `timescale 1 ps / 1 ps
-module lcd_state_machine_integration(
+module state_machine_with_display(
     input       [3:0] KEY,
-    input  wire       CLOCK2_50,         //                clk.clk
+    input  wire       clk,         //                Clock to be used
     inout  wire [7:0] LCD_DATA,    // external_interface.DATA
     output wire       LCD_ON,      //                   .ON
     output wire       LCD_BLON,    //                   .BLON
     output wire       LCD_EN,      //                   .EN
     output wire       LCD_RS,      //                   .RS
     output wire       LCD_RW,      //                   .RW
-    output wire [17:0] LEDR
+    output [1:0]      filter_type  // output the current state
 );
 
-    logic [1:0] filter_type;
-    filter_fsm(.clk(CLOCK2_50), 
+    filter_fsm(.clk(clk), 
                .key(KEY),
                .filter_type(filter_type));
-    
-    // view the current state on the LED's
-	assign LEDR[0] = filter_type[0];
-	assign LEDR[1] = filter_type[1];
 
     // iniate top level for the lcd control module
-    lcd_top_level(.clk(CLOCK2_50),
+    lcd_top_level(.clk(clk),
                   .current_state(filter_type),
                   .LCD_DATA    (LCD_DATA),    // external_interface.export
                   .LCD_ON      (LCD_ON),      //                   .export
