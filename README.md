@@ -64,3 +64,4 @@ It has a pulse to indicate the beginning and end of a packet (a frame, an image 
 This module increases the brightness of the image based on the maximum output frequency of the voice.
 It receives a data stream of 12 bit RGB values and increases their value by multiplying the R, G, B values and keeping the same ratio between them. If the multiple of the result of the multiplication is greater than 255 (1111) then the value is set to 255.
 There is no latency
+*Note that the multiplication factor = freq_flag + 1 != freq_flag*
