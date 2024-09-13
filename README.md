@@ -59,3 +59,8 @@ It takes the number of pixels as an input parameter as well as the number of bit
 It is always outputting VALID unless a reset signal is received.
 It is receives a ready signal and will only output a new value if the ready signal is received!!
 It has a pulse to indicate the beginning and end of a packet (a frame, an image etc.)
+
+## brightness_filter
+This module increases the brightness of the image based on the maximum output frequency of the voice.
+It receives a data stream of 12 bit RGB values and increases their value by multiplying the R, G, B values and keeping the same ratio between them. If the multiple of the result of the multiplication is greater than 255 (1111) then the value is set to 255.
+There is no latency
