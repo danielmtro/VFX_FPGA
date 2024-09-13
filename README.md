@@ -59,3 +59,7 @@ It takes the number of pixels as an input parameter as well as the number of bit
 It is always outputting VALID unless a reset signal is received.
 It is receives a ready signal and will only output a new value if the ready signal is received!!
 It has a pulse to indicate the beginning and end of a packet (a frame, an image etc.)
+
+## inversion_filter.sv
+This module receives a stream of pixel data each which is 12 bit RGB and outputs a data stream of the same size with all values inverted. It only inverts the pixels if the frequency flag `freq_flag` is above a given threshold (currently set to 1 [01]).
+This module has no latency and is not at all reliant on the clock.
