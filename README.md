@@ -60,6 +60,25 @@ It is always outputting VALID unless a reset signal is received.
 It is receives a ready signal and will only output a new value if the ready signal is received!!
 It has a pulse to indicate the beginning and end of a packet (a frame, an image etc.)
 
+## State_machine_with_display.sv
+Inputs: 
+    [3:0]key: All of the keys on the FPGA
+    A bunch of other DATA I/O ports on the FPGA (if its in caps then just use as a pin assignment)
+Outputs:
+    [1:0]filter_type: The current 'state' of the machine. Filter type mapping shown below.
+
+STATE MAPPING
+    00: COLOUR
+    01: BLUR
+    10: BRIGHTNESS
+    11: EDGES
+
+Module Explanation
+This module controls what the current state of the overall machine is and displays the state on the LCD.
+Pressing any of the keys on the FPGA will correspond to a change to that state.
+    
+
+
 ## brightness_filter
 This module increases the brightness of the image based on the maximum output frequency of the voice.
 It receives a data stream of 12 bit RGB values and increases their value by multiplying the R, G, B values and keeping the same ratio between them. If the multiple of the result of the multiplication is greater than 255 (1111) then the value is set to 255.
