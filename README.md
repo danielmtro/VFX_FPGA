@@ -77,3 +77,8 @@ Module Explanation
 This module controls what the current state of the overall machine is and displays the state on the LCD.
 Pressing any of the keys on the FPGA will correspond to a change to that state.
     
+
+
+## inversion_filter.sv
+This module receives a stream of pixel data each which is 12 bit RGB and outputs a data stream of the same size with all values inverted. It only inverts the pixels if the frequency flag `freq_flag` is above a given threshold (currently set to 1 [01]).
+This module has no latency and is not at all reliant on the clock.
