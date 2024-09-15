@@ -39,31 +39,7 @@ module top_level (
 	 .valid(audio_input.valid)
    );
 	
-	
-			
 	assign AUD_XCK = adc_clk;
-	
-	// Determne when a SOP and an EOP is
-	
-	
-//	FIR_filter u_fir_filter (
-//		.clk(CLOCK_50),
-//		.ast_sink_data(audio_input.data),
-//		.ast_sink_valid(audio_input.valid),
-//		.ast_source_data(filtered_audio_input.data),
-//		.ast_source_valid(filtered_audio_input.valid)
-//	);
-
-	rc_low_pass #(.ALPHA(16'b00000000_0001100)) u_rc_low_pass (
-		.clk(AUD_BLK),
-		.x(audio_input),
-		.y(filtered_audio_input)
-	);
-	
-	downsample u_downsample(.clk(AUD_BLK),
-									.x(filtered_audio_input),
-									.y(downsampled_audio_input));
-	
 
 
    fft_pitch_detect #(.W(W), .NSamples(NSamples)) DUT (
@@ -75,30 +51,6 @@ module top_level (
     );
 	 
 	 
-	logic [21:0] count;
-	always_ff @(posedge CLOCK_50) begin
-		if(count == 0) begin
-			LEDR <= downsampled_audio_input.data;
-			LEDG[0] <= audio_input.valid;
-			LEDG[1] <= downsampled_audio_input.valid;
-			LEDG[2] <= filtered_audio_input.valid;
-		end
-		count <= count + 1;
-	end
-	
-	// Trying to slow down the noise
-	logic [12:0] downsample_count;
-	always_ff @(posedge CLOCK_50) begin
-		if(downsample_count == 0) begin
-			fft_value <= pitch_output.data;
-		end
-		downsample_count <= downsample_count + 1;
-	end
-	
-	
-	// correction to increase sensitivity
-	logic [10:0] fft_value;
-
-	display u_display (.clk(adc_clk),.value(fft_value),.display0(HEX0),.display1(HEX1),.display2(HEX2),.display3(HEX3));
+	display u_display (.clk(adc_clk),.value(pitch_output.data),.display0(HEX0),.display1(HEX1),.display2(HEX2),.display3(HEX3));
 
 endmodule
