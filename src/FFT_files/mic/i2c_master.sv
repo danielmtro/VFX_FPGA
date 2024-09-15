@@ -1,5 +1,5 @@
 module i2c_master (
-    input  clk,      // 20 kHz input clock
+    input  clk,      // 20 kHz input clock. Assume this is the correct frequency for the I2C transfer.
 
     output i2c_scl,  // I2C clock
     inout  i2c_sda,  // I2C DATA
@@ -35,8 +35,7 @@ module i2c_master (
     localparam slave_address_length = 7;
     localparam slave_register_address = 8;
     localparam slave_data_length = 8;
-
-    // state transition table
+    //TODO Complete the FSM next-state table. Most states automatically transistion to the next (these are listed in order):
     always_comb begin : fsm_next_state
         next_state = INIT;
         case(state)
@@ -83,6 +82,7 @@ module i2c_master (
         end
     end
 
+    //TODO Complete the following FSM output table:
     always_comb begin : fsm_output
         sda_set = 1;      // Default : SDA line is high (undriven).
         scl_idle = 0;     // Default : The clock is idle (high). You can change this if you think it's easier.
@@ -106,6 +106,5 @@ module i2c_master (
 
 
     always if (read_not_write) $error("I2C read transaction not implemented!");
-
 
 endmodule

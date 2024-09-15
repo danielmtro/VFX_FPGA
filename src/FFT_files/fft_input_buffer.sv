@@ -20,7 +20,7 @@ module fft_input_buffer #(
 
     assign fft_input_valid = fft_read; // The Async FIFO is set such that valid data is read out whenever the rdreq flag is high.
     
-    //Implement a counter n to set fft_read to 1 when the FIFO becomes full (use full, not wr_full).
+    //TODO implement a counter n to set fft_read to 1 when the FIFO becomes full (use full, not wr_full).
     // Then, keep fft_read set to 1 until 1024 (NSamples) samples in total have been read out from the FIFO.
 
     logic start_count;

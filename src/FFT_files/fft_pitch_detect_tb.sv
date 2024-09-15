@@ -15,24 +15,9 @@ module fft_pitch_detect_tb;
     logic reset = 1'b1;
     
     dstream #(.N(W)) audio_input ();
-	 dstream #(.N(W)) filtered_audio_input ();
     dstream #(.N($clog2(NSamples))) pitch_output ();
-	 
 
-	 logic [29:0]source_data;
-	 logic sink_error;
-	 
-	 
-	 assign filtered_audio_input.data = source_data[29:14];
-	 FIR_filter u_fir_filter (
-		.clk(clk),
-		.reset_n(reset),
-		.ast_sink_data(audio_input.data),
-		.ast_sink_valid(audio_input.valid),
-		.ast_source_data(source_data),
-		.ast_source_valid(filtered_audio_input.valid));
-	
-    fft_pitch_detect DUT (.clk(clk), .audio_clk(bclk), .reset(reset), .audio_input(filtered_audio_input), .pitch_output(pitch_output));
+    fft_pitch_detect DUT (.clk(clk), .audio_clk(bclk), .reset(reset), .audio_input(audio_input), .pitch_output(pitch_output));
 
     logic [W-1:0] input_signal [NSamples];
     initial $readmemh("test_waveform.hex", input_signal);
@@ -47,8 +32,6 @@ module fft_pitch_detect_tb;
         reset = 1'b0;
         #(TCLK*5);
         start = 1'b1;
-		  sink_error = 1'b0;
-		  
         repeat (3) @(negedge pitch_output.valid);
         #(TCLK*100);
         $finish();

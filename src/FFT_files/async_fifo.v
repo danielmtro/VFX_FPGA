@@ -1,4 +1,4 @@
-// megafunction wizard: %FIFO%
+// Copy & Paste your code from task 1.3 here!// megafunction wizard: %FIFO%
 // GENERATION: STANDARD
 // VERSION: WM1.0
 // MODULE: dcfifo 
@@ -104,7 +104,6 @@ module async_fifo (
 
 
 endmodule
-
 // ============================================================
 // CNX file retrieval info
 // ============================================================

@@ -20,6 +20,10 @@ module fft_find_peak #(
     logic [NBits-1:0]     peak_k_temp = 0;
 
     always_ff @(posedge clk) begin : find_peak
+        //TODO Find the peak (maximum) value out of a window of 1024 streamed samples, streamed in one at a time.
+        // Store the corresponding k-index representing that value in peak_k. Set peak_valid to 1 for 1 clock cycle once all 1024 values have been streamed through.
+        // Use the counter i to count from 0 to 1023. Reset all registers after the 1024th value of i, in preparation for the next FFT window.
+        // The FFT k-index is represented by bit-reversing i.
 
         // check if we are resetting. Then reset all of the values
         if(reset) begin
@@ -28,7 +32,7 @@ module fft_find_peak #(
             peak_valid <=0;
             i <= 0;
         end
-        // if we've reached the end of the packet then set peak_valid correctly
+        // if we've reached theend of the packet then set peak_valid correctly
         else if(i == NSamples - 1) begin
 
             // set the output variables
@@ -47,7 +51,7 @@ module fft_find_peak #(
             
             // increment the index if the mag is bigger than the peak
             if(mag > peak_temp) begin
-                if(k[NBits - 1] != 1'b1 && k > 0) begin
+                if(k[NBits - 1] != 1'b1) begin
                     peak_temp <= mag;
                     peak_k_temp <= k;
                 end

@@ -16,7 +16,16 @@ module mic_load #(parameter N=16) (
     end
     assign redge_adclrc = ~adclrc_q & adclrc; // rising edge detected!
 
-
+    /*
+     * Implement the Timing diagram.
+     * -----------------------------
+     * You should use a temporary N-bit RX register to store the ADCDAT bitstream from MSB to LSB.
+     * Remember that MSB is first, LSB is last.
+     * Use `temp_rx_data[(N-1)-bit_index] <= adcdat;`
+     * BCLK rising is your trigger to sample the value of ADCDAT into the register at the appropriate bit index.
+     * ADCLRC rising (see `redge_adclrc`) signals that the MSB should be sampled on the next rising edge of BCLK.
+     * With the above, think about when and how you would reset your bit_index counter.
+     */
 
      logic [N - 1:0] temp_rx_data;
      integer bit_index = 0;
