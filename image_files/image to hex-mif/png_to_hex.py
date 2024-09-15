@@ -33,5 +33,5 @@ def png_to_hex(png_file, hex_file):
 
 
 # Usage example:
-png_to_hex('./Linear-gradient.png', 'linear-gradient.hex')
+png_to_hex('./chad-ho-640x480.png', './chad-ho.hex')
 

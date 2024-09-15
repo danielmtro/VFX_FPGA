@@ -1,0 +1,21 @@
+# system info vga on 2024.09.16.09:02:04
+system_info:
+name,value
+DEVICE,EP4CE115F29C7
+DEVICE_FAMILY,Cyclone IV E
+GENERATION_ID,1726441322
+#
+#
+# Files generated for vga on 2024.09.16.09:02:04
+files:
+filepath,kind,attributes,module,is_top
+simulation/vga.v,VERILOG,,vga,true
+#
+# Map from instance-path to kind of module
+instances:
+instancePath,module
+vga.video_data_expander_0,vga_video_data_expander_0
+vga.video_pll_0,vga_video_pll_0
+vga.video_vga_controller_0,vga_video_vga_controller_0
+vga.rst_controller,altera_reset_controller
+vga.rst_controller_001,altera_reset_controller

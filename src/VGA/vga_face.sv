@@ -82,7 +82,6 @@ module vga_face (
         else begin
             pixel_index <= pixel_index;
         end
-        //TODO Set pixel_index based on handshaking protocol. Remember the reset!!
     end
 
 endmodule
