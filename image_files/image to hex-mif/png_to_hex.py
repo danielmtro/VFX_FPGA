@@ -1,38 +1,37 @@
 # Utility to convert png files to hex memory initialisation files for Verilog's $readmemh() function.
-# Also: Converts 8-bit colour to 3-bit colour.
+# Also: Converts 8-bit colour to 12-bit colour.
 
 from PIL import Image
 
-def image_to_hex(image_path, hex_file_path):
+def png_to_hex(png_file, hex_file):
     # Open the image file
-    img = Image.open(image_path)
-    
-    # Ensure image is RGB
+    img = Image.open(png_file)
     img = img.convert('RGB')
     
-    # Get the dimensions of the image
+    # Get image dimensions
     width, height = img.size
     
-    # Open the hex file for writing
-    with open(hex_file_path, 'w') as hex_file:
+    # Open the HEX file for writing
+    with open(hex_file, 'w') as f:
+        # Process each pixel
         for y in range(height):
             for x in range(width):
-                # Get the RGB values of the pixel
                 r, g, b = img.getpixel((x, y))
                 
-                # Reduce the color depth to 3-bits (each color channel to 1-bit: 0 or 1)
-                r = 1 if r > 127 else 0
-                g = 1 if g > 127 else 0
-                b = 1 if b > 127 else 0
+                # Convert to 12-bit RGB (4 bits per channel)
+                r_12 = (r >> 4) & 0xF
+                g_12 = (g >> 4) & 0xF
+                b_12 = (b >> 4) & 0xF
                 
-                # Combine into a single 3-bit value (3 bits: R, G, B)
-                rgb_3bit = (r << 2) | (g << 1) | b
+                # Combine into a single 12-bit value
+                rgb_12 = (r_12 << 8) | (g_12 << 4) | b_12
                 
-                # Write to the hex file in 3-bit binary format (can be written in hex if needed)
-                hex_file.write(f"{rgb_3bit:01x}\n")
+                # Write to HEX file
+                f.write(f"{rgb_12:03X}\n")
 
-    print(f"Image has been converted to 3-bit color and written to {hex_file_path}")
+# Example usage
+
 
 # Usage example:
-image_to_hex('./Linear-gradient.png', 'linear-gradient.hex')
+png_to_hex('./Linear-gradient.png', 'linear-gradient.hex')
 
