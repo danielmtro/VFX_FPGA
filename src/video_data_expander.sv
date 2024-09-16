@@ -22,7 +22,7 @@ module video_data_expander #(
 	//specifying the name of the initialisation file,
 	//and Verilator will ignore it.
 
-    (* ram_init_file = "linear-gradient.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
+    (* ram_init_file = "chad-ho.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
 
    
     
