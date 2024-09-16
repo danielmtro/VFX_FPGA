@@ -37,4 +37,4 @@ def png_to_mif(png_file, mif_file):
         f.write("END;\n")
 
 # Example usage # add in this later
-png_to_mif('./Linear-Gradient.png', './output.mif')
+png_to_mif('./chad-ho-640x480.png', './chad-ho.mif')

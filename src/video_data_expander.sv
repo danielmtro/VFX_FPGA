@@ -1,6 +1,6 @@
 module video_data_expander #(
 	parameter NumPixels = 12*12,
-	parameter NumColourBits = 3
+	parameter NumColourBits = 12
 )
  (
     input  logic        clk,             
@@ -66,7 +66,7 @@ module video_data_expander #(
 
 //	 integer num_repeats;
 //	 assign num_repeats = 8 / (NumColourBits / 3);
-    assign data = {{8{current_pixel[2]}}, {2{1'b0}}, {8{current_pixel[1]}}, {2{1'b0}}, {8{current_pixel[0]}}, {2{1'b0}}}; //TODO assign data. Keep in mind, each RGB channel should be 10 bits like so: {8 bits of colour data, 2 bits of zero padding}.
+    assign data = {{2{current_pixel[11:8]}}, {2{1'b0}}, {2{current_pixel[7:4]}}, {2{1'b0}}, {2{current_pixel[3:0]}}, {2{1'b0}}}; //TODO assign data. Keep in mind, each RGB channel should be 10 bits like so: {8 bits of colour data, 2 bits of zero padding}.
     // Remember, our 3-bit wide image ROMs only have 1-bit for each colour channel!! (Hint: use the replication operator to convert from 1-bit to 8-bit colour).
 
     assign pixel_index_next = (reset || pixel_index == NumPixels - 1) ? 0 : pixel_index + 1;//TODO Set pixel_index_next (what **would be** the next value?)
