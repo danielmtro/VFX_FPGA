@@ -3,18 +3,17 @@ module video_data_expander_tb;
 	 logic        clk;
     logic        reset;
     logic [29:0] data;
-    logic        startofpacket;
-    logic        endofpacket;
+
     logic        valid;
     logic        ready = 1'b0;
+	 logic [11:0] pixel_in = {11{1'b0}};
 	 
 	 video_data_expander 
-			#(.NumPixels(12*12), .NumColourBits(3))dut(
+			#(.NumColourBits(12))dut(
         .clk(clk),
         .reset(reset),
         .data(data),
-        .startofpacket(startofpacket),
-        .endofpacket(endofpacket),
+		  .pixel_in(pixel_in),
         .valid(valid),
         .ready(ready)
     );
@@ -36,7 +35,11 @@ module video_data_expander_tb;
         // Apply reset
         #20 reset = 1'b0;
 		  
-		  #(20*250);
+		  pixel_in = 12'b0011_1100_1010;
+		  #40;
+		  pixel_in = 12'b1010_0101_1111;
+		  
+		  #40;
 		  
 		  $finish();
 	 end
@@ -44,8 +47,8 @@ module video_data_expander_tb;
 	// Monitor signals to verify behavior
     always_ff @(posedge clk) begin : monitor
         if (valid && ready) begin
-            $display("Received pixel: pixel_index =%d, data = %b", 
-                      dut.pixel_index, data);
+            $display("Received pixel: pixel_in =%b, data = %b", 
+                      pixel_in, data);
         end
     end
 
