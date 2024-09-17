@@ -17,7 +17,7 @@
          type = "int";
       }
    }
-   element video_data_expander_0
+   element vid_data_expand_0
    {
       datum _sortIndex
       {
@@ -76,11 +76,11 @@
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
  <module
-   name="video_data_expander_0"
-   kind="video_data_expander"
+   name="vid_data_expand_0"
+   kind="vid_data_expand"
    version="1.0"
    enabled="1">
-  <parameter name="NumColourBits" value="12" />
+  <parameter name="NumColourBits" value="3" />
   <parameter name="NumPixels" value="307200" />
  </module>
  <module
@@ -114,7 +114,7 @@
  <connection
    kind="avalon_streaming"
    version="20.1"
-   start="video_data_expander_0.avalon_streaming_source"
+   start="vid_data_expand_0.avalon_streaming_source"
    end="video_vga_controller_0.avalon_vga_sink" />
  <connection
    kind="clock"
@@ -130,7 +130,7 @@
    kind="clock"
    version="20.1"
    start="video_pll_0.vga_clk"
-   end="video_data_expander_0.clock" />
+   end="vid_data_expand_0.clock" />
  <connection
    kind="reset"
    version="20.1"
@@ -140,12 +140,12 @@
    kind="reset"
    version="20.1"
    start="video_pll_0.reset_source"
-   end="video_vga_controller_0.reset" />
+   end="vid_data_expand_0.reset" />
  <connection
    kind="reset"
    version="20.1"
    start="video_pll_0.reset_source"
-   end="video_data_expander_0.reset" />
+   end="video_vga_controller_0.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />

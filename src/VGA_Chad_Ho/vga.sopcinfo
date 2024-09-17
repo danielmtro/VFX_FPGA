@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="vga" kind="vga" version="1.0" fabric="QSYS">
  <!-- Format version 20.1 711 (Future versions may contain additional information.) -->
- <!-- 2024.09.16.09:02:10 -->
+ <!-- 2024.09.16.09:56:29 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1726441330</value>
+  <value>1726444589</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -400,10 +400,10 @@ parameters are a RESULT of the module parameters. -->
   </interface>
  </module>
  <module
-   name="video_data_expander_0"
-   kind="video_data_expander"
+   name="vid_data_expand_0"
+   kind="vid_data_expand"
    version="1.0"
-   path="video_data_expander_0">
+   path="vid_data_expand_0">
   <!-- Describes a single module. Module parameters are
 the requested settings for a module instance. -->
   <parameter name="NumPixels">
@@ -416,7 +416,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="NumColourBits">
    <type>int</type>
-   <value>12</value>
+   <value>3</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -969,9 +969,9 @@ parameters are a RESULT of the module parameters. -->
    </clockDomainMember>
    <clockDomainMember>
     <isBridge>false</isBridge>
-    <moduleName>video_data_expander_0</moduleName>
+    <moduleName>vid_data_expand_0</moduleName>
     <slaveName>clock</slaveName>
-    <name>video_data_expander_0.clock</name>
+    <name>vid_data_expand_0.clock</name>
    </clockDomainMember>
   </interface>
   <interface name="reset_source" kind="reset_source" version="20.1">
@@ -1455,10 +1455,10 @@ parameters are a RESULT of the module parameters. -->
   </interface>
  </module>
  <connection
-   name="video_data_expander_0.avalon_streaming_source/video_vga_controller_0.avalon_vga_sink"
+   name="vid_data_expand_0.avalon_streaming_source/video_vga_controller_0.avalon_vga_sink"
    kind="avalon_streaming"
    version="20.1"
-   start="video_data_expander_0.avalon_streaming_source"
+   start="vid_data_expand_0.avalon_streaming_source"
    end="video_vga_controller_0.avalon_vga_sink">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
@@ -1476,7 +1476,7 @@ parameters are a RESULT of the module parameters. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <startModule>video_data_expander_0</startModule>
+  <startModule>vid_data_expand_0</startModule>
   <startConnectionPoint>avalon_streaming_source</startConnectionPoint>
   <endModule>video_vga_controller_0</endModule>
   <endConnectionPoint>avalon_vga_sink</endConnectionPoint>
@@ -1536,11 +1536,11 @@ parameters are a RESULT of the module parameters. -->
   <endConnectionPoint>clk</endConnectionPoint>
  </connection>
  <connection
-   name="video_pll_0.vga_clk/video_data_expander_0.clock"
+   name="video_pll_0.vga_clk/vid_data_expand_0.clock"
    kind="clock"
    version="20.1"
    start="video_pll_0.vga_clk"
-   end="video_data_expander_0.clock">
+   end="vid_data_expand_0.clock">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
    <value>UNKNOWN</value>
@@ -1559,7 +1559,7 @@ parameters are a RESULT of the module parameters. -->
   </parameter>
   <startModule>video_pll_0</startModule>
   <startConnectionPoint>vga_clk</startConnectionPoint>
-  <endModule>video_data_expander_0</endModule>
+  <endModule>vid_data_expand_0</endModule>
   <endConnectionPoint>clock</endConnectionPoint>
  </connection>
  <connection
@@ -1590,6 +1590,33 @@ parameters are a RESULT of the module parameters. -->
   <endConnectionPoint>ref_reset</endConnectionPoint>
  </connection>
  <connection
+   name="video_pll_0.reset_source/vid_data_expand_0.reset"
+   kind="reset"
+   version="20.1"
+   start="video_pll_0.reset_source"
+   end="vid_data_expand_0.reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>video_pll_0</startModule>
+  <startConnectionPoint>reset_source</startConnectionPoint>
+  <endModule>vid_data_expand_0</endModule>
+  <endConnectionPoint>reset</endConnectionPoint>
+ </connection>
+ <connection
    name="video_pll_0.reset_source/video_vga_controller_0.reset"
    kind="reset"
    version="20.1"
@@ -1614,33 +1641,6 @@ parameters are a RESULT of the module parameters. -->
   <startModule>video_pll_0</startModule>
   <startConnectionPoint>reset_source</startConnectionPoint>
   <endModule>video_vga_controller_0</endModule>
-  <endConnectionPoint>reset</endConnectionPoint>
- </connection>
- <connection
-   name="video_pll_0.reset_source/video_data_expander_0.reset"
-   kind="reset"
-   version="20.1"
-   start="video_pll_0.reset_source"
-   end="video_data_expander_0.reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>video_pll_0</startModule>
-  <startConnectionPoint>reset_source</startConnectionPoint>
-  <endModule>video_data_expander_0</endModule>
   <endConnectionPoint>reset</endConnectionPoint>
  </connection>
  <plugin>
@@ -1685,10 +1685,10 @@ parameters are a RESULT of the module parameters. -->
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
-  <name>video_data_expander</name>
+  <name>vid_data_expand</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>video_data_expander</displayName>
+  <displayName>vid_data_expand</displayName>
   <version>1.0</version>
  </plugin>
  <plugin>

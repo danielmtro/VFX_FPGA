@@ -16,27 +16,27 @@ module vga (
 		output wire [7:0] vga_B          //      .B
 	);
 
-	wire         video_data_expander_0_avalon_streaming_source_valid;         // video_data_expander_0:valid -> video_vga_controller_0:valid
-	wire  [29:0] video_data_expander_0_avalon_streaming_source_data;          // video_data_expander_0:data -> video_vga_controller_0:data
-	wire         video_data_expander_0_avalon_streaming_source_ready;         // video_vga_controller_0:ready -> video_data_expander_0:ready
-	wire         video_data_expander_0_avalon_streaming_source_startofpacket; // video_data_expander_0:startofpacket -> video_vga_controller_0:startofpacket
-	wire         video_data_expander_0_avalon_streaming_source_endofpacket;   // video_data_expander_0:endofpacket -> video_vga_controller_0:endofpacket
-	wire         video_pll_0_vga_clk_clk;                                     // video_pll_0:vga_clk_clk -> [rst_controller:clk, video_data_expander_0:clk, video_vga_controller_0:clk]
-	wire         rst_controller_reset_out_reset;                              // rst_controller:reset_out -> [video_data_expander_0:reset, video_vga_controller_0:reset]
-	wire         video_pll_0_reset_source_reset;                              // video_pll_0:reset_source_reset -> rst_controller:reset_in0
-	wire         rst_controller_001_reset_out_reset;                          // rst_controller_001:reset_out -> video_pll_0:ref_reset_reset
+	wire         vid_data_expand_0_avalon_streaming_source_valid;         // vid_data_expand_0:valid -> video_vga_controller_0:valid
+	wire  [29:0] vid_data_expand_0_avalon_streaming_source_data;          // vid_data_expand_0:data -> video_vga_controller_0:data
+	wire         vid_data_expand_0_avalon_streaming_source_ready;         // video_vga_controller_0:ready -> vid_data_expand_0:ready
+	wire         vid_data_expand_0_avalon_streaming_source_startofpacket; // vid_data_expand_0:startofpacket -> video_vga_controller_0:startofpacket
+	wire         vid_data_expand_0_avalon_streaming_source_endofpacket;   // vid_data_expand_0:endofpacket -> video_vga_controller_0:endofpacket
+	wire         video_pll_0_vga_clk_clk;                                 // video_pll_0:vga_clk_clk -> [rst_controller:clk, vid_data_expand_0:clk, video_vga_controller_0:clk]
+	wire         rst_controller_reset_out_reset;                          // rst_controller:reset_out -> [vid_data_expand_0:reset, video_vga_controller_0:reset]
+	wire         video_pll_0_reset_source_reset;                          // video_pll_0:reset_source_reset -> rst_controller:reset_in0
+	wire         rst_controller_001_reset_out_reset;                      // rst_controller_001:reset_out -> video_pll_0:ref_reset_reset
 
 	video_data_expander #(
 		.NumPixels     (307200),
-		.NumColourBits (12)
-	) video_data_expander_0 (
-		.clk           (video_pll_0_vga_clk_clk),                                     //                   clock.clk
-		.reset         (rst_controller_reset_out_reset),                              //                   reset.reset
-		.data          (video_data_expander_0_avalon_streaming_source_data),          // avalon_streaming_source.data
-		.endofpacket   (video_data_expander_0_avalon_streaming_source_endofpacket),   //                        .endofpacket
-		.ready         (video_data_expander_0_avalon_streaming_source_ready),         //                        .ready
-		.startofpacket (video_data_expander_0_avalon_streaming_source_startofpacket), //                        .startofpacket
-		.valid         (video_data_expander_0_avalon_streaming_source_valid)          //                        .valid
+		.NumColourBits (3)
+	) vid_data_expand_0 (
+		.clk           (video_pll_0_vga_clk_clk),                                 //                   clock.clk
+		.reset         (rst_controller_reset_out_reset),                          //                   reset.reset
+		.data          (vid_data_expand_0_avalon_streaming_source_data),          // avalon_streaming_source.data
+		.endofpacket   (vid_data_expand_0_avalon_streaming_source_endofpacket),   //                        .endofpacket
+		.ready         (vid_data_expand_0_avalon_streaming_source_ready),         //                        .ready
+		.startofpacket (vid_data_expand_0_avalon_streaming_source_startofpacket), //                        .startofpacket
+		.valid         (vid_data_expand_0_avalon_streaming_source_valid)          //                        .valid
 	);
 
 	vga_video_pll_0 video_pll_0 (
@@ -47,21 +47,21 @@ module vga (
 	);
 
 	vga_video_vga_controller_0 video_vga_controller_0 (
-		.clk           (video_pll_0_vga_clk_clk),                                     //                clk.clk
-		.reset         (rst_controller_reset_out_reset),                              //              reset.reset
-		.data          (video_data_expander_0_avalon_streaming_source_data),          //    avalon_vga_sink.data
-		.startofpacket (video_data_expander_0_avalon_streaming_source_startofpacket), //                   .startofpacket
-		.endofpacket   (video_data_expander_0_avalon_streaming_source_endofpacket),   //                   .endofpacket
-		.valid         (video_data_expander_0_avalon_streaming_source_valid),         //                   .valid
-		.ready         (video_data_expander_0_avalon_streaming_source_ready),         //                   .ready
-		.VGA_CLK       (vga_CLK),                                                     // external_interface.export
-		.VGA_HS        (vga_HS),                                                      //                   .export
-		.VGA_VS        (vga_VS),                                                      //                   .export
-		.VGA_BLANK     (vga_BLANK),                                                   //                   .export
-		.VGA_SYNC      (vga_SYNC),                                                    //                   .export
-		.VGA_R         (vga_R),                                                       //                   .export
-		.VGA_G         (vga_G),                                                       //                   .export
-		.VGA_B         (vga_B)                                                        //                   .export
+		.clk           (video_pll_0_vga_clk_clk),                                 //                clk.clk
+		.reset         (rst_controller_reset_out_reset),                          //              reset.reset
+		.data          (vid_data_expand_0_avalon_streaming_source_data),          //    avalon_vga_sink.data
+		.startofpacket (vid_data_expand_0_avalon_streaming_source_startofpacket), //                   .startofpacket
+		.endofpacket   (vid_data_expand_0_avalon_streaming_source_endofpacket),   //                   .endofpacket
+		.valid         (vid_data_expand_0_avalon_streaming_source_valid),         //                   .valid
+		.ready         (vid_data_expand_0_avalon_streaming_source_ready),         //                   .ready
+		.VGA_CLK       (vga_CLK),                                                 // external_interface.export
+		.VGA_HS        (vga_HS),                                                  //                   .export
+		.VGA_VS        (vga_VS),                                                  //                   .export
+		.VGA_BLANK     (vga_BLANK),                                               //                   .export
+		.VGA_SYNC      (vga_SYNC),                                                //                   .export
+		.VGA_R         (vga_R),                                                   //                   .export
+		.VGA_G         (vga_G),                                                   //                   .export
+		.VGA_B         (vga_B)                                                    //                   .export
 	);
 
 	altera_reset_controller #(

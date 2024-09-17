@@ -1,7 +1,7 @@
 
 module vga (
-	reset_reset_n,
 	clk_clk,
+	reset_reset_n,
 	vga_CLK,
 	vga_HS,
 	vga_VS,
@@ -11,8 +11,8 @@ module vga (
 	vga_G,
 	vga_B);	
 
-	input		reset_reset_n;
 	input		clk_clk;
+	input		reset_reset_n;
 	output		vga_CLK;
 	output		vga_HS;
 	output		vga_VS;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="vga" kind="system" version="20.1" fabric="QSYS">
  <!-- Format version 20.1 711 (Future versions may contain additional information.) -->
- <!-- 2024.09.16.09:02:13 -->
+ <!-- 2024.09.16.09:56:32 -->
  <!-- A collection of modules and connections -->
  <parameter name="clockCrossingAdapter">
   <type>com.altera.sopcmodel.ensemble.EClockAdapter</type>
@@ -53,7 +53,7 @@
  </parameter>
  <parameter name="generationId">
   <type>int</type>
-  <value>1726441330</value>
+  <value>1726444589</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>true</visible>
@@ -458,10 +458,10 @@ parameters are a RESULT of the module parameters. -->
   </interface>
  </module>
  <module
-   name="video_data_expander_0"
-   kind="video_data_expander"
+   name="vid_data_expand_0"
+   kind="vid_data_expand"
    version="1.0"
-   path="video_data_expander_0">
+   path="vid_data_expand_0">
   <!-- Describes a single module. Module parameters are
 the requested settings for a module instance. -->
   <parameter name="NumPixels">
@@ -474,7 +474,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="NumColourBits">
    <type>int</type>
-   <value>12</value>
+   <value>3</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -1027,9 +1027,9 @@ parameters are a RESULT of the module parameters. -->
    </clockDomainMember>
    <clockDomainMember>
     <isBridge>false</isBridge>
-    <moduleName>video_data_expander_0</moduleName>
+    <moduleName>vid_data_expand_0</moduleName>
     <slaveName>clock</slaveName>
-    <name>video_data_expander_0.clock</name>
+    <name>vid_data_expand_0.clock</name>
    </clockDomainMember>
    <clockDomainMember>
     <isBridge>false</isBridge>
@@ -2269,10 +2269,10 @@ parameters are a RESULT of the module parameters. -->
   </interface>
  </module>
  <connection
-   name="video_data_expander_0.avalon_streaming_source/video_vga_controller_0.avalon_vga_sink"
+   name="vid_data_expand_0.avalon_streaming_source/video_vga_controller_0.avalon_vga_sink"
    kind="avalon_streaming"
    version="20.1"
-   start="video_data_expander_0.avalon_streaming_source"
+   start="vid_data_expand_0.avalon_streaming_source"
    end="video_vga_controller_0.avalon_vga_sink">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
@@ -2290,7 +2290,7 @@ parameters are a RESULT of the module parameters. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <startModule>video_data_expander_0</startModule>
+  <startModule>vid_data_expand_0</startModule>
   <startConnectionPoint>avalon_streaming_source</startConnectionPoint>
   <endModule>video_vga_controller_0</endModule>
   <endConnectionPoint>avalon_vga_sink</endConnectionPoint>
@@ -2350,11 +2350,11 @@ parameters are a RESULT of the module parameters. -->
   <endConnectionPoint>clk</endConnectionPoint>
  </connection>
  <connection
-   name="video_pll_0.vga_clk/video_data_expander_0.clock"
+   name="video_pll_0.vga_clk/vid_data_expand_0.clock"
    kind="clock"
    version="20.1"
    start="video_pll_0.vga_clk"
-   end="video_data_expander_0.clock">
+   end="vid_data_expand_0.clock">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
    <value>UNKNOWN</value>
@@ -2373,15 +2373,15 @@ parameters are a RESULT of the module parameters. -->
   </parameter>
   <startModule>video_pll_0</startModule>
   <startConnectionPoint>vga_clk</startConnectionPoint>
-  <endModule>video_data_expander_0</endModule>
+  <endModule>vid_data_expand_0</endModule>
   <endConnectionPoint>clock</endConnectionPoint>
  </connection>
  <connection
-   name="rst_controller.reset_out/video_data_expander_0.reset"
+   name="rst_controller.reset_out/vid_data_expand_0.reset"
    kind="reset"
    version="20.1"
    start="rst_controller.reset_out"
-   end="video_data_expander_0.reset">
+   end="vid_data_expand_0.reset">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
    <value>UNKNOWN</value>
@@ -2400,7 +2400,7 @@ parameters are a RESULT of the module parameters. -->
   </parameter>
   <startModule>rst_controller</startModule>
   <startConnectionPoint>reset_out</startConnectionPoint>
-  <endModule>video_data_expander_0</endModule>
+  <endModule>vid_data_expand_0</endModule>
   <endConnectionPoint>reset</endConnectionPoint>
  </connection>
  <connection
@@ -2607,10 +2607,10 @@ parameters are a RESULT of the module parameters. -->
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
-  <name>video_data_expander</name>
+  <name>vid_data_expand</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>video_data_expander</displayName>
+  <displayName>vid_data_expand</displayName>
   <version>1.0</version>
  </plugin>
  <plugin>
@@ -2726,5 +2726,5 @@ parameters are a RESULT of the module parameters. -->
   <version>20.1</version>
  </plugin>
  <reportVersion>20.1 711</reportVersion>
- <uniqueIdentifier>60F26226A73600000191F7EC1A8C</uniqueIdentifier>
+ <uniqueIdentifier>60F26226A73600000191F81DD60C</uniqueIdentifier>
 </EnsembleReport>

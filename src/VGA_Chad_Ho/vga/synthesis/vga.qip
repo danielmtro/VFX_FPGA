@@ -2,7 +2,7 @@ set_global_assignment -entity "vga" -library "vga" -name IP_TOOL_NAME "Qsys"
 set_global_assignment -entity "vga" -library "vga" -name IP_TOOL_VERSION "20.1"
 set_global_assignment -entity "vga" -library "vga" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -library "vga" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../vga.sopcinfo"]
-set_global_assignment -entity "vga" -library "vga" -name SLD_INFO "QSYS_NAME vga HAS_SOPCINFO 1 GENERATION_ID 1726441330"
+set_global_assignment -entity "vga" -library "vga" -name SLD_INFO "QSYS_NAME vga HAS_SOPCINFO 1 GENERATION_ID 1726444589"
 set_global_assignment -library "vga" -name MISC_FILE [file join $::quartus(qip_path) "../vga.cmp"]
 set_global_assignment -library "vga" -name SLD_FILE [file join $::quartus(qip_path) "vga.debuginfo"]
 set_global_assignment -entity "vga" -library "vga" -name IP_TARGETED_DEVICE_FAMILY "Cyclone IV E"
@@ -15,7 +15,7 @@ set_global_assignment -entity "vga" -library "vga" -name IP_COMPONENT_DISPLAY_NA
 set_global_assignment -entity "vga" -library "vga" -name IP_COMPONENT_REPORT_HIERARCHY "On"
 set_global_assignment -entity "vga" -library "vga" -name IP_COMPONENT_INTERNAL "Off"
 set_global_assignment -entity "vga" -library "vga" -name IP_COMPONENT_VERSION "MS4w"
-set_global_assignment -entity "vga" -library "vga" -name IP_COMPONENT_PARAMETER "QVVUT19HRU5FUkFUSU9OX0lE::MTcyNjQ0MTMzMA==::QXV0byBHRU5FUkFUSU9OX0lE"
+set_global_assignment -entity "vga" -library "vga" -name IP_COMPONENT_PARAMETER "QVVUT19HRU5FUkFUSU9OX0lE::MTcyNjQ0NDU4OQ==::QXV0byBHRU5FUkFUSU9OX0lE"
 set_global_assignment -entity "vga" -library "vga" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::Q3ljbG9uZSBJViBF::QXV0byBERVZJQ0VfRkFNSUxZ"
 set_global_assignment -entity "vga" -library "vga" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0U=::RVA0Q0UxMTVGMjlDNw==::QXV0byBERVZJQ0U="
 set_global_assignment -entity "vga" -library "vga" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfU1BFRURHUkFERQ==::Nw==::QXV0byBERVZJQ0VfU1BFRURHUkFERQ=="
@@ -111,12 +111,12 @@ set_global_assignment -entity "altera_up_altpll" -library "vga" -name IP_COMPONE
 set_global_assignment -entity "altera_up_altpll" -library "vga" -name IP_COMPONENT_PARAMETER "UEhBU0VfU0hJRlQ=::MA==::UEhBU0VfU0hJRlQ="
 set_global_assignment -entity "altera_up_altpll" -library "vga" -name IP_COMPONENT_PARAMETER "REVWSUNFX0ZBTUlMWQ==::Q3ljbG9uZSBJVg==::REVWSUNFX0ZBTUlMWQ=="
 set_global_assignment -entity "video_data_expander" -library "vga" -name IP_COMPONENT_NAME "dmlkZW9fZGF0YV9leHBhbmRlcg=="
-set_global_assignment -entity "video_data_expander" -library "vga" -name IP_COMPONENT_DISPLAY_NAME "dmlkZW9fZGF0YV9leHBhbmRlcg=="
+set_global_assignment -entity "video_data_expander" -library "vga" -name IP_COMPONENT_DISPLAY_NAME "dmlkX2RhdGFfZXhwYW5k"
 set_global_assignment -entity "video_data_expander" -library "vga" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
 set_global_assignment -entity "video_data_expander" -library "vga" -name IP_COMPONENT_INTERNAL "Off"
 set_global_assignment -entity "video_data_expander" -library "vga" -name IP_COMPONENT_VERSION "MS4w"
 set_global_assignment -entity "video_data_expander" -library "vga" -name IP_COMPONENT_PARAMETER "TnVtUGl4ZWxz::MzA3MjAw::TnVtUGl4ZWxz"
-set_global_assignment -entity "video_data_expander" -library "vga" -name IP_COMPONENT_PARAMETER "TnVtQ29sb3VyQml0cw==::MTI=::TnVtQ29sb3VyQml0cw=="
+set_global_assignment -entity "video_data_expander" -library "vga" -name IP_COMPONENT_PARAMETER "TnVtQ29sb3VyQml0cw==::Mw==::TnVtQ29sb3VyQml0cw=="
 
 set_global_assignment -library "vga" -name VERILOG_FILE [file join $::quartus(qip_path) "vga.v"]
 set_global_assignment -library "vga" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_reset_controller.v"]

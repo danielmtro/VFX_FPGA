@@ -1,7 +1,7 @@
 	component vga is
 		port (
-			reset_reset_n : in  std_logic                    := 'X'; -- reset_n
 			clk_clk       : in  std_logic                    := 'X'; -- clk
+			reset_reset_n : in  std_logic                    := 'X'; -- reset_n
 			vga_CLK       : out std_logic;                           -- CLK
 			vga_HS        : out std_logic;                           -- HS
 			vga_VS        : out std_logic;                           -- VS
@@ -15,8 +15,8 @@
 
 	u0 : component vga
 		port map (
-			reset_reset_n => CONNECTED_TO_reset_reset_n, -- reset.reset_n
 			clk_clk       => CONNECTED_TO_clk_clk,       --   clk.clk
+			reset_reset_n => CONNECTED_TO_reset_reset_n, -- reset.reset_n
 			vga_CLK       => CONNECTED_TO_vga_CLK,       --   vga.CLK
 			vga_HS        => CONNECTED_TO_vga_HS,        --      .HS
 			vga_VS        => CONNECTED_TO_vga_VS,        --      .VS
