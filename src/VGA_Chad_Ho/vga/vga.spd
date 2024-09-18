@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+ <file path="simulation/vga.v" type="VERILOG" />
+ <topLevel name="vga" />
+ <deviceFamily name="cycloneive" />
+</simPackage>
