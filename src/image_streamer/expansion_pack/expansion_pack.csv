@@ -1,0 +1,23 @@
+# system info expansion_pack on 2024.09.18.18:44:19
+system_info:
+name,value
+DEVICE,EP4CE115F29C7
+DEVICE_FAMILY,Cyclone IV E
+GENERATION_ID,1726649057
+#
+#
+# Files generated for expansion_pack on 2024.09.18.18:44:19
+files:
+filepath,kind,attributes,module,is_top
+simulation/expansion_pack.v,VERILOG,,expansion_pack,true
+#
+# Map from instance-path to kind of module
+instances:
+instancePath,module
+expansion_pack.artificial_video_streaming_0,expansion_pack_artificial_video_streaming_0
+expansion_pack.video_data_expander_0,expansion_pack_video_data_expander_0
+expansion_pack.video_pll_0,expansion_pack_video_pll_0
+expansion_pack.video_vga_controller_0,expansion_pack_video_vga_controller_0
+expansion_pack.avalon_st_adapter,expansion_pack_avalon_st_adapter
+expansion_pack.rst_controller,altera_reset_controller
+expansion_pack.rst_controller_001,altera_reset_controller

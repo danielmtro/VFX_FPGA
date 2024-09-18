@@ -1,7 +1,16 @@
 module streaming_top_level(
-	input clk,
-	input logic reset,
-	input logic ready
+	input wire CLOCK_50,
+	input wire SW0,
+	input wire SW1,
+	
+		output wire        VGA_CLK,    
+		output wire        VGA_HS,     
+		output wire        VGA_VS,     
+		output wire        VGA_BLANK,  
+		output wire        VGA_SYNC,   
+		output wire [7:0]  VGA_R,        
+		output wire [7:0]  VGA_G,        
+		output wire [7:0]  VGA_B 
 );
 
     logic [11:0] im_data;
@@ -14,32 +23,17 @@ module streaming_top_level(
 	 logic			vga_endofpacket;
     logic        valid;
 	
-artificial_video_streaming 
-			#(.NumPixels(320*240), .NumColourBits(12))image_stream(
-        .clk(clk),
-        .reset(reset),
-        .data(im_data),
-        .startofpacket(image_startofpacket),
-        .endofpacket(image_endofpacket),
-        .valid(im_valid),
-        .ready(ready)
-    );
-	 
-	 
- video_data_expander #(
-	.NumPixels(320*240),
-	.NumColourBits(12)
-)
- vga_stream(
-    .clk(clk),            
-    .reset(reset),  
-	.data_in(im_data),
-
-    .data(vga_data),         
-    .startofpacket(vga_startofpacket),   
-    .endofpacket(vga_endofpacket),    
-    .valid(vga_valid),          
-    .ready(ready)  
-);
+expansion_pack (
+		.clk_clk(CLOCK_50),       //   clk.clk
+		.reset_reset_n(SW0), // reset.reset_n
+		.vga_CLK(VGA_CLK),       //   vga.CLK
+		.vga_HS(VGA_HS),        //      .HS
+		.vga_VS(VGA_VS),        //      .VS
+		.vga_BLANK(VGA_BLANK),     //      .BLANK
+		.vga_SYNC(VGA_SYNC),      //      .SYNC
+		.vga_R(VGA_R),         //      .R
+		.vga_G(VGA_G),         //      .G
+		.vga_B(VGA_B)          //      .B
+	);
 
 endmodule 
