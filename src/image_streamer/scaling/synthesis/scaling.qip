@@ -1,0 +1,49 @@
+set_global_assignment -entity "scaling" -library "scaling" -name IP_TOOL_NAME "Qsys"
+set_global_assignment -entity "scaling" -library "scaling" -name IP_TOOL_VERSION "20.1"
+set_global_assignment -entity "scaling" -library "scaling" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -library "scaling" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../scaling.sopcinfo"]
+set_global_assignment -entity "scaling" -library "scaling" -name SLD_INFO "QSYS_NAME scaling HAS_SOPCINFO 1 GENERATION_ID 1726650304"
+set_global_assignment -library "scaling" -name MISC_FILE [file join $::quartus(qip_path) "../scaling.cmp"]
+set_global_assignment -library "scaling" -name SLD_FILE [file join $::quartus(qip_path) "scaling.debuginfo"]
+set_global_assignment -entity "scaling" -library "scaling" -name IP_TARGETED_DEVICE_FAMILY "Cyclone IV E"
+set_global_assignment -entity "scaling" -library "scaling" -name IP_GENERATED_DEVICE_FAMILY "{Cyclone IV E}"
+set_global_assignment -entity "scaling" -library "scaling" -name IP_QSYS_MODE "SYSTEM"
+set_global_assignment -name SYNTHESIS_ONLY_QIP ON
+set_global_assignment -library "scaling" -name MISC_FILE [file join $::quartus(qip_path) "../../scaling.qsys"]
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_NAME "c2NhbGluZw=="
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_DISPLAY_NAME "c2NhbGluZw=="
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_REPORT_HIERARCHY "On"
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_VERSION "MS4w"
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_PARAMETER "QVVUT19HRU5FUkFUSU9OX0lE::MTcyNjY1MDMwNA==::QXV0byBHRU5FUkFUSU9OX0lE"
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::Q3ljbG9uZSBJViBF::QXV0byBERVZJQ0VfRkFNSUxZ"
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0U=::RVA0Q0UxMTVGMjlDNw==::QXV0byBERVZJQ0U="
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfU1BFRURHUkFERQ==::Nw==::QXV0byBERVZJQ0VfU1BFRURHUkFERQ=="
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_PARAMETER "QVVUT19DTEtfQ0xPQ0tfUkFURQ==::LTE=::QXV0byBDTE9DS19SQVRF"
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_PARAMETER "QVVUT19DTEtfQ0xPQ0tfRE9NQUlO::LTE=::QXV0byBDTE9DS19ET01BSU4="
+set_global_assignment -entity "scaling" -library "scaling" -name IP_COMPONENT_PARAMETER "QVVUT19DTEtfUkVTRVRfRE9NQUlO::LTE=::QXV0byBSRVNFVF9ET01BSU4="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_NAME "c2NhbGluZ192aWRlb19zY2FsZXJfMA=="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_DISPLAY_NAME "U2NhbGVy"
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_AUTHOR "SW50ZWwgRlBHQSBVbml2ZXJzaXR5IFByb2dyYW0="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_VERSION "MTguMA=="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_DESCRIPTION "VmlkZW8gU2NhbGVyIGZvciBERS1zZXJpZXMgQm9hcmRz"
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "d2lkdGhfc2NhbGluZw==::Mg==::V2lkdGggU2NhbGluZyBGYWN0b3I="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "aGVpZ2h0X3NjYWxpbmc=::Mg==::SGVpZ2h0IFNjYWxpbmcgRmFjdG9y"
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "aW5jbHVkZV9jaGFubmVs::ZmFsc2U=::T3V0cHV0IFNjYWxpbmcgYXMgQ2hhbm5lbA=="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "Y2hhbm5lbF9zaXpl::Mg==::Q2hhbm5lbCBzaXplICgjIG9mIGJpdHMp"
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "d2lkdGhfaW4=::MzIw::V2lkdGggKCMgb2YgcGl4ZWxzKQ=="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "aGVpZ2h0X2lu::MjQw::SGVpZ2h0ICgjIG9mIGxpbmVzKQ=="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "d2lkdGhfb3V0::NjQw::V2lkdGggKCMgb2YgcGl4ZWxzKQ=="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "aGVpZ2h0X291dA==::NDgw::SGVpZ2h0ICgjIG9mIGxpbmVzKQ=="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "Y29sb3JfYml0cw==::NA==::RGF0YSBCaXRzIHBlciBTeW1ib2w="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "Y29sb3JfcGxhbmVz::Mw==::U3ltYm9scyBwZXIgQmVhdA=="
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::Q3ljbG9uZSBJViBF::QXV0byBERVZJQ0VfRkFNSUxZ"
+set_global_assignment -entity "scaling_video_scaler_0" -library "scaling" -name IP_COMPONENT_PARAMETER "QVVUT19DTEtfQ0xPQ0tfUkFURQ==::MA==::QXV0byBDTE9DS19SQVRF"
+
+set_global_assignment -library "scaling" -name VERILOG_FILE [file join $::quartus(qip_path) "scaling.v"]
+set_global_assignment -library "scaling" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_video_scaler_shrink.v"]
+set_global_assignment -library "scaling" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_video_scaler_multiply_width.v"]
+set_global_assignment -library "scaling" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_video_scaler_multiply_height.v"]
+set_global_assignment -library "scaling" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/scaling_video_scaler_0.v"]

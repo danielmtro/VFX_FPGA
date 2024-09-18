@@ -1,20 +1,13 @@
-module video_data_expander #(
+module artificial_video_streaming #(
 	parameter NumPixels = 320*240,
 	parameter NumColourBits = 12
 )
  (
     input  logic        clk,             
-    input  logic        reset,  
-	 
-
-	 // sink signals
-	 input logic [11:0] data_in,
-	 input logic sop_in,
-	 input logic eop_in,
-	 input logic valid_in,
+    input  logic        reset,           
 
     // Avalon-ST Interface:
-    output logic [29:0] data,            // Data output to VGA (8 data bits + 2 padding bits for each colour Red, Green and Blue = 30 bits)
+    output logic [11:0] data,            // Data output to VGA (8 data bits + 2 padding bits for each colour Red, Green and Blue = 30 bits)
     output logic        startofpacket,   // Start of packet signal
     output logic        endofpacket,     // End of packet signal
     output logic        valid,           // Data valid signal
@@ -29,6 +22,7 @@ module video_data_expander #(
 	//specifying the name of the initialisation file,
 	//and Verilator will ignore it.
 
+    (* ram_init_file = "chad-ho320x240.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
     
     
     // The pixel counter/index. Set pixel_index_next in an always_comb block.
@@ -44,14 +38,18 @@ module video_data_expander #(
     // If reset, read the first pixel value. If valid&ready (handshake), read the next pixel value for the next handshake.
     assign read_enable = reset | (valid & ready); 
 
-
+    always_ff @(posedge clk) begin : bram_read // This block is for correctly inferring BRAM in Quartus - we need read registers!
+        if (read_enable) begin
+            linear_grad_q   <= linear_grad[pixel_index_next];
+        end
+    end
     
     /* Complete the TODOs below */
 
     logic [NumColourBits-1:0] current_pixel; //TODO assign this to one of happy_face_q, neutral_face_q or angry_face_q depending on the value of face_select.
     always_comb begin
 
-        current_pixel <= data_in;
+        current_pixel <= linear_grad_q;
 
     end
 
@@ -62,7 +60,7 @@ module video_data_expander #(
 
 //	 integer num_repeats;
 //	 assign num_repeats = 8 / (NumColourBits / 3);
-    assign data = {{2{current_pixel[11:8]}}, {2{1'b0}}, {2{current_pixel[7:4]}}, {2{1'b0}}, {2{current_pixel[3:0]}}, {2{1'b0}}}; //TODO assign data. Keep in mind, each RGB channel should be 10 bits like so: {8 bits of colour data, 2 bits of zero padding}.
+    assign data = {{{current_pixel[11:8]}}, {{current_pixel[7:4]}}, {{current_pixel[3:0]}}}; //TODO assign data. Keep in mind, each RGB channel should be 10 bits like so: {8 bits of colour data, 2 bits of zero padding}.
     // Remember, our 3-bit wide image ROMs only have 1-bit for each colour channel!! (Hint: use the replication operator to convert from 1-bit to 8-bit colour).
 
     assign pixel_index_next = (reset || pixel_index == NumPixels - 1) ? 0 : pixel_index + 1;//TODO Set pixel_index_next (what **would be** the next value?)

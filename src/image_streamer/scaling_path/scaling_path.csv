@@ -1,0 +1,24 @@
+# system info scaling_path on 2024.09.18.18:16:56
+system_info:
+name,value
+DEVICE,EP4CE115F29C7
+DEVICE_FAMILY,Cyclone IV E
+GENERATION_ID,1726647412
+#
+#
+# Files generated for scaling_path on 2024.09.18.18:16:56
+files:
+filepath,kind,attributes,module,is_top
+simulation/scaling_path.v,VERILOG,,scaling_path,true
+#
+# Map from instance-path to kind of module
+instances:
+instancePath,module
+scaling_path.artificial_video_streaming_0,scaling_path_artificial_video_streaming_0
+scaling_path.video_data_expander_0,scaling_path_video_data_expander_0
+scaling_path.video_pll_0,scaling_path_video_pll_0
+scaling_path.video_scaler_0,scaling_path_video_scaler_0
+scaling_path.video_vga_controller_0,scaling_path_video_vga_controller_0
+scaling_path.avalon_st_adapter,scaling_path_avalon_st_adapter
+scaling_path.rst_controller,altera_reset_controller
+scaling_path.rst_controller_001,altera_reset_controller

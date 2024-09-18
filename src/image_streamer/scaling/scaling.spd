@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+ <file
+   path="simulation/submodules/altera_up_video_scaler_shrink.v"
+   type="VERILOG"
+   library="video_scaler_0" />
+ <file
+   path="simulation/submodules/altera_up_video_scaler_multiply_width.v"
+   type="VERILOG"
+   library="video_scaler_0" />
+ <file
+   path="simulation/submodules/altera_up_video_scaler_multiply_height.v"
+   type="VERILOG"
+   library="video_scaler_0" />
+ <file
+   path="simulation/submodules/scaling_video_scaler_0.v"
+   type="VERILOG"
+   library="video_scaler_0" />
+ <file path="simulation/scaling.v" type="VERILOG" />
+ <topLevel name="scaling" />
+ <deviceFamily name="cycloneive" />
+</simPackage>

@@ -1,0 +1,154 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 2020  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details, at
+https://fpgasoftware.intel.com/eula.
+*/
+(header "symbol" (version "1.1"))
+(symbol
+	(rect 0 0 368 248)
+	(text "scaling" (rect 164 -1 189 11)(font "Arial" (font_size 10)))
+	(text "inst" (rect 8 232 20 244)(font "Arial" ))
+	(port
+		(pt 0 72)
+		(input)
+		(text "clk_clk" (rect 0 0 27 12)(font "Arial" (font_size 8)))
+		(text "clk_clk" (rect 4 61 46 72)(font "Arial" (font_size 8)))
+		(line (pt 0 72)(pt 112 72)(line_width 1))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "reset_reset" (rect 0 0 46 12)(font "Arial" (font_size 8)))
+		(text "reset_reset" (rect 4 101 70 112)(font "Arial" (font_size 8)))
+		(line (pt 0 112)(pt 112 112)(line_width 1))
+	)
+	(port
+		(pt 368 72)
+		(input)
+		(text "sauce_ready" (rect 0 0 53 12)(font "Arial" (font_size 8)))
+		(text "sauce_ready" (rect 301 61 367 72)(font "Arial" (font_size 8)))
+		(line (pt 368 72)(pt 256 72)(line_width 1))
+	)
+	(port
+		(pt 0 152)
+		(input)
+		(text "sink_startofpacket" (rect 0 0 73 12)(font "Arial" (font_size 8)))
+		(text "sink_startofpacket" (rect 4 141 112 152)(font "Arial" (font_size 8)))
+		(line (pt 0 152)(pt 112 152)(line_width 1))
+	)
+	(port
+		(pt 0 168)
+		(input)
+		(text "sink_endofpacket" (rect 0 0 69 12)(font "Arial" (font_size 8)))
+		(text "sink_endofpacket" (rect 4 157 100 168)(font "Arial" (font_size 8)))
+		(line (pt 0 168)(pt 112 168)(line_width 1))
+	)
+	(port
+		(pt 0 184)
+		(input)
+		(text "sink_valid" (rect 0 0 38 12)(font "Arial" (font_size 8)))
+		(text "sink_valid" (rect 4 173 64 184)(font "Arial" (font_size 8)))
+		(line (pt 0 184)(pt 112 184)(line_width 1))
+	)
+	(port
+		(pt 0 216)
+		(input)
+		(text "sink_data[11..0]" (rect 0 0 60 12)(font "Arial" (font_size 8)))
+		(text "sink_data[11..0]" (rect 4 205 100 216)(font "Arial" (font_size 8)))
+		(line (pt 0 216)(pt 112 216)(line_width 3))
+	)
+	(port
+		(pt 368 88)
+		(output)
+		(text "sauce_startofpacket" (rect 0 0 81 12)(font "Arial" (font_size 8)))
+		(text "sauce_startofpacket" (rect 264 77 378 88)(font "Arial" (font_size 8)))
+		(line (pt 368 88)(pt 256 88)(line_width 1))
+	)
+	(port
+		(pt 368 104)
+		(output)
+		(text "sauce_endofpacket" (rect 0 0 77 12)(font "Arial" (font_size 8)))
+		(text "sauce_endofpacket" (rect 268 93 370 104)(font "Arial" (font_size 8)))
+		(line (pt 368 104)(pt 256 104)(line_width 1))
+	)
+	(port
+		(pt 368 120)
+		(output)
+		(text "sauce_valid" (rect 0 0 47 12)(font "Arial" (font_size 8)))
+		(text "sauce_valid" (rect 307 109 373 120)(font "Arial" (font_size 8)))
+		(line (pt 368 120)(pt 256 120)(line_width 1))
+	)
+	(port
+		(pt 368 136)
+		(output)
+		(text "sauce_data[11..0]" (rect 0 0 68 12)(font "Arial" (font_size 8)))
+		(text "sauce_data[11..0]" (rect 282 125 384 136)(font "Arial" (font_size 8)))
+		(line (pt 368 136)(pt 256 136)(line_width 3))
+	)
+	(port
+		(pt 368 152)
+		(output)
+		(text "sauce_channel[1..0]" (rect 0 0 77 12)(font "Arial" (font_size 8)))
+		(text "sauce_channel[1..0]" (rect 269 141 383 152)(font "Arial" (font_size 8)))
+		(line (pt 368 152)(pt 256 152)(line_width 3))
+	)
+	(port
+		(pt 0 200)
+		(output)
+		(text "sink_ready" (rect 0 0 44 12)(font "Arial" (font_size 8)))
+		(text "sink_ready" (rect 4 189 64 200)(font "Arial" (font_size 8)))
+		(line (pt 0 200)(pt 112 200)(line_width 1))
+	)
+	(drawing
+		(text "clk" (rect 97 43 212 99)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "clk" (rect 117 67 252 144)(font "Arial" (color 0 0 0)))
+		(text "reset" (rect 83 83 196 179)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "reset" (rect 117 107 264 224)(font "Arial" (color 0 0 0)))
+		(text "sauce" (rect 257 43 544 99)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "ready" (rect 228 67 486 144)(font "Arial" (color 0 0 0)))
+		(text "startofpacket" (rect 196 83 470 176)(font "Arial" (color 0 0 0)))
+		(text "endofpacket" (rect 201 99 468 208)(font "Arial" (color 0 0 0)))
+		(text "valid" (rect 233 115 496 240)(font "Arial" (color 0 0 0)))
+		(text "data" (rect 235 131 494 272)(font "Arial" (color 0 0 0)))
+		(text "channel" (rect 221 147 484 304)(font "Arial" (color 0 0 0)))
+		(text "sink" (rect 89 123 202 259)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "startofpacket" (rect 117 147 312 304)(font "Arial" (color 0 0 0)))
+		(text "endofpacket" (rect 117 163 300 336)(font "Arial" (color 0 0 0)))
+		(text "valid" (rect 117 179 264 368)(font "Arial" (color 0 0 0)))
+		(text "ready" (rect 117 195 264 400)(font "Arial" (color 0 0 0)))
+		(text "data" (rect 117 211 258 432)(font "Arial" (color 0 0 0)))
+		(text " scaling " (rect 336 232 726 474)(font "Arial" ))
+		(line (pt 112 32)(pt 256 32)(line_width 1))
+		(line (pt 256 32)(pt 256 232)(line_width 1))
+		(line (pt 112 232)(pt 256 232)(line_width 1))
+		(line (pt 112 32)(pt 112 232)(line_width 1))
+		(line (pt 113 52)(pt 113 76)(line_width 1))
+		(line (pt 114 52)(pt 114 76)(line_width 1))
+		(line (pt 113 92)(pt 113 116)(line_width 1))
+		(line (pt 114 92)(pt 114 116)(line_width 1))
+		(line (pt 255 52)(pt 255 156)(line_width 1))
+		(line (pt 254 52)(pt 254 156)(line_width 1))
+		(line (pt 113 132)(pt 113 220)(line_width 1))
+		(line (pt 114 132)(pt 114 220)(line_width 1))
+		(line (pt 0 0)(pt 368 0)(line_width 1))
+		(line (pt 368 0)(pt 368 248)(line_width 1))
+		(line (pt 0 248)(pt 368 248)(line_width 1))
+		(line (pt 0 0)(pt 0 248)(line_width 1))
+	)
+)

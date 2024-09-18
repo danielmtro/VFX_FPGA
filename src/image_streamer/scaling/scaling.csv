@@ -1,0 +1,21 @@
+# system info scaling on 2024.09.18.19:05:00
+system_info:
+name,value
+DEVICE,EP4CE115F29C7
+DEVICE_FAMILY,Cyclone IV E
+GENERATION_ID,1726650298
+#
+#
+# Files generated for scaling on 2024.09.18.19:05:00
+files:
+filepath,kind,attributes,module,is_top
+simulation/scaling.v,VERILOG,,scaling,true
+simulation/submodules/altera_up_video_scaler_shrink.v,VERILOG,,scaling_video_scaler_0,false
+simulation/submodules/altera_up_video_scaler_multiply_width.v,VERILOG,,scaling_video_scaler_0,false
+simulation/submodules/altera_up_video_scaler_multiply_height.v,VERILOG,,scaling_video_scaler_0,false
+simulation/submodules/scaling_video_scaler_0.v,VERILOG,,scaling_video_scaler_0,false
+#
+# Map from instance-path to kind of module
+instances:
+instancePath,module
+scaling.video_scaler_0,scaling_video_scaler_0

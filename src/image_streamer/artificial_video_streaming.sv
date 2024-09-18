@@ -24,12 +24,6 @@ module artificial_video_streaming #(
 
     (* ram_init_file = "chad-ho320x240.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
 
-   
-    
-	 initial begin : memset /* The 'ifdef VERILATOR' means this initial block is ignored in Quartus */
-        $readmemh("chad-ho320x240.hex", linear_grad);
-    end
-    
     
     // The pixel counter/index. Set pixel_index_next in an always_comb block.
     // Set pixel_index <= pixel_index_next in an always_ff block.

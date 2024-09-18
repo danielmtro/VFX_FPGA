@@ -1,0 +1,26 @@
+# system info vga_clock on 2024.09.18.19:21:27
+system_info:
+name,value
+DEVICE,EP4CE115F29C7
+DEVICE_FAMILY,Cyclone IV E
+GENERATION_ID,1726651283
+#
+#
+# Files generated for vga_clock on 2024.09.18.19:21:27
+files:
+filepath,kind,attributes,module,is_top
+simulation/vga_clock.v,VERILOG,,vga_clock,true
+simulation/submodules/vga_clock_video_pll_0.v,VERILOG,,vga_clock_video_pll_0,false
+simulation/submodules/altera_reset_controller.v,VERILOG,,altera_reset_controller,false
+simulation/submodules/altera_reset_synchronizer.v,VERILOG,,altera_reset_controller,false
+simulation/submodules/altera_reset_controller.sdc,SDC,,altera_reset_controller,false
+simulation/submodules/altera_up_altpll.v,VERILOG,,altera_up_altpll,false
+simulation/submodules/altera_up_avalon_reset_from_locked_signal.v,VERILOG,,altera_up_avalon_reset_from_locked_signal,false
+#
+# Map from instance-path to kind of module
+instances:
+instancePath,module
+vga_clock.video_pll_0,vga_clock_video_pll_0
+vga_clock.video_pll_0.video_pll,altera_up_altpll
+vga_clock.video_pll_0.reset_from_locked,altera_up_avalon_reset_from_locked_signal
+vga_clock.rst_controller,altera_reset_controller
