@@ -17,6 +17,7 @@ def png_to_mif(png_file, mif_file):
         
         # Process each pixel
         address = 0
+        flag = 0
         for y in range(height):
             for x in range(width):
                 r, g, b = img.getpixel((x, y))
@@ -25,6 +26,12 @@ def png_to_mif(png_file, mif_file):
                 r_12 = (r >> 4) & 0xF
                 g_12 = (g >> 4) & 0xF
                 b_12 = (b >> 4) & 0xF
+
+                if flag%10000 == 0:
+                    print(bin(r), bin(g), bin(b), bin(r_12), bin(g_12), bin(b_12))
+                
+                flag += 1
+                
                 
                 # Combine into a single 12-bit value
                 rgb_12 = (r_12 << 8) | (g_12 << 4) | b_12
@@ -37,4 +44,4 @@ def png_to_mif(png_file, mif_file):
         f.write("END;\n")
 
 # Example usage # add in this later
-png_to_mif('./chad-ho-640x480.png', './chad-ho.mif')
+png_to_mif('./chad-ho-640x480.png', './chad-ho-640x480.mif')

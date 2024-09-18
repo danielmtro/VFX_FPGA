@@ -1,0 +1,15 @@
+	component complete_streaming_path is
+		port (
+			clk_clk       : in  std_logic                    := 'X'; -- clk
+			reset_reset_n : in  std_logic                    := 'X'; -- reset_n
+			vga_CLK       : out std_logic;                           -- CLK
+			vga_HS        : out std_logic;                           -- HS
+			vga_VS        : out std_logic;                           -- VS
+			vga_BLANK     : out std_logic;                           -- BLANK
+			vga_SYNC      : out std_logic;                           -- SYNC
+			vga_R         : out std_logic_vector(7 downto 0);        -- R
+			vga_G         : out std_logic_vector(7 downto 0);        -- G
+			vga_B         : out std_logic_vector(7 downto 0)         -- B
+		);
+	end component complete_streaming_path;
+
