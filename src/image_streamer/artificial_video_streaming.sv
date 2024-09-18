@@ -1,13 +1,13 @@
 module artificial_video_streaming #(
-	parameter NumPixels = 320*240,
-	parameter NumColourBits = 12
+	parameter NumPixels = 640*480,
+	parameter NumColourBits = 3
 )
  (
     input  logic        clk,             
     input  logic        reset,           
 
     // Avalon-ST Interface:
-    output logic [11:0] data,            // Data output to VGA (8 data bits + 2 padding bits for each colour Red, Green and Blue = 30 bits)
+    output logic [2:0] data,            // Data output to VGA (8 data bits + 2 padding bits for each colour Red, Green and Blue = 30 bits)
     output logic        startofpacket,   // Start of packet signal
     output logic        endofpacket,     // End of packet signal
     output logic        valid,           // Data valid signal
@@ -22,7 +22,7 @@ module artificial_video_streaming #(
 	//specifying the name of the initialisation file,
 	//and Verilator will ignore it.
 
-    (* ram_init_file = "chad-ho320x240.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
+    (* ram_init_file = "chad-ho-640x480.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
 
    
     
@@ -66,7 +66,7 @@ module artificial_video_streaming #(
 
 //	 integer num_repeats;
 //	 assign num_repeats = 8 / (NumColourBits / 3);
-    assign data = {{{current_pixel[11:8]}}, {{current_pixel[7:4]}}, {{current_pixel[3:0]}}}; //TODO assign data. Keep in mind, each RGB channel should be 10 bits like so: {8 bits of colour data, 2 bits of zero padding}.
+    assign data = {{{current_pixel[2]}}, {{current_pixel[1]}}, {{current_pixel[0]}}}; //TODO assign data. Keep in mind, each RGB channel should be 10 bits like so: {8 bits of colour data, 2 bits of zero padding}.
     // Remember, our 3-bit wide image ROMs only have 1-bit for each colour channel!! (Hint: use the replication operator to convert from 1-bit to 8-bit colour).
 
     assign pixel_index_next = (reset || pixel_index == NumPixels - 1) ? 0 : pixel_index + 1;//TODO Set pixel_index_next (what **would be** the next value?)

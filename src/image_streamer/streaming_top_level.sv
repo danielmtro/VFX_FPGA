@@ -25,7 +25,7 @@ module streaming_top_level(
 	
 expansion_pack (
 		.clk_clk(CLOCK_50),       //   clk.clk
-		.reset_reset_n(SW0), // reset.reset_n
+		.reset_reset_n(0), // reset.reset_n
 		.vga_CLK(VGA_CLK),       //   vga.CLK
 		.vga_HS(VGA_HS),        //      .HS
 		.vga_VS(VGA_VS),        //      .VS

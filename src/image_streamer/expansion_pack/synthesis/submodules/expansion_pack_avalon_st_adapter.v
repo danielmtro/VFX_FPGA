@@ -7,16 +7,16 @@
 
 `timescale 1 ps / 1 ps
 module expansion_pack_avalon_st_adapter #(
-		parameter inBitsPerSymbol = 4,
+		parameter inBitsPerSymbol = 1,
 		parameter inUsePackets    = 1,
-		parameter inDataWidth     = 12,
+		parameter inDataWidth     = 3,
 		parameter inChannelWidth  = 0,
 		parameter inErrorWidth    = 0,
 		parameter inUseEmptyPort  = 0,
 		parameter inUseValid      = 1,
 		parameter inUseReady      = 1,
 		parameter inReadyLatency  = 0,
-		parameter outDataWidth    = 12,
+		parameter outDataWidth    = 3,
 		parameter outChannelWidth = 0,
 		parameter outErrorWidth   = 0,
 		parameter outUseEmptyPort = 0,
@@ -24,17 +24,17 @@ module expansion_pack_avalon_st_adapter #(
 		parameter outUseReady     = 0,
 		parameter outReadyLatency = 0
 	) (
-		input  wire        in_clk_0_clk,        // in_clk_0.clk
-		input  wire        in_rst_0_reset,      // in_rst_0.reset
-		input  wire [11:0] in_0_data,           //     in_0.data
-		input  wire        in_0_valid,          //         .valid
-		output wire        in_0_ready,          //         .ready
-		input  wire        in_0_startofpacket,  //         .startofpacket
-		input  wire        in_0_endofpacket,    //         .endofpacket
-		output wire [11:0] out_0_data,          //    out_0.data
-		output wire        out_0_valid,         //         .valid
-		output wire        out_0_startofpacket, //         .startofpacket
-		output wire        out_0_endofpacket    //         .endofpacket
+		input  wire       in_clk_0_clk,        // in_clk_0.clk
+		input  wire       in_rst_0_reset,      // in_rst_0.reset
+		input  wire [2:0] in_0_data,           //     in_0.data
+		input  wire       in_0_valid,          //         .valid
+		output wire       in_0_ready,          //         .ready
+		input  wire       in_0_startofpacket,  //         .startofpacket
+		input  wire       in_0_endofpacket,    //         .endofpacket
+		output wire [2:0] out_0_data,          //    out_0.data
+		output wire       out_0_valid,         //         .valid
+		output wire       out_0_startofpacket, //         .startofpacket
+		output wire       out_0_endofpacket    //         .endofpacket
 	);
 
 	generate
@@ -43,7 +43,7 @@ module expansion_pack_avalon_st_adapter #(
 		// has been instantiated this module with a set of parameters different
 		// from those it was generated for.  This will usually result in a
 		// non-functioning system.
-		if (inBitsPerSymbol != 4)
+		if (inBitsPerSymbol != 1)
 		begin
 			initial begin
 				$display("Generated module instantiated with wrong parameters");
@@ -61,7 +61,7 @@ module expansion_pack_avalon_st_adapter #(
 			instantiated_with_wrong_parameters_error_see_comment_above
 					inusepackets_check ( .error(1'b1) );
 		end
-		if (inDataWidth != 12)
+		if (inDataWidth != 3)
 		begin
 			initial begin
 				$display("Generated module instantiated with wrong parameters");
@@ -124,7 +124,7 @@ module expansion_pack_avalon_st_adapter #(
 			instantiated_with_wrong_parameters_error_see_comment_above
 					inreadylatency_check ( .error(1'b1) );
 		end
-		if (outDataWidth != 12)
+		if (outDataWidth != 3)
 		begin
 			initial begin
 				$display("Generated module instantiated with wrong parameters");

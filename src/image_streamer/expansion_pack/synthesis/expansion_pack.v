@@ -23,12 +23,12 @@ module expansion_pack (
 	wire         video_data_expander_0_avalon_streaming_source_endofpacket;          // video_data_expander_0:endofpacket -> video_vga_controller_0:endofpacket
 	wire         video_pll_0_vga_clk_clk;                                            // video_pll_0:vga_clk_clk -> [artificial_video_streaming_0:clk, avalon_st_adapter:in_clk_0_clk, rst_controller:clk, video_data_expander_0:clk, video_vga_controller_0:clk]
 	wire         artificial_video_streaming_0_avalon_streaming_source_valid;         // artificial_video_streaming_0:valid -> avalon_st_adapter:in_0_valid
-	wire  [11:0] artificial_video_streaming_0_avalon_streaming_source_data;          // artificial_video_streaming_0:data -> avalon_st_adapter:in_0_data
+	wire   [2:0] artificial_video_streaming_0_avalon_streaming_source_data;          // artificial_video_streaming_0:data -> avalon_st_adapter:in_0_data
 	wire         artificial_video_streaming_0_avalon_streaming_source_ready;         // avalon_st_adapter:in_0_ready -> artificial_video_streaming_0:ready
 	wire         artificial_video_streaming_0_avalon_streaming_source_startofpacket; // artificial_video_streaming_0:startofpacket -> avalon_st_adapter:in_0_startofpacket
 	wire         artificial_video_streaming_0_avalon_streaming_source_endofpacket;   // artificial_video_streaming_0:endofpacket -> avalon_st_adapter:in_0_endofpacket
 	wire         avalon_st_adapter_out_0_valid;                                      // avalon_st_adapter:out_0_valid -> video_data_expander_0:valid_in
-	wire  [11:0] avalon_st_adapter_out_0_data;                                       // avalon_st_adapter:out_0_data -> video_data_expander_0:data_in
+	wire   [2:0] avalon_st_adapter_out_0_data;                                       // avalon_st_adapter:out_0_data -> video_data_expander_0:data_in
 	wire         avalon_st_adapter_out_0_startofpacket;                              // avalon_st_adapter:out_0_startofpacket -> video_data_expander_0:sop_in
 	wire         avalon_st_adapter_out_0_endofpacket;                                // avalon_st_adapter:out_0_endofpacket -> video_data_expander_0:eop_in
 	wire         rst_controller_reset_out_reset;                                     // rst_controller:reset_out -> [artificial_video_streaming_0:reset, avalon_st_adapter:in_rst_0_reset, video_data_expander_0:reset, video_vga_controller_0:reset]
@@ -91,16 +91,16 @@ module expansion_pack (
 	);
 
 	expansion_pack_avalon_st_adapter #(
-		.inBitsPerSymbol (4),
+		.inBitsPerSymbol (1),
 		.inUsePackets    (1),
-		.inDataWidth     (12),
+		.inDataWidth     (3),
 		.inChannelWidth  (0),
 		.inErrorWidth    (0),
 		.inUseEmptyPort  (0),
 		.inUseValid      (1),
 		.inUseReady      (1),
 		.inReadyLatency  (0),
-		.outDataWidth    (12),
+		.outDataWidth    (3),
 		.outChannelWidth (0),
 		.outErrorWidth   (0),
 		.outUseEmptyPort (0),

@@ -24,11 +24,6 @@
          value = "0";
          type = "int";
       }
-      datum sopceditor_expanded
-      {
-         value = "1";
-         type = "boolean";
-      }
    }
    element video_data_expander_0
    {
