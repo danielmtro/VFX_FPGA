@@ -22,9 +22,9 @@ module brightness_filter (
 	end
 	
 	always_comb begin
-		red_br 	= (red > (MAX_VAL / (freq_flag + 1))) ? MAX_VAL : (freq_flag + 1) * red;
-		green_br = (green > (MAX_VAL / (freq_flag + 1))) ? MAX_VAL : (freq_flag + 1) * green;
-		blue_br 	= (blue > (MAX_VAL / (freq_flag + 1))) ? MAX_VAL : (freq_flag + 1) * blue;
+		red_br 	= (red * (freq_flag + 1) > (MAX_VAL)) ? MAX_VAL : (freq_flag + 1) * red;
+		green_br = (green * (freq_flag + 1) > (MAX_VAL)) ? MAX_VAL : (freq_flag + 1) * green;
+		blue_br 	= (blue *  (freq_flag + 1) > (MAX_VAL)) ? MAX_VAL : (freq_flag + 1) * blue;
 		
 		
 	end
