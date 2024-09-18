@@ -1,6 +1,5 @@
 module static_data_initialisation #(
-	parameter NumPixels = 640*480,
-	parameter NumColourBits = 3,
+	parameter NumPixels = 320*240,
     parameter DATA_WIDTH = 12
 )(
     input  logic        clk,             
@@ -19,14 +18,14 @@ module static_data_initialisation #(
 	//specifying the name of the initialisation file,
 	//and Verilator will ignore it.
 
-    (* ram_init_file = "chad-ho-640x480.mif" *)  logic [NumColourBits-1:0]  linear_grad [NumPixels];
+    (* ram_init_file = "chad-ho-320x240.mif" *)  logic [DATA_WIDTH-1:0]  linear_grad [NumPixels];
 
     // The pixel counter/index. Set pixel_index_next in an always_comb block.
     // Set pixel_index <= pixel_index_next in an always_ff block.
     logic [18:0] pixel_index = 0, pixel_index_next; 
  
     // Registers for reading from each ROM.
-    logic [NumColourBits-1:0] linear_grad_q; 
+    logic [DATA_WIDTH-1:0] linear_grad_q; 
       
     logic read_enable; // Need to have a read enable signal for the BRAM
 
@@ -39,7 +38,7 @@ module static_data_initialisation #(
         end
     end
 
-    logic [NumColourBits-1:0] current_pixel; 
+    logic [DATA_WIDTH-1:0] current_pixel; 
 
     // set the current_pixel based on the reg value;
     always_comb begin

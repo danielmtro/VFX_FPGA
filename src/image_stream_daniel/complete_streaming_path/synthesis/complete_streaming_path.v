@@ -50,8 +50,7 @@ module complete_streaming_path (
 	);
 
 	static_data_initialisation #(
-		.NumPixels     (307200),
-		.NumColourBits (3),
+		.NumPixels     (76800),
 		.DATA_WIDTH    (12)
 	) static_data_0 (
 		.clk           (video_pll_0_vga_clk_clk),                             //                   clock.clk

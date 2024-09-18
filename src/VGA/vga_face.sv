@@ -22,13 +22,6 @@ module vga_face (
     (* ram_init_file = "neutral.mif" *) logic [NumColourBits-1:0] neutral_face [NumPixels]; //   specifying the name of the initialisation file.
     (* ram_init_file = "angry.mif" *)   logic [NumColourBits-1:0] angry_face   [NumPixels]; //   and Verilator will ignore it.
 
-    `ifdef VERILATOR
-    initial begin : memset /* The 'ifdef VERILATOR' means this initial block is ignored in Quartus */
-        $readmemh("images/happy.hex", happy_face);
-        $readmemh("images/neutral.hex", neutral_face);
-        $readmemh("images/angry.hex", angry_face);
-    end
-    `endif
      
     logic [18:0] pixel_index = 0, pixel_index_next; // The pixel counter/index. Set pixel_index_next in an always_comb block.
                                                     // Set pixel_index <= pixel_index_next in an always_ff block.
