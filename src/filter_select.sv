@@ -15,7 +15,7 @@ module filter_select(
         BLUR = 2'b01,
         BRIGHTNESS = 2'b10,
         EDGES = 2'b11
-    };
+    }state_type;
 
 	logic [11:0] inv_data, blur_data, bri_data, edge_data;
 
@@ -33,9 +33,10 @@ module filter_select(
 			BLUR			: data_out = blur_data;
 			BRIGHTNESS 	: data_out = bri_data;
 			EDGES			: data_out = edge_data;
+			default		: data_out = data_in;
 		
 		
-	 end
-
+	 endcase
+	end
 
 endmodule 
