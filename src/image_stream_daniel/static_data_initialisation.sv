@@ -1,33 +1,30 @@
-module video_data_expander #(
-	parameter NumPixels = 12*12,
-	parameter NumColourBits = 12
-)
- (
+module static_data_initialisation #(
+	parameter NumPixels = 320*240,
+	parameter NumColourBits = 3,
+    parameter DATA_WIDTH
+)(
     input  logic        clk,             
-    input  logic        reset,           
-
-    // Avalon-ST Interface:
-    output logic [29:0] data,            // Data output to VGA (8 data bits + 2 padding bits for each colour Red, Green and Blue = 30 bits)
+    input  logic        reset,
+	input  logic        ready, 
+    
+    output logic [DATA_WIDTH:0] data,    // 12 bit data output
     output logic        startofpacket,   // Start of packet signal
     output logic        endofpacket,     // End of packet signal
-    output logic        valid,           // Data valid signal
-    input  logic        ready      // Data ready signal from VGA Module
+    output logic        valid            // valid output
+    
 );
 
-//    localparam NumPixels     = 12 * 12; // Total number of pixels on the 640x480 screen
-//    localparam NumColourBits = 3;         // We are using a 3-bit colour space to fit 3 images within the 3.888 Mbits of BRAM on our FPGA.
 
     // Image ROMs:
 	 // The ram_init_file is a Quartus-only directive
 	//specifying the name of the initialisation file,
 	//and Verilator will ignore it.
 
-    (* ram_init_file = "chad-ho.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
-    
+    (* ram_init_file = "chad-ho320x240.mif" *)  logic [NumColourBits-1:0]  linear_grad [NumPixels];
+
     // The pixel counter/index. Set pixel_index_next in an always_comb block.
     // Set pixel_index <= pixel_index_next in an always_ff block.
     logic [18:0] pixel_index = 0, pixel_index_next; 
-    
  
     // Registers for reading from each ROM.
     logic [NumColourBits-1:0] linear_grad_q; 
@@ -42,26 +39,24 @@ module video_data_expander #(
             linear_grad_q   <= linear_grad[pixel_index_next];
         end
     end
-    
 
-    logic [NumColourBits-1:0] current_pixel; //TODO assign this to one of happy_face_q, neutral_face_q or angry_face_q depending on the value of face_select.
+    logic [NumColourBits-1:0] current_pixel; 
+
+    // set the current_pixel based on the reg value;
     always_comb begin
-
         current_pixel <= linear_grad_q;
-
     end
 
-    assign valid = (reset) ? 0 : 1;
-
+    assign valid = (reset) ? 0 : 1;                    // Data valid (constant)
     assign startofpacket = (pixel_index == 0);         // Start of frame
     assign endofpacket = (pixel_index == NumPixels-1); // End of frame
 
-
-    assign data = {{2{current_pixel[2]}}, {2{1'b0}}, {2{current_pixel[1]}}, {2{1'b0}}, {2{current_pixel[0]}}, {2{1'b0}}};
+    // set the data as the current pixel for output streaming
+    assign data = current_pixel;
 
     assign pixel_index_next = (reset || pixel_index == NumPixels - 1) ? 0 : pixel_index + 1;
-
-
+    
+    // flip flop to update the pixel_index value
     always_ff @(posedge clk) begin
         if (reset) begin
             pixel_index <= 0;
@@ -69,6 +64,5 @@ module video_data_expander #(
             pixel_index <= pixel_index_next;
         end
     end
-
 
 endmodule
