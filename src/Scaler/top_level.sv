@@ -12,7 +12,7 @@ module top_level (
 		output wire [7:0]  VGA_B         
 );
 
-complete_streaming_path csp_0 (
+scaler scaler_0 (
 		.clk_clk(CLOCK_50),
 		.reset_reset_n(1'b1),
 		.vga_CLK(VGA_CLK),
