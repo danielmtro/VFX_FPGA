@@ -22,12 +22,12 @@ module artificial_video_streaming #(
 	//specifying the name of the initialisation file,
 	//and Verilator will ignore it.
 
-    (* ram_init_file = "chad-ho.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
+    (* ram_init_file = "chad-ho320x240.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
 
    
     
 	 initial begin : memset /* The 'ifdef VERILATOR' means this initial block is ignored in Quartus */
-        $readmemh("chad-ho.hex", linear_grad);
+        $readmemh("chad-ho320x240.hex", linear_grad);
     end
     
     
