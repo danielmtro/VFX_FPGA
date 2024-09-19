@@ -1,13 +1,34 @@
 module brightness_filter (
 
 	input logic 			clk,
+	input logic 			reset,
+	input logic [2:0] 	freq_flag,
 	
+	//Sink ports
 	input  logic [11:0] 	data_in,
+	input logic 			sop_in,
+	input logic 			eop_in,
+	input logic 			valid_in,
+	
+	//receiving back pressure from source
+	input logic 			ready_in,
+	
+	//put back pressure on previous module
+	output logic 			ready_out,
+	
+	//source ports
 	output logic [11:0] 	data_out,
-	
-	input  logic [2:0] 	freq_flag
-	
+	output logic 			sop_out,
+	output logic 			eop_out,
+	output logic 			valid_out
 	);
+	
+	always_comb begin
+		ready_out = ready_in;
+		eop_out = eop_in;
+		sop_out = sop_in;
+		valid_out = valid_in && (!reset);
+	end
 	
 	logic [3:0] red, green, blue;
 	logic [3:0] red_br, green_br, blue_br;
