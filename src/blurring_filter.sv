@@ -1,8 +1,6 @@
 `timescale 1ns / 1ps
 
-module blurring_filter #(
-    parameter DATA_WIDTH = 12
-) (
+module blurring_filter (
     input logic clk,
     input logic [2:0] freq_flag,  // Pitch input: 0 for 1x1, 1 for 3x3, 2 for 5x5
     input logic [12-1:0] data_in,
@@ -72,41 +70,6 @@ module blurring_filter #(
         endcase
     end
 
-    /*
-    // Define the kernel weights based on freq_flag (Pitch input)
-    always_comb begin
-        case (freq_flag)
-        3'b000: begin // 1x1 kernel
-            kernel[0] = 12'h000001;
-        end
-        3'b001: begin // 3x3 kernel
-            kernel[0] = '{12'h000001, 12'h000001, 12'h000001};
-            kernel[1] = '{12'h000001, 12'h000002, 12'h000001};
-            kernel[2] = '{12'h000001, 12'h000001, 12'h000001};
-        end
-        3'b010: begin // 5x5 kernel
-            kernel[0] = '{12'h000001, 12'h000001, 12'h000001, 12'h000001, 12'h000001};
-            kernel[1] = '{12'h000001, 12'h000002, 12'h000002, 12'h000002, 12'h000001};
-            kernel[2] = '{12'h000001, 12'h000002, 12'h000003, 12'h000002, 12'h000001};
-            kernel[3] = '{12'h000001, 12'h000002, 12'h000002, 12'h000002, 12'h000001};
-            kernel[4] = '{12'h000001, 12'h000001, 12'h000001, 12'h000001, 12'h000001};
-        end
-        3'b011: begin // 7x7 kernel
-            kernel[0] = '{12'h000001, 12'h000001, 12'h000001, 12'h000001, 12'h000001, 12'h000001, 12'h000001};
-            kernel[1] = '{12'h000001, 12'h000002, 12'h000002, 12'h000002, 12'h000002, 12'h000002, 12'h000001};
-            kernel[2] = '{12'h000001, 12'h000002, 12'h000003, 12'h000003, 12'h000003, 12'h000002, 12'h000001};
-            kernel[3] = '{12'h000001, 12'h000002, 12'h000003, 12'h000004, 12'h000003, 12'h000002, 12'h000001};
-            kernel[4] = '{12'h000001, 12'h000002, 12'h000003, 12'h000003, 12'h000003, 12'h000002, 12'h000001};
-            kernel[5] = '{12'h000001, 12'h000002, 12'h000002, 12'h000002, 12'h000002, 12'h000002, 12'h000001};
-            kernel[6] = '{12'h000001, 12'h000001, 12'h000001, 12'h000001, 12'h000001, 12'h000001, 12'h000001};
-        end
-        default: begin // Default to 1x1 kernel
-            kernel[0] = 12'h000001;
-        end
-    endcase
-
-    end */
-
     // Shift incoming data into the image buffer
     always_ff @(posedge clk) begin
         // Shift the image buffer rows
@@ -126,10 +89,7 @@ module blurring_filter #(
         // Apply convolution only if freq_flag matches the kernel size
         for (int i = 0; i < MAX_KERNEL_SIZE; i++) begin
             for (int j = 0; j < MAX_KERNEL_SIZE; j++) begin
-                // Ensure valid indexing for kernels smaller than MAX_KERNEL_SIZE
-                if (i < MAX_KERNEL_SIZE && j < MAX_KERNEL_SIZE) begin
-                    conv_result += image_buffer[i][j] * kernel[i][j];
-                end
+					 conv_result += image_buffer[i][j] * kernel[i][j];
             end
         end
         // Truncate the result to the output width

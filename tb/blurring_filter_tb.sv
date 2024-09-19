@@ -15,7 +15,7 @@ module blurring_filter_tb;
     logic [11:0] data_out;
 
     // Instantiate the blurring filter
-    blurring_filter #(.W(W), .W_FRAC(W_FRAC)) DUT (
+    blurring_filter DUT (
         .clk(clk),
         .freq_flag(freq_flag),
         .data_in(data_in),
@@ -43,19 +43,22 @@ module blurring_filter_tb;
         $dumpfile("blurring_filter_tb.vcd");
         $dumpvars(0, blurring_filter_tb);
 
+		  #100 // Delay before entering each test
         // Test 1x1 kernel
         $display("Testing with 1x1 kernel");
         freq_flag = 3'b000; // Set to 1x1 kernel
         run_test();
 
+		  #100 // Delay before entering each test
         // Test 3x3 kernel
         $display("Testing with 3x3 kernel");
-        freq_flag = 3'b010; // Set to 3x3 kernel
+        freq_flag = 3'b001; // Set to 3x3 kernel
         run_test();
 
+		  #100 // Delay before entering each test
         // Test 5x5 kernel
         $display("Testing with 5x5 kernel");
-        freq_flag = 3'b100; // Set to 5x5 kernel
+        freq_flag = 3'b010; // Set to 5x5 kernel
         run_test();
 
         // Finish simulation
