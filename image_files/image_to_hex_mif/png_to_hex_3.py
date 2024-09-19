@@ -34,5 +34,4 @@ def image_to_hex(image_path, hex_file_path):
     print(f"Image has been converted to 3-bit color and written to {hex_file_path}")
 
 # Usage example:
-image_to_hex('./Linear-gradient.png', 'linear-gradient.hex')
-
+image_to_hex('./chad-ho-640x480.png', './chad-ho-3bit.hex')
