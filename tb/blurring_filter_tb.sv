@@ -7,19 +7,21 @@ module blurring_filter_tb;
     localparam IMG_SIZE = 15; // Image size is 15x15
 
     logic clk = 0;
-	 logic ready_in = 0;
+	logic ready_in = 0;
     logic [2:0] freq_flag; // Kernel size control
     logic [11:0] data_in;
-	 logic ready_out;
+	logic ready_out;
     logic [11:0] data_out;
 
     // Instantiate the blurring filter
     blurring_filter DUT (
         .clk(clk),
-		  .ready_in(ready_in),
+	    .ready_in(ready_in),
         .freq_flag(freq_flag),
         .data_in(data_in),
-		  .ready_out(ready_out),
+		.image_height(IMG_SIZE),
+		.image_width(IMG_SIZE),
+		.ready_out(ready_out),
         .data_out(data_out)
     );
 
@@ -44,33 +46,33 @@ module blurring_filter_tb;
         $dumpfile("blurring_filter_tb.vcd");
         $dumpvars(0, blurring_filter_tb);
 		  
-		  // Delay before entering each test
-		  #100
-		  ready_in = 1;
-		  
+		// Delay before entering each test
+		#100
+		ready_in = 1;
+
         // Test 1x1 kernel
         $display("Testing with 1x1 kernel");
         freq_flag = 3'b000; // Set to 1x1 kernel
         run_test();
-		  ready_in = 0;
+		ready_in = 0;
 
-		  #100
-		  ready_in = 1;
+		#100
+		ready_in = 1;
 		  
         // Test 3x3 kernel
         $display("Testing with 3x3 kernel");
         freq_flag = 3'b001; // Set to 3x3 kernel
         run_test();
-		  ready_in = 0;
+		ready_in = 0;
 
-		  #100;
-		  ready_in = 1;
+		#100;
+		ready_in = 1;
 		  
         // Test 5x5 kernel
         $display("Testing with 5x5 kernel");
         freq_flag = 3'b010; // Set to 5x5 kernel
         run_test();
-		  ready_in = 0;
+		ready_in = 0;
 
         // Finish simulation
         $finish;
