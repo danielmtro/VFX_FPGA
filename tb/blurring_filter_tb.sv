@@ -19,8 +19,6 @@ module blurring_filter_tb;
 	    .ready_in(ready_in),
         .freq_flag(freq_flag),
         .data_in(data_in),
-		.image_height(IMG_SIZE),
-		.image_width(IMG_SIZE),
 		.ready_out(ready_out),
         .data_out(data_out)
     );
