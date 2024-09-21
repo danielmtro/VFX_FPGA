@@ -20,10 +20,8 @@ module blurring_filter (
     localparam KERNEL_SIZE_5x5 = 3'b101;
 
     // Image buffer (maximum size for 5x5 kernel)
-    // For testing:
-    logic [12-1:0] image_buffer [0:KERNEL_SIZE_5x5-1][0:15-1];
-    // // For camera:
-    // logic [12-1:0] image_buffer [0:KERNEL_SIZE_5x5-1][0:320-1];
+    // For camera:
+    logic [12-1:0] image_buffer [0:KERNEL_SIZE_5x5-1][0:320-1];
     logic [12-1:0] kernel [0:KERNEL_SIZE_5x5-1][0:KERNEL_SIZE_5x5-1];
     logic [2*12-1:0] conv_result;  // Double-width for intermediate result
 	
