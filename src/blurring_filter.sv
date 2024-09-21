@@ -37,7 +37,7 @@ module blurring_filter (
             3'b000: begin // 1x1 kernel
                 kernel[0][0] = 12'h000001;
 					/* 1 */
-				KERNEL_SIZE = KERNEL_SIZE_1x1;
+				KERNEL_SIZE <= KERNEL_SIZE_1x1;
             end
             3'b001: begin // 3x3 kernel with total wieght of 32
                 kernel[0][0] = 12'h000003;
@@ -54,7 +54,7 @@ module blurring_filter (
 					4 4 4
 					3 4 3
 					*/
-			    KERNEL_SIZE = KERNEL_SIZE_3x3;
+			    KERNEL_SIZE <= KERNEL_SIZE_3x3;
             end
             3'b010: begin // 5x5 kernel with total wieght of 64
                 kernel[0][0] = 12'h000001;
@@ -89,11 +89,11 @@ module blurring_filter (
 					2 3 4 3 2
 					1 2 3 2 1
 					*/
-				KERNEL_SIZE = KERNEL_SIZE_5x5;
+				KERNEL_SIZE <= KERNEL_SIZE_5x5;
             end
             default: begin // Default to 1x1 kernel
                 kernel[0][0] = 12'h000001;
-					KERNEL_SIZE = KERNEL_SIZE_1x1;
+					KERNEL_SIZE <= KERNEL_SIZE_1x1;
             end
         endcase
     end
@@ -121,12 +121,23 @@ module blurring_filter (
             if (buffer_row_count == KERNEL_SIZE) begin
                 buffer_full <= 1;
             
-                // If buffer is full, shift rows up and add new row at the bottom
-                for (int i = 0; i < (KERNEL_SIZE_5x5 - 1); i++) begin
-                    for (int j = 0; j < image_width; j++) begin
-                        image_buffer[i][j] <= image_buffer[i+1][j]; // Shift rows up
-                    end
-                end
+					if (KERNEL_SIZE == KERNEL_SIZE_3x3) begin
+						 // If buffer is full, shift rows up and add new row at the bottom
+						 for (int i = 0; i < (KERNEL_SIZE_3x3 - 1); i++) begin
+							  for (int j = 0; j < image_width; j++) begin
+									image_buffer[i][j] <= image_buffer[i+1][j]; // Shift rows up
+							  end
+						 end
+					end
+					
+					else if (KERNEL_SIZE == KERNEL_SIZE_5x5) begin
+						 // If buffer is full, shift rows up and add new row at the bottom
+						 for (int i = 0; i < (KERNEL_SIZE_5x5 - 1); i++) begin
+							  for (int j = 0; j < image_width; j++) begin
+									image_buffer[i][j] <= image_buffer[i+1][j]; // Shift rows up
+							  end
+						 end
+					end
                     
                 // Decrement the row
                 buffer_row_count <= buffer_row_count - 1;
@@ -144,9 +155,9 @@ module blurring_filter (
     always_ff @(posedge clk) begin : Convolution
 		ready_out <= 0;
 		data_out <= 12'b0;
+		conv_result <= 0;
 		
         if (ready_in) begin
-            conv_result <= 0;
 
 	        if (freq_flag == 0) begin
 			    data_out <= data_in;
@@ -154,28 +165,29 @@ module blurring_filter (
 			
 		    else begin
                 // For 3x3 convolution
-                if ((buffer_full) && (freq_flag == 1) && (buffer_row_count >= 2) && (buffer_col_count >= 2) && (buffer_row_count < image_height - 1) && (buffer_col_count < image_width - 1)) begin
-
+                if ((buffer_full) && (freq_flag == 1) && (buffer_row_count >= 2) && (buffer_col_count >= 2) && (buffer_row_count < image_height) && (buffer_col_count < image_width)) begin
                     // Apply convolution only on kernel
                     for (int i = 0; i < KERNEL_SIZE_3x3; i++) begin
                         for (int j = 0; j < KERNEL_SIZE_3x3; j++) begin
-                            conv_result <= conv_result + image_buffer[buffer_row_count - 1 + i][buffer_col_count - 1 + j] * kernel[i][j];
+                            conv_result <= conv_result + (image_buffer[buffer_row_count - 2 + i][buffer_col_count - 2 + j] * kernel[i][j]);
                         end
                     end
                     // For 3x3 convolution (division by 32)
-						  data_out <= conv_result[16:5];
+						  // data_out <= conv_result[16:5];
+						  data_out <= conv_result[11:0];
                 end
 				  
                 // For 5x5 convolution
-                else if ((buffer_full) && (freq_flag == 2) && (buffer_row_count >= 4) && (buffer_col_count >= 4) && (buffer_row_count < image_height - 2) && (buffer_col_count < image_width - 2)) begin
-                    // Apply convolution only on kernel
+                else if ((buffer_full) && (freq_flag == 2) && (buffer_row_count >= 4) && (buffer_col_count >= 4) && (buffer_row_count < image_height) && (buffer_col_count < image_width)) begin
+						 // Apply convolution only on kernel
                     for (int i = 0; i < KERNEL_SIZE_5x5; i++) begin
                         for (int j = 0; j < KERNEL_SIZE_5x5; j++) begin
-                            conv_result <= conv_result + image_buffer[buffer_row_count - 2 + i][buffer_col_count - 2 + j] * kernel[i][j];
+                            conv_result <= conv_result + (image_buffer[buffer_row_count - 4 + i][buffer_col_count - 4 + j] * kernel[i][j]);
                         end
                     end
                     // For 5x5 convolution (division by 64)
-						  data_out <= conv_result[17:6];
+						  // data_out <= conv_result[17:6];
+						  data_out <= conv_result[11:0];
                 end
 					 
 				ready_out <= 1;

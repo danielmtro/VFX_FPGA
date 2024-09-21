@@ -36,7 +36,8 @@ module blurring_filter_tb;
         // Initialize image with a simple pattern (gradient)
         for (i = 0; i < IMG_SIZE; i = i + 1) begin
             for (j = 0; j < IMG_SIZE; j = j + 1) begin
-                image[i * IMG_SIZE + j] = (i * IMG_SIZE + j) & 12'hFFF; // Simple gradient
+                image[i * IMG_SIZE + j] = 12'h001; // Simple gradient
+					 // image[i * IMG_SIZE + j] = (i * IMG_SIZE + j) & 12'hFFF; // Simple gradient
             end
         end
 
