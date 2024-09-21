@@ -35,6 +35,13 @@ module blurring_filter_tb;
     integer i, j;
 
     initial begin
+	 
+		  // Set variables to 0 to avoid red lines in testbench
+		  freq_flag = 0;
+		  data_in = 0;
+		  ready_out = 0;
+		  data_out = 0;
+	 
         // Initialize image with a 1's to ensure base functionality
         for (i = 0; i < IMG_LENGTH; i = i + 1) begin
             for (j = 0; j < IMG_WIDTH; j = j + 1) begin
