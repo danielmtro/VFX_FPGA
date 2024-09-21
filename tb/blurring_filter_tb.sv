@@ -4,7 +4,9 @@ module blurring_filter_tb;
 
     localparam TCLK = 20; // Clock period: 20 ns
 
-    localparam IMG_SIZE = 15; // Image size is 15x15
+	 // Camera image size
+    localparam IMG_WIDTH = 320;
+	 localparam IMG_LENGTH = 240;
 
     logic clk = 0;
 	logic ready_in = 0;
@@ -27,17 +29,16 @@ module blurring_filter_tb;
     always #(TCLK / 2) clk = ~clk;
 
     // 15x15 image initialization (simple gradient for testing)
-    localparam LEN = IMG_SIZE * IMG_SIZE;
+    localparam LEN = IMG_LENGTH * IMG_WIDTH;
     logic [11:0] image [0:LEN-1];
 
     integer i, j;
 
     initial begin
         // Initialize image with a 1's to ensure base functionality
-        for (i = 0; i < IMG_SIZE; i = i + 1) begin
-            for (j = 0; j < IMG_SIZE; j = j + 1) begin
-                image[i * IMG_SIZE + j] = 12'h001; // Simple gradient
-					 // image[i * IMG_SIZE + j] = (i * IMG_SIZE + j) & 12'hFFF; // Simple gradient
+        for (i = 0; i < IMG_LENGTH; i = i + 1) begin
+            for (j = 0; j < IMG_WIDTH; j = j + 1) begin
+                image[i * IMG_LENGTH + j] = 12'h001; // Simple gradient
             end
         end
 
@@ -76,9 +77,9 @@ module blurring_filter_tb;
 		#1000
 		
 		// Initialize image with a simple pattern (gradient)
-        for (i = 0; i < IMG_SIZE; i = i + 1) begin
-            for (j = 0; j < IMG_SIZE; j = j + 1) begin
-					 image[i * IMG_SIZE + j] = (i * IMG_SIZE + j) & 12'hFFF; // Simple gradient
+        for (i = 0; i < IMG_LENGTH; i = i + 1) begin
+            for (j = 0; j < IMG_WIDTH; j = j + 1) begin
+					 image[i * IMG_LENGTH + j] = (i * IMG_LENGTH + j) & 12'hFFF; // Simple gradient
             end
         end
 
@@ -123,9 +124,9 @@ module blurring_filter_tb;
     task run_test;
         begin
             // Feed image data to the filter
-            for (i = 0; i < IMG_SIZE; i = i + 1) begin
-                for (j = 0; j < IMG_SIZE; j = j + 1) begin
-                    data_in = image[i * IMG_SIZE + j];
+            for (i = 0; i < IMG_LENGTH; i = i + 1) begin
+                for (j = 0; j < IMG_WIDTH; j = j + 1) begin
+                    data_in = image[i * IMG_LENGTH + j];
                     #TCLK; // Wait for processing
                     // Add output checks as needed for each kernel
                     $display("Pixel (%d, %d): Input = %h, Output = %h", i, j, data_in, data_out);
