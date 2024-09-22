@@ -82,3 +82,9 @@ Pressing any of the keys on the FPGA will correspond to a change to that state.
 ## inversion_filter.sv
 This module receives a stream of pixel data each which is 12 bit RGB and outputs a data stream of the same size with all values inverted. It only inverts the pixels if the frequency flag `freq_flag` is above a given threshold (currently set to 1 [01]).
 This module has no latency and is not at all reliant on the clock.
+
+## brightness_filter
+This module increases the brightness of the image based on the maximum output frequency of the voice.
+It receives a data stream of 12 bit RGB values and increases their value by multiplying the R, G, B values and keeping the same ratio between them. If the multiple of the result of the multiplication is greater than 255 (1111) then the value is set to 255.
+There is no latency
+*Note that the multiplication factor = freq_flag + 1 != freq_flag*
