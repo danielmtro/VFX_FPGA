@@ -48,4 +48,5 @@ def image_to_mif(image_path, mif_file_path):
     print(f"Image has been converted to 3-bit color and written to {mif_file_path}")
 
 # Usage example:
-image_to_mif('./chad-ho-640x480.png', './chad-ho-3bit.mif')
+image_to_mif('./Linear-gradient.png', 'linear-gradient.mif')
+

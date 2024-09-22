@@ -1,15 +1,17 @@
-module video_data_expander #(
-	parameter NumPixels =640*480,
+module artificial_video_streaming #(
+	parameter NumPixels = 12*12,
 	parameter NumColourBits = 3
-)(
+)
+ (
     input  logic        clk,             
-    input  logic        reset,
-	 input  logic        ready, 
-    output logic [29:0] data,            // Data output to VGA (8 data bits + 2 padding bits for each colour Red, Green and Blue = 30 bits)
+    input  logic        reset,           
+
+    // Avalon-ST Interface:
+    output logic [2:0] data,            // Data output to VGA (8 data bits + 2 padding bits for each colour Red, Green and Blue = 30 bits)
     output logic        startofpacket,   // Start of packet signal
     output logic        endofpacket,     // End of packet signal
-    output logic        valid  
-    
+    output logic        valid,           // Data valid signal
+    input  logic        ready      // Data ready signal from VGA Module
 );
 
 //    localparam NumPixels     = 12 * 12; // Total number of pixels on the 640x480 screen
@@ -20,8 +22,13 @@ module video_data_expander #(
 	//specifying the name of the initialisation file,
 	//and Verilator will ignore it.
 
-    (* ram_init_file = "chad-ho-3bit.mif" *)  logic [NumColourBits-1:0]  linear_grad [NumPixels];
+    (* ram_init_file = "linear-gradient.mif" *)  logic [NumColourBits-1:0] linear_grad   [NumPixels];
 
+   
+    
+	 initial begin : memset /* The 'ifdef VERILATOR' means this initial block is ignored in Quartus */
+        $readmemh("linear-gradient.hex", linear_grad);
+    end
     
     
     // The pixel counter/index. Set pixel_index_next in an always_comb block.
@@ -43,6 +50,7 @@ module video_data_expander #(
         end
     end
     
+    /* Complete the TODOs below */
 
     logic [NumColourBits-1:0] current_pixel; //TODO assign this to one of happy_face_q, neutral_face_q or angry_face_q depending on the value of face_select.
     always_comb begin
@@ -58,7 +66,7 @@ module video_data_expander #(
 
 //	 integer num_repeats;
 //	 assign num_repeats = 8 / (NumColourBits / 3);
-    assign data = {{2{current_pixel[2]}}, {2{1'b0}}, {2{current_pixel[1]}}, {2{1'b0}}, {2{current_pixel[0]}}, {2{1'b0}}}; //TODO assign data. Keep in mind, each RGB channel should be 10 bits like so: {8 bits of colour data, 2 bits of zero padding}.
+    assign data = {{{current_pixel[2]}}, {{current_pixel[1]}}, {{current_pixel[0]}}}; //TODO assign data. Keep in mind, each RGB channel should be 10 bits like so: {8 bits of colour data, 2 bits of zero padding}.
     // Remember, our 3-bit wide image ROMs only have 1-bit for each colour channel!! (Hint: use the replication operator to convert from 1-bit to 8-bit colour).
 
     assign pixel_index_next = (reset || pixel_index == NumPixels - 1) ? 0 : pixel_index + 1;//TODO Set pixel_index_next (what **would be** the next value?)
