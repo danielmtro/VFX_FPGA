@@ -10,8 +10,8 @@ module blurring_filter (
 );
 
     // 15x15 image
-    localparam image_height = 8'b00001111;
-    localparam image_width = 9'b000001111;
+    localparam image_height = 8'b11110000;
+    localparam image_width = 9'b101000000;
 
     // Kernel sizes
 	 logic [2:0] KERNEL_SIZE;
@@ -38,15 +38,17 @@ module blurring_filter (
 				KERNEL_SIZE <= KERNEL_SIZE_1x1;
             end
             3'b001: begin // 3x3 kernel with total wieght of 32
-                kernel[0][0] = 12'h000003;
-                kernel[0][1] = 12'h000004;
-                kernel[0][2] = 12'h000003;
-                kernel[1][0] = 12'h000004;
-                kernel[1][1] = 12'h000004;
-                kernel[1][2] = 12'h000004;
-                kernel[2][0] = 12'h000003;
-                kernel[2][1] = 12'h000004;
-                kernel[2][2] = 12'h000003;
+                // Corners are assigned as 3 and rest are assigned as 4
+					for (int i = 0; i < KERNEL_SIZE_3x3; i++) begin
+						for (int j = 0; j < KERNEL_SIZE_3x3; j++) begin
+							if ((i % 2 == 0) && (j % 2 == 0)) begin
+								kernel[i][j] = 12'h000003;
+							end
+							else begin
+								kernel[i][j] = 12'h000004;
+							end
+						end
+					end
 					/*
 					3 4 3
 					4 4 4
@@ -55,31 +57,20 @@ module blurring_filter (
 			    KERNEL_SIZE <= KERNEL_SIZE_3x3;
             end
             3'b010: begin // 5x5 kernel with total wieght of 64
-                kernel[0][0] = 12'h000001;
-                kernel[0][1] = 12'h000002;
-                kernel[0][2] = 12'h000003;
-                kernel[0][3] = 12'h000002;
-                kernel[0][4] = 12'h000001;
-                kernel[1][0] = 12'h000002;
-                kernel[1][1] = 12'h000003;
-                kernel[1][2] = 12'h000004;
-                kernel[1][3] = 12'h000003;
-                kernel[1][4] = 12'h000002;
-                kernel[2][0] = 12'h000003;
-                kernel[2][1] = 12'h000004;
-                kernel[2][2] = 12'h000004;
-                kernel[2][3] = 12'h000004;
-                kernel[2][4] = 12'h000003;
-                kernel[3][0] = 12'h000002;
-                kernel[3][1] = 12'h000003;
-                kernel[3][2] = 12'h000004;
-                kernel[3][3] = 12'h000003;
-                kernel[3][4] = 12'h000002;
-                kernel[4][0] = 12'h000001;
-                kernel[4][1] = 12'h000002;
-                kernel[4][2] = 12'h000003;
-                kernel[4][3] = 12'h000002;
-                kernel[4][4] = 12'h000001;
+               for (int i = 0; i < KERNEL_SIZE_5x5; i++) begin
+						 for (int j = 0; j < KERNEL_SIZE_5x5; j++) begin
+							  if (i == 0 || i == 4) begin
+									kernel[i][j] = (j == 0 || j == 4) ? 12'h000001 : (j == 1 || j == 3) ? 12'h000002 : 12'h000003;
+							  end
+							  else if (i == 1 || i == 3) begin
+									kernel[i][j] = (j == 0 || j == 4) ? 12'h000002 : (j == 1 || j == 3) ? 12'h000003 : 12'h000004;
+							  end
+							  else begin // For i == 2 (middle row)
+									kernel[i][j] = (j == 0 || j == 4) ? 12'h000003 : (j == 1 || j == 3) ? 12'h000004 : 12'h000004;
+							  end
+						 end
+					end
+
 					/*
 					1 2 3 2 1
 					2 3 4 3 2
