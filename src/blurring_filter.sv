@@ -39,21 +39,21 @@ module blurring_filter (
             end
             3'b001: begin // 3x3 kernel with total wieght of 32
                 // Corners are assigned as 3 and rest are assigned as 4
-					for (int i = 0; i < KERNEL_SIZE_3x3; i++) begin
-						for (int j = 0; j < KERNEL_SIZE_3x3; j++) begin
-							if ((i % 2 == 0) && (j % 2 == 0)) begin
-								kernel[i][j] = 12'h000003;
-							end
-							else begin
-								kernel[i][j] = 12'h000004;
-							end
+				for (int i = 0; i < KERNEL_SIZE_3x3; i++) begin
+					for (int j = 0; j < KERNEL_SIZE_3x3; j++) begin
+						if ((i % 2 == 0) && (j % 2 == 0)) begin
+							kernel[i][j] = 12'h000003;
+						end
+						else begin
+							kernel[i][j] = 12'h000004;
 						end
 					end
-					/*
-					3 4 3
-					4 4 4
-					3 4 3
-					*/
+				end
+				/*
+				3 4 3
+				4 4 4
+				3 4 3
+				*/
 			    KERNEL_SIZE <= KERNEL_SIZE_3x3;
             end
             3'b010: begin // 5x5 kernel with total wieght of 64
