@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<simPackage>
- <file path="simulation/camera_to_vga.v" type="VERILOG" />
- <topLevel name="camera_to_vga" />
- <deviceFamily name="cycloneive" />
-</simPackage>
