@@ -1,0 +1,5 @@
+Testcase1: Received pixel: data_in = 000110001110 and freq_flag: 0 and did not brighten to data_out: =000110001110 
+Testcase2: Received pixel: data_in = 000101001110 and freq_flag: 1 and brghtened by double to data_out: =001010001111 
+Testcase2: Received pixel: data_in = 000101001110 and freq_flag: 2 and brghtened by triple to data_out: =001111001111 
+Testcase4: Received pixel: data_in = 000101001110 and bri_use_flag: 0 and outputted: =000000000000 
+Testcase5: Received pixel: data_in = 000101001110 and valid_in: 0 and inverted to data_out: =000000000000 

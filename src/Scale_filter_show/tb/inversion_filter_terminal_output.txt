@@ -1,0 +1,4 @@
+Testcase1: Received pixel: data_in = 000110001111 and freq_flag: 0 and did not invert to data_out: =000110001111 
+Testcase2: Received pixel: data_in = 000110001111 and freq_flag: 2 and inverted to data_out: =111001110000 
+Testcase3: Received pixel: data_in = 000110001111 and inv_use_flag: 0 and outputted: =000000000000 
+Testcase4: Received pixel: data_in = 000110001111 and valid_in: 0 and inverted to data_out: =000000000000 
