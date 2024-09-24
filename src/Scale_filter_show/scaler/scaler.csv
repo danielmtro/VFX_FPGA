@@ -1,12 +1,12 @@
-# system info scaler on 2024.09.19.11:38:40
+# system info scaler on 2024.09.24.16:38:07
 system_info:
 name,value
 DEVICE,EP4CE115F29C7
 DEVICE_FAMILY,Cyclone IV E
-GENERATION_ID,1726709918
+GENERATION_ID,1727159884
 #
 #
-# Files generated for scaler on 2024.09.19.11:38:40
+# Files generated for scaler on 2024.09.24.16:38:07
 files:
 filepath,kind,attributes,module,is_top
 simulation/scaler.v,VERILOG,,scaler,true

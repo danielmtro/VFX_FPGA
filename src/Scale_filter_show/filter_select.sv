@@ -29,14 +29,15 @@ module filter_select(
 	logic bri_ready_out, inv_ready_out, blur_ready_out, edge_ready_out;
 	logic bri_sop_out, inv_sop_out, blur_sop_out, edge_sop_out;
 	logic bri_eop_out, inv_eop_out, blur_eop_out, edge_eop_out;
-	logic bri_valid_out, inv_valid_out, blue_valid_out, edge_valid_out;
+	logic bri_valid_out, inv_valid_out, blur_valid_out, edge_valid_out;
+	logic	bri_use_flag, inv_use_flag, blur_use_flag, edge_use_flag;
 	logic [11:0] inv_data, blur_data, bri_data, edge_data;
 	
 	always_comb begin
 		ready_out = (bri_ready_out | inv_ready_out | blur_ready_out | edge_ready_out);
 		sop_out = (bri_sop_out | inv_sop_out | blur_sop_out | edge_sop_out);
 		eop_out = (bri_eop_out | inv_eop_out | blur_eop_out | edge_eop_out);
-		valid_out = (bri_valid_out | inv_valid_out | blue_valid_out | edge_valid_out);
+		valid_out = (bri_valid_out | inv_valid_out | blur_valid_out | edge_valid_out);
 		data_out = (inv_data | blur_data | bri_data | edge_data);
 	end
 	
@@ -54,6 +55,8 @@ module filter_select(
 		.clk(clk),
 		.reset(reset),
 		.freq_flag(freq_flag),
+		.use_flag(inv_use_flag),
+		
 		.data_in(data_in),
 		.sop_in(sop_in),
 		.eop_in(eop_in),
@@ -71,6 +74,8 @@ module filter_select(
 		.clk(clk),
 		.reset(reset),
 		.freq_flag(freq_flag),
+		.use_flag(bri_use_flag),
+		
 		.data_in(data_in),
 		.sop_in(sop_in),
 		.eop_in(eop_in),
@@ -90,13 +95,30 @@ module filter_select(
 	 always_comb begin
 		inv_ready_in 		= 0;
 		blur_ready_in 		= 0;
-		bri_ready_in 	= 0;
+		bri_ready_in 		= 0;
 		edge_ready_in 		= 0;
+		
+		inv_use_flag		= 0;
+		blur_use_flag		= 0;
+		bri_use_flag		= 0;
+		edge_use_flag		= 0;
 		case (filter_num) 
-			COLOUR		: inv_ready_in 	= ready_in;
-			BLUR			: blur_ready_in	= ready_in;
-			BRIGHTNESS 	: bri_ready_in 	= ready_in;
-			EDGES			: edge_ready_in 	= ready_in;
+			COLOUR		: begin 
+				inv_ready_in 	= ready_in;
+				inv_use_flag	= 1;
+				end
+			BLUR			: begin 
+				blur_ready_in	= ready_in;
+				blur_use_flag	= 1;
+				end
+			BRIGHTNESS 	: begin 
+				bri_ready_in 	= ready_in;
+				bri_use_flag	= 1;
+				end
+			EDGES			: begin
+				edge_ready_in 	= ready_in;
+				bri_use_flag 	= 1;
+				end
 	 endcase
 	end
 

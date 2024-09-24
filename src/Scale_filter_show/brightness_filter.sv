@@ -3,6 +3,7 @@ module brightness_filter (
 	input logic 			clk,
 	input logic 			reset,
 	input logic [1:0] 	freq_flag,
+	input logic 			use_flag,
 	
 	//Sink ports
 	input  logic [11:0] 	data_in,
@@ -52,7 +53,7 @@ module brightness_filter (
 	
 	always_comb begin
 		data_out = 0;		
-		if (ready_in) begin
+		if (use_flag) begin
 			data_out = {red_br, green_br, blue_br};	
 		end
 	end

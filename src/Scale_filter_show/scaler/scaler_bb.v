@@ -14,8 +14,8 @@ module scaler (
 	vga_B);	
 
 	input		clk_clk;
-	input	[2:0]	filter_num_filter_num;
-	input	[2:0]	freq_flag_freq_flag;
+	input	[1:0]	filter_num_filter_num;
+	input	[1:0]	freq_flag_freq_flag;
 	input		reset_reset_n;
 	output		vga_CLK;
 	output		vga_HS;

@@ -1,8 +1,8 @@
 	component scaler is
 		port (
 			clk_clk               : in  std_logic                    := 'X';             -- clk
-			filter_num_filter_num : in  std_logic_vector(2 downto 0) := (others => 'X'); -- filter_num
-			freq_flag_freq_flag   : in  std_logic_vector(2 downto 0) := (others => 'X'); -- freq_flag
+			filter_num_filter_num : in  std_logic_vector(1 downto 0) := (others => 'X'); -- filter_num
+			freq_flag_freq_flag   : in  std_logic_vector(1 downto 0) := (others => 'X'); -- freq_flag
 			reset_reset_n         : in  std_logic                    := 'X';             -- reset_n
 			vga_CLK               : out std_logic;                                       -- CLK
 			vga_HS                : out std_logic;                                       -- HS
