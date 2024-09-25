@@ -292,5 +292,4 @@ module blurring_filter (
 		 end
 	end
 
-
 endmodule
