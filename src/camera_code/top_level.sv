@@ -38,7 +38,7 @@
 
 module top_level(
 	input wire clk_50,
-	input wire btn_resend,
+	input wire [17:0]SW,
 	output wire led_config_finished,
 	output wire vga_hsync,
 	output wire vga_vsync,
@@ -60,6 +60,10 @@ module top_level(
 );
 
 	// DE2-115 board has an Altera Cyclone V E, which has ALTPLL's'
+	
+	wire btn_resend;
+	assign btn_resend = SW[0];
+	
 	wire clk_50_camera;
 	wire clk_25_vga;
 	wire wren;
@@ -125,39 +129,42 @@ module top_level(
     .data(wrdata),
     .wren(wren));
 
-		
-		
+
   // create counter with back pressure
   integer row = 0, col = 0;
   integer row_old = 0, col_old = 0;
   reg vga_ready, vga_start, vga_end;
   always_ff @(posedge clk_25_vga) begin
-	
-	if(resend)
-		 begin
-			col = 0; row= 0;
-		 end
-	else if(vga_ready) begin
-		if(col >= 319) begin
-			col<= 0;
-			if(row >= 239) row <= 0;
-			else row <= row + 1;
-		end
-		else col <= col + 1;
+    
+    
+    if(resend)
+      begin
+        col = 0; row= 0;
+      end
+    else if(vga_ready) begin
+      if(col >= 319) begin
+        col<= 0;
+        if(row >= 239) row <= 0;
+        else row <= row + 1;
+      end
+      else col <= col + 1;
 
-    row_old <= row;
-    col_old <= col;
-	end
+      row_old <= row;
+      col_old <= col;
+    end
 	
   end
   
   // Set VGA start and end
   always @(*) begin
+
+    // set start of packet
 		if(col_old == 0 && row_old == 0) begin
 			vga_start = 1;
 		end
 		else vga_start = 0;
 		
+    // set end of packet
 		if(col_old == 319 && row_old == 239) vga_end = 1;
 		else vga_end = 0;
 
