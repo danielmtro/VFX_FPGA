@@ -3,7 +3,6 @@ module inversion_filter_tb;
 	logic clk;
 	logic reset = 1;
 	logic [1:0] freq_flag = 0;
-	logic inv_use_flag = 1;
 	
 	logic [11:0] data_in = 0;
 	logic sop_in = 0;
@@ -22,7 +21,6 @@ module inversion_filter_tb;
 		.clk(clk),
 		.reset(reset),
 		.freq_flag(freq_flag),
-		.use_flag(inv_use_flag),
 		
 		.data_in(data_in),
 		.sop_in(sop_in),
@@ -71,24 +69,15 @@ module inversion_filter_tb;
 		#20;
 		$display("Testcase2: Received pixel: data_in = %b and freq_flag: %d and inverted to data_out: =%b ", 
                        data_in, freq_flag, inv_data);
-		#100
-		//testcase 3: usage flag is low: should output 0
-		#80
-		freq_flag = 2;
-		inv_use_flag = 0;
-		data_in = 12'b0001_1000_1111;
-		#20;
-		$display("Testcase3: Received pixel: data_in = %b and inv_use_flag: %d and outputted: =%b ", 
-                       data_in, inv_use_flag, inv_data);
-							  
-		//testcase 4: valid_in is false
+	
+		//testcase 3: valid_in is false
 		#80;
 
 		freq_flag = 2;
 		valid_in = 0;
 		data_in = 12'b0001_1000_1111;
 		#20;
-		$display("Testcase4: Received pixel: data_in = %b and valid_in: %d and inverted to data_out: =%b ", 
+		$display("Testcase3: Received pixel: data_in = %b and valid_in: %d and inverted to data_out: =%b ", 
                        data_in, valid_in, inv_data);
 		
 		#80;

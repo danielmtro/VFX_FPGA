@@ -3,7 +3,6 @@ module brightness_filter_tb;
 	logic clk;
 	logic reset = 1;
 	logic [1:0] freq_flag = 0;
-	logic bri_use_flag = 1;
 	
 	logic [11:0] data_in = 0;
 	logic sop_in = 0;
@@ -22,7 +21,6 @@ module brightness_filter_tb;
 		.clk(clk),
 		.reset(reset),
 		.freq_flag(freq_flag),
-		.use_flag(bri_use_flag),
 		
 		.data_in(data_in),
 		.sop_in(sop_in),
@@ -81,23 +79,16 @@ module brightness_filter_tb;
 		$display("Testcase2: Received pixel: data_in = %b and freq_flag: %d and brghtened by triple to data_out: =%b ", 
                        data_in, freq_flag, bri_data);
 		
-		//testcase 4: usage flag is low: should output 0
-		#80
-		freq_flag = 2;
-		bri_use_flag = 0;
-		data_in = 12'b0001_0100_1110;
-		#20;
-		$display("Testcase4: Received pixel: data_in = %b and bri_use_flag: %d and outputted: =%b ", 
-                       data_in, bri_use_flag, bri_data);
+
 							  
-		//testcase 5: valid_in is false
+		//testcase 4: valid_in is false
 		#80;
 
 		freq_flag = 2;
 		valid_in = 0;
 		data_in = 12'b0001_0100_1110;
 		#20;
-		$display("Testcase5: Received pixel: data_in = %b and valid_in: %d and inverted to data_out: =%b ", 
+		$display("Testcase4: Received pixel: data_in = %b and valid_in: %d and inverted to data_out: =%b ", 
                        data_in, valid_in, bri_data);
 		
 		#80;
