@@ -1,0 +1,74 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2020  Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions 
+# and other software and tools, and any partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License 
+# Subscription Agreement, the Intel Quartus Prime License Agreement,
+# the Intel FPGA IP License Agreement, or other applicable license
+# agreement, including, without limitation, that your use is for
+# the sole purpose of programming logic devices manufactured by
+# Intel and sold by Intel or its authorized distributors.  Please
+# refer to the applicable agreement for further details, at
+# https://fpgasoftware.intel.com/eula.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus Prime
+# Version 20.1.0 Build 711 06/05/2020 SJ Lite Edition
+# Date created = 09:57:56  September 26, 2024
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		FFT_stream_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus Prime software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "Cyclone V"
+set_global_assignment -name DEVICE 5CGXFC7C7F23C8
+set_global_assignment -name TOP_LEVEL_ENTITY FFT_stream
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "09:57:56  SEPTEMBER 26, 2024"
+set_global_assignment -name LAST_QUARTUS_VERSION "20.1.0 Lite Edition"
+set_global_assignment -name SYSTEMVERILOG_FILE top_level.sv
+set_global_assignment -name SYSTEMVERILOG_FILE seven_seg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE low_pass_conv.sv
+set_global_assignment -name SYSTEMVERILOG_FILE fft_pitch_detect_tb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE fft_pitch_detect.sv
+set_global_assignment -name SYSTEMVERILOG_FILE fft_mag_sq.sv
+set_global_assignment -name SYSTEMVERILOG_FILE fft_input_buffer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE fft_find_peak.sv
+set_global_assignment -name SYSTEMVERILOG_FILE dstream.sv
+set_global_assignment -name SYSTEMVERILOG_FILE display.sv
+set_global_assignment -name QIP_FILE async_fifo.qip
+set_global_assignment -name VERILOG_FILE r22sdf/TwiddleConvert8.v
+set_global_assignment -name VERILOG_FILE r22sdf/TwiddleConvert4.v
+set_global_assignment -name VERILOG_FILE r22sdf/Twiddle.v
+set_global_assignment -name VERILOG_FILE r22sdf/SdfUnit2.v
+set_global_assignment -name VERILOG_FILE r22sdf/SdfUnit_TC.v
+set_global_assignment -name VERILOG_FILE r22sdf/Multiply.v
+set_global_assignment -name VERILOG_FILE r22sdf/FFT.v
+set_global_assignment -name VERILOG_FILE r22sdf/DelayBuffer.v
+set_global_assignment -name VERILOG_FILE r22sdf/Butterfly.v
+set_global_assignment -name SYSTEMVERILOG_FILE mic/set_audio_encoder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE mic/mic_load.sv
+set_global_assignment -name QIP_FILE mic/i2c_pll.qip
+set_global_assignment -name SYSTEMVERILOG_FILE mic/i2c_master.sv
+set_global_assignment -name QIP_FILE mic/adc_pll.qip
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
