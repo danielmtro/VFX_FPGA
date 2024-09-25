@@ -17,7 +17,7 @@ module blurring_filter (
     // Pass through valid signal
 	 assign valid_out = valid_in;
 
-    // 15x15 image
+    // 320x240 image
     localparam image_height = 8'b11110000;
     localparam image_width = 9'b101000000;
 
@@ -35,6 +35,9 @@ module blurring_filter (
 	
 	logic [9:0] buffer_col_count;
     logic [3:0] buffer_row_count;
+	 logic [9:0] start_buffer_count;
+	 logic[3:0] calc_buffer;
+	 logic [9:0] end_buffer_count;
 	 
 	 // Registers for intermediate results and pipeline stages
 	logic signed [16:0] partial_sum_3x3_stage1 [2:0];   // Row sums for 3x3 kernel (Stage 1)
@@ -86,7 +89,7 @@ module blurring_filter (
 		end
     end
 
-	 // Pipelined convolution process
+	// Pipelined convolution process
 
     // Stage 1: Load pixels and perform initial multiplications for 3x3 kernel
 	always_ff @(posedge clk) begin
@@ -147,14 +150,138 @@ module blurring_filter (
 	// Stage 4: Normalise and output the result
 	always_ff @(posedge clk) begin
 		 if (freq_flag == 1) begin
-			  // Normalise for the 3x3 kernel (divide by 32, right shift by 5)
-			  data_out <= conv_result_3x3_stage[16:5];
-			  ready_out <= ready_in;
+			  ready_out <= 0;
+			  startofpacket_out <= 0;
+			  endofpacket_out <= 0;
+			  
+			  // First packet reset buffer count
+			  if (startofpacket_in) begin
+				  start_buffer_count <= 0;
+			  end
+			  
+			  // Wait until buffer count is on row 1 column 1 and account for the calculation buffer
+			  else if (start_buffer_count < (image_width + 1 + 4)) begin
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Start image output as 0
+			  else if (start_buffer_count == (image_width + 1 + 4)) begin
+				  startofpacket_out <= 1;
+				  data_out <= 0;
+				  ready_out <= 1;
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Continue image output as 0 until full kernel can be filled
+			  else if (start_buffer_count < (2*(image_width + 1) + 4)) begin
+				  data_out <= 0;
+				  ready_out <= 1;
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Output convoluted result as kernel is full until end packet flag is read
+			  else if (!endofpacket_in) begin
+			  // Normalise for the 5x5 kernel (divide by 64, right shift by 6)
+				  data_out <= conv_result_5x5_stage[17:6];
+				  ready_out <= 1;
+			  end
+
+			  // Wait for remaining convoluted pixels in the pipeline to be calculated and output
+			  else if (calc_buffer < 4) begin
+				  data_out <= conv_result_5x5_stage[17:6];
+				  ready_out <= 1;
+				  calc_buffer <= calc_buffer + 1;
+			  end
+
+			  // Outuput remaining pixels in image as 0
+			  else if (end_buffer_count < ((2*image_width) + 2)) begin
+			  	  data_out <= 0;
+				  ready_out <= 1;
+				  end_buffer_count <= end_buffer_count + 1;
+			  end
+
+			  // Outuput final pixel in image as 0
+			  else if (end_buffer_count < ((2*image_width) + 2)) begin
+			  	  data_out <= 0;
+				  ready_out <= 1;
+				  end_buffer_count <= end_buffer_count + 1;
+				  endofpacket_out <= 1;
+			  end
+
+			  // Reset counters and flags to 0
+			  else begin
+				  startofpacket_out <= 0;
+				  endofpacket_out <= 0;
+				  start_buffer_count <= 0;
+				  end_buffer_count <= 0;
+			  end
 		 end
 		 else if (freq_flag == 2) begin
+			  ready_out <= 0;
+			  startofpacket_out <= 0;
+			  endofpacket_out <= 0;
+			  
+			  // First packet reset buffer count
+			  if (startofpacket_in) begin
+				  start_buffer_count <= 0;
+				  calc_buffer <= 0;
+				  end_buffer_count <= 0;
+			  end
+			  
+			  // Wait until buffer count is on row 2 column 2
+			  else if (start_buffer_count < ((2*image_width) + 2 + 4)) begin
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Start image output as 0
+			  else if (start_buffer_count == ((2*image_width) + 2 + 4)) begin
+				  startofpacket_out <= 1;
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Continue image output as 0 until full kernel can be filled
+			  else if (start_buffer_count < (2*((2*image_width) + 2) + 4)) begin
+				  data_out <= 0;
+				  ready_out <= 1;
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Output convoluted result as kernel is full until end packet flag is read
+			  else if (!endofpacket_in) begin
 			  // Normalise for the 5x5 kernel (divide by 64, right shift by 6)
-			  data_out <= conv_result_5x5_stage[17:6];
-			  ready_out <= ready_in;
+				  data_out <= conv_result_5x5_stage[17:6];
+				  ready_out <= 1;
+			  end 
+			  
+			  // Wait for remaining convoluted pixels in the pipeline to be calculated and output
+			  else if (calc_buffer < 4) begin
+				  data_out <= conv_result_5x5_stage[17:6];
+				  ready_out <= 1;
+				  calc_buffer <= calc_buffer + 1;
+			  end
+
+			  // Outuput remaining pixels in image as 0
+			  else if (end_buffer_count < ((2*image_width) + 2)) begin
+			  	  data_out <= 0;
+				  ready_out <= 1;
+				  end_buffer_count <= end_buffer_count + 1;
+			  end
+
+			  // Outuput final pixel in image as 0
+			  else if (end_buffer_count < ((2*image_width) + 2)) begin
+			  	  data_out <= 0;
+				  ready_out <= 1;
+				  end_buffer_count <= end_buffer_count + 1;
+				  endofpacket_out <= 1;
+			  end
+
+			  // Reset counters and flags to 0
+			  else begin
+				  startofpacket_out <= 0;
+				  endofpacket_out <= 0;
+				  start_buffer_count <= 0;
+				  end_buffer_count <= 0;
+			  end
 		 end
 		 else if (freq_flag == 0) begin
 			  // For 1x1 kernel, directly pass through the data
