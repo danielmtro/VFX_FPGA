@@ -123,7 +123,7 @@ module filter_select(
 				sop_out			= edge_sop_out;
 				eop_out			= edge_eop_out;
 				valid_out		= edge_valid_out;
-				data_out			= edge_data;
+				data_out		= edge_data;
 				end
 	 endcase
 	end
