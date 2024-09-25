@@ -6,7 +6,7 @@
    version="1.0"
    description=""
    tags=""
-   categories="" />
+   categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
    element clk_0
@@ -185,22 +185,6 @@
          type = "String";
       }
    }
-   element video_csc_0
-   {
-      datum _sortIndex
-      {
-         value = "9";
-         type = "int";
-      }
-   }
-   element video_csc_1
-   {
-      datum _sortIndex
-      {
-         value = "10";
-         type = "int";
-      }
-   }
    element video_edge_detection_0
    {
       datum _sortIndex
@@ -214,6 +198,22 @@
       datum _sortIndex
       {
          value = "3";
+         type = "int";
+      }
+   }
+   element video_rgb_resampler_0
+   {
+      datum _sortIndex
+      {
+         value = "9";
+         type = "int";
+      }
+   }
+   element video_rgb_resampler_1
+   {
+      datum _sortIndex
+      {
+         value = "10";
          type = "int";
       }
    }
@@ -284,24 +284,6 @@
    version="1.0"
    enabled="1" />
  <module
-   name="video_csc_0"
-   kind="altera_up_avalon_video_csc"
-   version="18.0"
-   enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="25000000" />
-  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone IV E" />
-  <parameter name="csc_type">24-bit RGB to Grayscale (Y)</parameter>
- </module>
- <module
-   name="video_csc_1"
-   kind="altera_up_avalon_video_csc"
-   version="18.0"
-   enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="25000000" />
-  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone IV E" />
-  <parameter name="csc_type">Grayscale (Y) to 24-bit RGB</parameter>
- </module>
- <module
    name="video_edge_detection_0"
    kind="altera_up_avalon_video_edge_detection"
    version="18.0"
@@ -326,6 +308,28 @@
   <parameter name="lcd_clk_en" value="false" />
   <parameter name="vga_clk_en" value="true" />
   <parameter name="video_in_clk_en" value="false" />
+ </module>
+ <module
+   name="video_rgb_resampler_0"
+   kind="altera_up_avalon_video_rgb_resampler"
+   version="18.0"
+   enabled="1">
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="25000000" />
+  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone IV E" />
+  <parameter name="alpha" value="1023" />
+  <parameter name="input_type" value="24-bit RGB" />
+  <parameter name="output_type" value="8-bit Grayscale" />
+ </module>
+ <module
+   name="video_rgb_resampler_1"
+   kind="altera_up_avalon_video_rgb_resampler"
+   version="18.0"
+   enabled="1">
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="25000000" />
+  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone IV E" />
+  <parameter name="alpha" value="1023" />
+  <parameter name="input_type" value="8-bit Grayscale" />
+  <parameter name="output_type" value="24-bit RGB" />
  </module>
  <module
    name="video_scaler_0"
@@ -357,18 +361,18 @@
  <connection
    kind="avalon_streaming"
    version="20.1"
-   start="video_csc_0.avalon_csc_source"
+   start="video_edge_detection_0.avalon_edge_detection_source"
+   end="video_rgb_resampler_1.avalon_rgb_sink" />
+ <connection
+   kind="avalon_streaming"
+   version="20.1"
+   start="video_rgb_resampler_0.avalon_rgb_source"
    end="video_edge_detection_0.avalon_edge_detection_sink" />
  <connection
    kind="avalon_streaming"
    version="20.1"
-   start="video_csc_1.avalon_csc_source"
+   start="video_rgb_resampler_1.avalon_rgb_source"
    end="edge_scale_output_0.avalon_streaming_sink" />
- <connection
-   kind="avalon_streaming"
-   version="20.1"
-   start="video_edge_detection_0.avalon_edge_detection_source"
-   end="video_csc_1.avalon_csc_sink" />
  <connection
    kind="avalon_streaming"
    version="20.1"
@@ -378,7 +382,7 @@
    kind="avalon_streaming"
    version="20.1"
    start="edge_scale_input_0.avalon_streaming_source"
-   end="video_csc_0.avalon_csc_sink" />
+   end="video_rgb_resampler_0.avalon_rgb_sink" />
  <connection
    kind="avalon_streaming"
    version="20.1"
@@ -418,12 +422,12 @@
    kind="clock"
    version="20.1"
    start="video_pll_0.vga_clk"
-   end="video_csc_0.clk" />
+   end="video_rgb_resampler_1.clk" />
  <connection
    kind="clock"
    version="20.1"
    start="video_pll_0.vga_clk"
-   end="video_csc_1.clk" />
+   end="video_rgb_resampler_0.clk" />
  <connection
    kind="clock"
    version="20.1"
@@ -488,12 +492,12 @@
    kind="reset"
    version="20.1"
    start="video_pll_0.reset_source"
-   end="video_csc_0.reset" />
+   end="video_rgb_resampler_0.reset" />
  <connection
    kind="reset"
    version="20.1"
    start="video_pll_0.reset_source"
-   end="video_csc_1.reset" />
+   end="video_rgb_resampler_1.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />

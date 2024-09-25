@@ -2,7 +2,7 @@ set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_TOOL
 set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_TOOL_VERSION "20.1"
 set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -library "edge_detect" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../edge_detect.sopcinfo"]
-set_global_assignment -entity "edge_detect" -library "edge_detect" -name SLD_INFO "QSYS_NAME edge_detect HAS_SOPCINFO 1 GENERATION_ID 1726986971"
+set_global_assignment -entity "edge_detect" -library "edge_detect" -name SLD_INFO "QSYS_NAME edge_detect HAS_SOPCINFO 1 GENERATION_ID 1727304821"
 set_global_assignment -library "edge_detect" -name MISC_FILE [file join $::quartus(qip_path) "../edge_detect.cmp"]
 set_global_assignment -library "edge_detect" -name SLD_FILE [file join $::quartus(qip_path) "edge_detect.debuginfo"]
 set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_TARGETED_DEVICE_FAMILY "Cyclone IV E"
@@ -15,7 +15,7 @@ set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_COMP
 set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_COMPONENT_REPORT_HIERARCHY "On"
 set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_COMPONENT_INTERNAL "Off"
 set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_COMPONENT_VERSION "MS4w"
-set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19HRU5FUkFUSU9OX0lE::MTcyNjk4Njk3MQ==::QXV0byBHRU5FUkFUSU9OX0lE"
+set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19HRU5FUkFUSU9OX0lE::MTcyNzMwNDgyMQ==::QXV0byBHRU5FUkFUSU9OX0lE"
 set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::Q3ljbG9uZSBJViBF::QXV0byBERVZJQ0VfRkFNSUxZ"
 set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0U=::RVA0Q0UxMTVGMjlDNw==::QXV0byBERVZJQ0U="
 set_global_assignment -entity "edge_detect" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfU1BFRURHUkFERQ==::Nw==::QXV0byBERVZJQ0VfU1BFRURHUkFERQ=="
@@ -133,6 +133,28 @@ set_global_assignment -entity "edge_detect_video_scaler_0" -library "edge_detect
 set_global_assignment -entity "edge_detect_video_scaler_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "Y29sb3JfcGxhbmVz::Mw==::U3ltYm9scyBwZXIgQmVhdA=="
 set_global_assignment -entity "edge_detect_video_scaler_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::Q3ljbG9uZSBJViBF::QXV0byBERVZJQ0VfRkFNSUxZ"
 set_global_assignment -entity "edge_detect_video_scaler_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19DTEtfQ0xPQ0tfUkFURQ==::MjUwMDAwMDA=::QXV0byBDTE9DS19SQVRF"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_NAME "ZWRnZV9kZXRlY3RfdmlkZW9fcmdiX3Jlc2FtcGxlcl8x"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_DISPLAY_NAME "UkdCIFJlc2FtcGxlcg=="
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_AUTHOR "SW50ZWwgRlBHQSBVbml2ZXJzaXR5IFByb2dyYW0="
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_VERSION "MTguMA=="
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_DESCRIPTION "UkdCIFJlc2FtcGxlciBmb3IgREUtc2VyaWVzIEJvYXJkcw=="
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_PARAMETER "aW5wdXRfdHlwZQ==::OC1iaXQgR3JheXNjYWxl::SW5jb21pbmcgRm9ybWF0"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_PARAMETER "b3V0cHV0X3R5cGU=::MjQtYml0IFJHQg==::T3V0Z29pbmcgRm9ybWF0"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::Q3ljbG9uZSBJViBF::QXV0byBERVZJQ0VfRkFNSUxZ"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_1" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19DTEtfQ0xPQ0tfUkFURQ==::MjUwMDAwMDA=::QXV0byBDTE9DS19SQVRF"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_NAME "ZWRnZV9kZXRlY3RfdmlkZW9fcmdiX3Jlc2FtcGxlcl8w"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_DISPLAY_NAME "UkdCIFJlc2FtcGxlcg=="
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_AUTHOR "SW50ZWwgRlBHQSBVbml2ZXJzaXR5IFByb2dyYW0="
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_VERSION "MTguMA=="
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_DESCRIPTION "UkdCIFJlc2FtcGxlciBmb3IgREUtc2VyaWVzIEJvYXJkcw=="
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "aW5wdXRfdHlwZQ==::MjQtYml0IFJHQg==::SW5jb21pbmcgRm9ybWF0"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "b3V0cHV0X3R5cGU=::OC1iaXQgR3JheXNjYWxl::T3V0Z29pbmcgRm9ybWF0"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::Q3ljbG9uZSBJViBF::QXV0byBERVZJQ0VfRkFNSUxZ"
+set_global_assignment -entity "edge_detect_video_rgb_resampler_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19DTEtfQ0xPQ0tfUkFURQ==::MjUwMDAwMDA=::QXV0byBDTE9DS19SQVRF"
 set_global_assignment -entity "edge_detect_video_pll_0" -library "edge_detect" -name IP_COMPONENT_NAME "ZWRnZV9kZXRlY3RfdmlkZW9fcGxsXzA="
 set_global_assignment -entity "edge_detect_video_pll_0" -library "edge_detect" -name IP_COMPONENT_DISPLAY_NAME "VmlkZW8gQ2xvY2tzIGZvciBERS1zZXJpZXMgQm9hcmRz"
 set_global_assignment -entity "edge_detect_video_pll_0" -library "edge_detect" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
@@ -187,26 +209,6 @@ set_global_assignment -entity "edge_detect_video_edge_detection_0" -library "edg
 set_global_assignment -entity "edge_detect_video_edge_detection_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "aW50ZW5zaXR5::MQ==::RWRnZSBJbnRlbnNpdHk="
 set_global_assignment -entity "edge_detect_video_edge_detection_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::Q3ljbG9uZSBJViBF::QXV0byBERVZJQ0VfRkFNSUxZ"
 set_global_assignment -entity "edge_detect_video_edge_detection_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19DTEtfQ0xPQ0tfUkFURQ==::MjUwMDAwMDA=::QXV0byBDTE9DS19SQVRF"
-set_global_assignment -entity "edge_detect_video_csc_1" -library "edge_detect" -name IP_COMPONENT_NAME "ZWRnZV9kZXRlY3RfdmlkZW9fY3NjXzE="
-set_global_assignment -entity "edge_detect_video_csc_1" -library "edge_detect" -name IP_COMPONENT_DISPLAY_NAME "Q29sb3VyLVNwYWNlIENvbnZlcnRlcg=="
-set_global_assignment -entity "edge_detect_video_csc_1" -library "edge_detect" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
-set_global_assignment -entity "edge_detect_video_csc_1" -library "edge_detect" -name IP_COMPONENT_INTERNAL "Off"
-set_global_assignment -entity "edge_detect_video_csc_1" -library "edge_detect" -name IP_COMPONENT_AUTHOR "SW50ZWwgRlBHQSBVbml2ZXJzaXR5IFByb2dyYW0="
-set_global_assignment -entity "edge_detect_video_csc_1" -library "edge_detect" -name IP_COMPONENT_VERSION "MTguMA=="
-set_global_assignment -entity "edge_detect_video_csc_1" -library "edge_detect" -name IP_COMPONENT_DESCRIPTION "Q29sb3VyLVNwYWNlIENvbnZlcnRlciBmb3IgREUtU2VyaWVzIEJvYXJkcw=="
-set_global_assignment -entity "edge_detect_video_csc_1" -library "edge_detect" -name IP_COMPONENT_PARAMETER "Y3NjX3R5cGU=::R3JheXNjYWxlIChZKSB0byAyNC1iaXQgUkdC::Q29sb3VyLVNwYWNlIENvbnZlcnNpb24="
-set_global_assignment -entity "edge_detect_video_csc_1" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::Q3ljbG9uZSBJViBF::QXV0byBERVZJQ0VfRkFNSUxZ"
-set_global_assignment -entity "edge_detect_video_csc_1" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19DTEtfQ0xPQ0tfUkFURQ==::MjUwMDAwMDA=::QXV0byBDTE9DS19SQVRF"
-set_global_assignment -entity "edge_detect_video_csc_0" -library "edge_detect" -name IP_COMPONENT_NAME "ZWRnZV9kZXRlY3RfdmlkZW9fY3NjXzA="
-set_global_assignment -entity "edge_detect_video_csc_0" -library "edge_detect" -name IP_COMPONENT_DISPLAY_NAME "Q29sb3VyLVNwYWNlIENvbnZlcnRlcg=="
-set_global_assignment -entity "edge_detect_video_csc_0" -library "edge_detect" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
-set_global_assignment -entity "edge_detect_video_csc_0" -library "edge_detect" -name IP_COMPONENT_INTERNAL "Off"
-set_global_assignment -entity "edge_detect_video_csc_0" -library "edge_detect" -name IP_COMPONENT_AUTHOR "SW50ZWwgRlBHQSBVbml2ZXJzaXR5IFByb2dyYW0="
-set_global_assignment -entity "edge_detect_video_csc_0" -library "edge_detect" -name IP_COMPONENT_VERSION "MTguMA=="
-set_global_assignment -entity "edge_detect_video_csc_0" -library "edge_detect" -name IP_COMPONENT_DESCRIPTION "Q29sb3VyLVNwYWNlIENvbnZlcnRlciBmb3IgREUtU2VyaWVzIEJvYXJkcw=="
-set_global_assignment -entity "edge_detect_video_csc_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "Y3NjX3R5cGU=::MjQtYml0IFJHQiB0byBHcmF5c2NhbGUgKFkp::Q29sb3VyLVNwYWNlIENvbnZlcnNpb24="
-set_global_assignment -entity "edge_detect_video_csc_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19ERVZJQ0VfRkFNSUxZ::Q3ljbG9uZSBJViBF::QXV0byBERVZJQ0VfRkFNSUxZ"
-set_global_assignment -entity "edge_detect_video_csc_0" -library "edge_detect" -name IP_COMPONENT_PARAMETER "QVVUT19DTEtfQ0xPQ0tfUkFURQ==::MjUwMDAwMDA=::QXV0byBDTE9DS19SQVRF"
 set_global_assignment -entity "static_data_initialisation" -library "edge_detect" -name IP_COMPONENT_NAME "c3RhdGljX2RhdGFfaW5pdGlhbGlzYXRpb24="
 set_global_assignment -entity "static_data_initialisation" -library "edge_detect" -name IP_COMPONENT_DISPLAY_NAME "c3RhdGljX2RhdGFfaW5pdGlhbGlzYXRpb24="
 set_global_assignment -entity "static_data_initialisation" -library "edge_detect" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
@@ -240,6 +242,8 @@ set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::qu
 set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_video_scaler_multiply_width.v"]
 set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_video_scaler_multiply_height.v"]
 set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/edge_detect_video_scaler_0.v"]
+set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/edge_detect_video_rgb_resampler_1.v"]
+set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/edge_detect_video_rgb_resampler_0.v"]
 set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/edge_detect_video_pll_0.v"]
 set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_avalon_reset_from_locked_signal.v"]
 set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_altpll.v"]
@@ -250,10 +254,6 @@ set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::qu
 set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_edge_detection_pixel_info_shift_register.v"]
 set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_edge_detection_data_shift_register.v"]
 set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/edge_detect_video_edge_detection_0.v"]
-set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_YCrCb_to_RGB_converter.v"]
-set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_up_RGB_to_YCrCb_converter.v"]
-set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/edge_detect_video_csc_1.v"]
-set_global_assignment -library "edge_detect" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/edge_detect_video_csc_0.v"]
 set_global_assignment -library "edge_detect" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/static_data_initialisation.sv"]
 set_global_assignment -library "edge_detect" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/edge_scale_output.sv"]
 set_global_assignment -library "edge_detect" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/edge_scale_input.sv"]

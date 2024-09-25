@@ -12,9 +12,8 @@ module top_level (
 		output wire [7:0]  VGA_B         
 );
 
-vga u_vga (
+edge_detect u_vga (
 		.clk_clk(CLOCK_50),
-		.face_select_face_select(SW[1:0]),
 		.reset_reset_n(1'b1),
 		.vga_CLK(VGA_CLK),
 		.vga_HS(VGA_HS),

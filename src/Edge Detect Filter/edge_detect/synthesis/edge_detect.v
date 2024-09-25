@@ -16,26 +16,26 @@ module edge_detect (
 		output wire [7:0] vga_B          //      .B
 	);
 
-	wire         video_csc_0_avalon_csc_source_valid;                                // video_csc_0:stream_out_valid -> video_edge_detection_0:in_valid
-	wire   [7:0] video_csc_0_avalon_csc_source_data;                                 // video_csc_0:stream_out_data -> video_edge_detection_0:in_data
-	wire         video_csc_0_avalon_csc_source_ready;                                // video_edge_detection_0:in_ready -> video_csc_0:stream_out_ready
-	wire         video_csc_0_avalon_csc_source_startofpacket;                        // video_csc_0:stream_out_startofpacket -> video_edge_detection_0:in_startofpacket
-	wire         video_csc_0_avalon_csc_source_endofpacket;                          // video_csc_0:stream_out_endofpacket -> video_edge_detection_0:in_endofpacket
-	wire         video_csc_1_avalon_csc_source_valid;                                // video_csc_1:stream_out_valid -> edge_scale_output_0:valid_in
-	wire  [23:0] video_csc_1_avalon_csc_source_data;                                 // video_csc_1:stream_out_data -> edge_scale_output_0:data_in
-	wire         video_csc_1_avalon_csc_source_ready;                                // edge_scale_output_0:ready_out -> video_csc_1:stream_out_ready
-	wire         video_csc_1_avalon_csc_source_startofpacket;                        // video_csc_1:stream_out_startofpacket -> edge_scale_output_0:sop_in
-	wire         video_csc_1_avalon_csc_source_endofpacket;                          // video_csc_1:stream_out_endofpacket -> edge_scale_output_0:eop_in
-	wire         video_edge_detection_0_avalon_edge_detection_source_valid;          // video_edge_detection_0:out_valid -> video_csc_1:stream_in_valid
-	wire   [7:0] video_edge_detection_0_avalon_edge_detection_source_data;           // video_edge_detection_0:out_data -> video_csc_1:stream_in_data
-	wire         video_edge_detection_0_avalon_edge_detection_source_ready;          // video_csc_1:stream_in_ready -> video_edge_detection_0:out_ready
-	wire         video_edge_detection_0_avalon_edge_detection_source_startofpacket;  // video_edge_detection_0:out_startofpacket -> video_csc_1:stream_in_startofpacket
-	wire         video_edge_detection_0_avalon_edge_detection_source_endofpacket;    // video_edge_detection_0:out_endofpacket -> video_csc_1:stream_in_endofpacket
-	wire         edge_scale_input_0_avalon_streaming_source_valid;                   // edge_scale_input_0:valid_out -> video_csc_0:stream_in_valid
-	wire  [23:0] edge_scale_input_0_avalon_streaming_source_data;                    // edge_scale_input_0:data_out -> video_csc_0:stream_in_data
-	wire         edge_scale_input_0_avalon_streaming_source_ready;                   // video_csc_0:stream_in_ready -> edge_scale_input_0:ready_in
-	wire         edge_scale_input_0_avalon_streaming_source_startofpacket;           // edge_scale_input_0:sop_out -> video_csc_0:stream_in_startofpacket
-	wire         edge_scale_input_0_avalon_streaming_source_endofpacket;             // edge_scale_input_0:eop_out -> video_csc_0:stream_in_endofpacket
+	wire         video_edge_detection_0_avalon_edge_detection_source_valid;          // video_edge_detection_0:out_valid -> video_rgb_resampler_1:stream_in_valid
+	wire   [7:0] video_edge_detection_0_avalon_edge_detection_source_data;           // video_edge_detection_0:out_data -> video_rgb_resampler_1:stream_in_data
+	wire         video_edge_detection_0_avalon_edge_detection_source_ready;          // video_rgb_resampler_1:stream_in_ready -> video_edge_detection_0:out_ready
+	wire         video_edge_detection_0_avalon_edge_detection_source_startofpacket;  // video_edge_detection_0:out_startofpacket -> video_rgb_resampler_1:stream_in_startofpacket
+	wire         video_edge_detection_0_avalon_edge_detection_source_endofpacket;    // video_edge_detection_0:out_endofpacket -> video_rgb_resampler_1:stream_in_endofpacket
+	wire         video_rgb_resampler_0_avalon_rgb_source_valid;                      // video_rgb_resampler_0:stream_out_valid -> video_edge_detection_0:in_valid
+	wire   [7:0] video_rgb_resampler_0_avalon_rgb_source_data;                       // video_rgb_resampler_0:stream_out_data -> video_edge_detection_0:in_data
+	wire         video_rgb_resampler_0_avalon_rgb_source_ready;                      // video_edge_detection_0:in_ready -> video_rgb_resampler_0:stream_out_ready
+	wire         video_rgb_resampler_0_avalon_rgb_source_startofpacket;              // video_rgb_resampler_0:stream_out_startofpacket -> video_edge_detection_0:in_startofpacket
+	wire         video_rgb_resampler_0_avalon_rgb_source_endofpacket;                // video_rgb_resampler_0:stream_out_endofpacket -> video_edge_detection_0:in_endofpacket
+	wire         video_rgb_resampler_1_avalon_rgb_source_valid;                      // video_rgb_resampler_1:stream_out_valid -> edge_scale_output_0:valid_in
+	wire  [23:0] video_rgb_resampler_1_avalon_rgb_source_data;                       // video_rgb_resampler_1:stream_out_data -> edge_scale_output_0:data_in
+	wire         video_rgb_resampler_1_avalon_rgb_source_ready;                      // edge_scale_output_0:ready_out -> video_rgb_resampler_1:stream_out_ready
+	wire         video_rgb_resampler_1_avalon_rgb_source_startofpacket;              // video_rgb_resampler_1:stream_out_startofpacket -> edge_scale_output_0:sop_in
+	wire         video_rgb_resampler_1_avalon_rgb_source_endofpacket;                // video_rgb_resampler_1:stream_out_endofpacket -> edge_scale_output_0:eop_in
+	wire         edge_scale_input_0_avalon_streaming_source_valid;                   // edge_scale_input_0:valid_out -> video_rgb_resampler_0:stream_in_valid
+	wire  [23:0] edge_scale_input_0_avalon_streaming_source_data;                    // edge_scale_input_0:data_out -> video_rgb_resampler_0:stream_in_data
+	wire         edge_scale_input_0_avalon_streaming_source_ready;                   // video_rgb_resampler_0:stream_in_ready -> edge_scale_input_0:ready_in
+	wire         edge_scale_input_0_avalon_streaming_source_startofpacket;           // edge_scale_input_0:sop_out -> video_rgb_resampler_0:stream_in_startofpacket
+	wire         edge_scale_input_0_avalon_streaming_source_endofpacket;             // edge_scale_input_0:eop_out -> video_rgb_resampler_0:stream_in_endofpacket
 	wire         edge_scale_output_0_avalon_streaming_source_valid;                  // edge_scale_output_0:valid_out -> video_scaler_0:stream_in_valid
 	wire  [11:0] edge_scale_output_0_avalon_streaming_source_data;                   // edge_scale_output_0:data_out -> video_scaler_0:stream_in_data
 	wire         edge_scale_output_0_avalon_streaming_source_ready;                  // video_scaler_0:stream_in_ready -> edge_scale_output_0:ready_in
@@ -51,7 +51,7 @@ module edge_detect (
 	wire         data_expander_0_avalon_streaming_source_ready;                      // video_vga_controller_0:ready -> data_expander_0:ready_in
 	wire         data_expander_0_avalon_streaming_source_startofpacket;              // data_expander_0:sop_out -> video_vga_controller_0:startofpacket
 	wire         data_expander_0_avalon_streaming_source_endofpacket;                // data_expander_0:eop_out -> video_vga_controller_0:endofpacket
-	wire         video_pll_0_vga_clk_clk;                                            // video_pll_0:vga_clk_clk -> [avalon_st_adapter:in_clk_0_clk, data_expander_0:clock_clk, edge_scale_input_0:clock_clk, edge_scale_output_0:clock_clk, rst_controller:clk, static_data_initialisation_0:clk, video_csc_0:clk, video_csc_1:clk, video_edge_detection_0:clk, video_scaler_0:clk, video_vga_controller_0:clk]
+	wire         video_pll_0_vga_clk_clk;                                            // video_pll_0:vga_clk_clk -> [avalon_st_adapter:in_clk_0_clk, data_expander_0:clock_clk, edge_scale_input_0:clock_clk, edge_scale_output_0:clock_clk, rst_controller:clk, static_data_initialisation_0:clk, video_edge_detection_0:clk, video_rgb_resampler_0:clk, video_rgb_resampler_1:clk, video_scaler_0:clk, video_vga_controller_0:clk]
 	wire         video_scaler_0_avalon_scaler_source_valid;                          // video_scaler_0:stream_out_valid -> avalon_st_adapter:in_0_valid
 	wire  [11:0] video_scaler_0_avalon_scaler_source_data;                           // video_scaler_0:stream_out_data -> avalon_st_adapter:in_0_data
 	wire         video_scaler_0_avalon_scaler_source_ready;                          // avalon_st_adapter:in_0_ready -> video_scaler_0:stream_out_ready
@@ -63,7 +63,7 @@ module edge_detect (
 	wire         avalon_st_adapter_out_0_ready;                                      // data_expander_0:ready_out -> avalon_st_adapter:out_0_ready
 	wire         avalon_st_adapter_out_0_startofpacket;                              // avalon_st_adapter:out_0_startofpacket -> data_expander_0:sop_in
 	wire         avalon_st_adapter_out_0_endofpacket;                                // avalon_st_adapter:out_0_endofpacket -> data_expander_0:eop_in
-	wire         rst_controller_reset_out_reset;                                     // rst_controller:reset_out -> [avalon_st_adapter:in_rst_0_reset, data_expander_0:reset, edge_scale_input_0:reset, edge_scale_output_0:reset, static_data_initialisation_0:reset, video_csc_0:reset, video_csc_1:reset, video_edge_detection_0:reset, video_scaler_0:reset, video_vga_controller_0:reset]
+	wire         rst_controller_reset_out_reset;                                     // rst_controller:reset_out -> [avalon_st_adapter:in_rst_0_reset, data_expander_0:reset, edge_scale_input_0:reset, edge_scale_output_0:reset, static_data_initialisation_0:reset, video_edge_detection_0:reset, video_rgb_resampler_0:reset, video_rgb_resampler_1:reset, video_scaler_0:reset, video_vga_controller_0:reset]
 	wire         video_pll_0_reset_source_reset;                                     // video_pll_0:reset_source_reset -> rst_controller:reset_in0
 	wire         rst_controller_001_reset_out_reset;                                 // rst_controller_001:reset_out -> video_pll_0:ref_reset_reset
 
@@ -99,11 +99,11 @@ module edge_detect (
 
 	edge_scale_output edge_scale_output_0 (
 		.reset     (rst_controller_reset_out_reset),                            //                   reset.reset
-		.data_in   (video_csc_1_avalon_csc_source_data),                        //   avalon_streaming_sink.data
-		.eop_in    (video_csc_1_avalon_csc_source_endofpacket),                 //                        .endofpacket
-		.sop_in    (video_csc_1_avalon_csc_source_startofpacket),               //                        .startofpacket
-		.valid_in  (video_csc_1_avalon_csc_source_valid),                       //                        .valid
-		.ready_out (video_csc_1_avalon_csc_source_ready),                       //                        .ready
+		.data_in   (video_rgb_resampler_1_avalon_rgb_source_data),              //   avalon_streaming_sink.data
+		.eop_in    (video_rgb_resampler_1_avalon_rgb_source_endofpacket),       //                        .endofpacket
+		.sop_in    (video_rgb_resampler_1_avalon_rgb_source_startofpacket),     //                        .startofpacket
+		.valid_in  (video_rgb_resampler_1_avalon_rgb_source_valid),             //                        .valid
+		.ready_out (video_rgb_resampler_1_avalon_rgb_source_ready),             //                        .ready
 		.data_out  (edge_scale_output_0_avalon_streaming_source_data),          // avalon_streaming_source.data
 		.eop_out   (edge_scale_output_0_avalon_streaming_source_endofpacket),   //                        .endofpacket
 		.sop_out   (edge_scale_output_0_avalon_streaming_source_startofpacket), //                        .startofpacket
@@ -122,44 +122,14 @@ module edge_detect (
 		.valid         (static_data_initialisation_0_avalon_streaming_source_valid)          //                        .valid
 	);
 
-	edge_detect_video_csc_0 video_csc_0 (
-		.clk                      (video_pll_0_vga_clk_clk),                                  //               clk.clk
-		.reset                    (rst_controller_reset_out_reset),                           //             reset.reset
-		.stream_in_startofpacket  (edge_scale_input_0_avalon_streaming_source_startofpacket), //   avalon_csc_sink.startofpacket
-		.stream_in_endofpacket    (edge_scale_input_0_avalon_streaming_source_endofpacket),   //                  .endofpacket
-		.stream_in_valid          (edge_scale_input_0_avalon_streaming_source_valid),         //                  .valid
-		.stream_in_ready          (edge_scale_input_0_avalon_streaming_source_ready),         //                  .ready
-		.stream_in_data           (edge_scale_input_0_avalon_streaming_source_data),          //                  .data
-		.stream_out_ready         (video_csc_0_avalon_csc_source_ready),                      // avalon_csc_source.ready
-		.stream_out_startofpacket (video_csc_0_avalon_csc_source_startofpacket),              //                  .startofpacket
-		.stream_out_endofpacket   (video_csc_0_avalon_csc_source_endofpacket),                //                  .endofpacket
-		.stream_out_valid         (video_csc_0_avalon_csc_source_valid),                      //                  .valid
-		.stream_out_data          (video_csc_0_avalon_csc_source_data)                        //                  .data
-	);
-
-	edge_detect_video_csc_1 video_csc_1 (
-		.clk                      (video_pll_0_vga_clk_clk),                                           //               clk.clk
-		.reset                    (rst_controller_reset_out_reset),                                    //             reset.reset
-		.stream_in_startofpacket  (video_edge_detection_0_avalon_edge_detection_source_startofpacket), //   avalon_csc_sink.startofpacket
-		.stream_in_endofpacket    (video_edge_detection_0_avalon_edge_detection_source_endofpacket),   //                  .endofpacket
-		.stream_in_valid          (video_edge_detection_0_avalon_edge_detection_source_valid),         //                  .valid
-		.stream_in_ready          (video_edge_detection_0_avalon_edge_detection_source_ready),         //                  .ready
-		.stream_in_data           (video_edge_detection_0_avalon_edge_detection_source_data),          //                  .data
-		.stream_out_ready         (video_csc_1_avalon_csc_source_ready),                               // avalon_csc_source.ready
-		.stream_out_startofpacket (video_csc_1_avalon_csc_source_startofpacket),                       //                  .startofpacket
-		.stream_out_endofpacket   (video_csc_1_avalon_csc_source_endofpacket),                         //                  .endofpacket
-		.stream_out_valid         (video_csc_1_avalon_csc_source_valid),                               //                  .valid
-		.stream_out_data          (video_csc_1_avalon_csc_source_data)                                 //                  .data
-	);
-
 	edge_detect_video_edge_detection_0 video_edge_detection_0 (
 		.clk               (video_pll_0_vga_clk_clk),                                           //                          clk.clk
 		.reset             (rst_controller_reset_out_reset),                                    //                        reset.reset
-		.in_data           (video_csc_0_avalon_csc_source_data),                                //   avalon_edge_detection_sink.data
-		.in_startofpacket  (video_csc_0_avalon_csc_source_startofpacket),                       //                             .startofpacket
-		.in_endofpacket    (video_csc_0_avalon_csc_source_endofpacket),                         //                             .endofpacket
-		.in_valid          (video_csc_0_avalon_csc_source_valid),                               //                             .valid
-		.in_ready          (video_csc_0_avalon_csc_source_ready),                               //                             .ready
+		.in_data           (video_rgb_resampler_0_avalon_rgb_source_data),                      //   avalon_edge_detection_sink.data
+		.in_startofpacket  (video_rgb_resampler_0_avalon_rgb_source_startofpacket),             //                             .startofpacket
+		.in_endofpacket    (video_rgb_resampler_0_avalon_rgb_source_endofpacket),               //                             .endofpacket
+		.in_valid          (video_rgb_resampler_0_avalon_rgb_source_valid),                     //                             .valid
+		.in_ready          (video_rgb_resampler_0_avalon_rgb_source_ready),                     //                             .ready
 		.out_ready         (video_edge_detection_0_avalon_edge_detection_source_ready),         // avalon_edge_detection_source.ready
 		.out_data          (video_edge_detection_0_avalon_edge_detection_source_data),          //                             .data
 		.out_startofpacket (video_edge_detection_0_avalon_edge_detection_source_startofpacket), //                             .startofpacket
@@ -172,6 +142,40 @@ module edge_detect (
 		.ref_reset_reset    (rst_controller_001_reset_out_reset), //    ref_reset.reset
 		.vga_clk_clk        (video_pll_0_vga_clk_clk),            //      vga_clk.clk
 		.reset_source_reset (video_pll_0_reset_source_reset)      // reset_source.reset
+	);
+
+	edge_detect_video_rgb_resampler_0 video_rgb_resampler_0 (
+		.clk                      (video_pll_0_vga_clk_clk),                                  //               clk.clk
+		.reset                    (rst_controller_reset_out_reset),                           //             reset.reset
+		.stream_in_startofpacket  (edge_scale_input_0_avalon_streaming_source_startofpacket), //   avalon_rgb_sink.startofpacket
+		.stream_in_endofpacket    (edge_scale_input_0_avalon_streaming_source_endofpacket),   //                  .endofpacket
+		.stream_in_valid          (edge_scale_input_0_avalon_streaming_source_valid),         //                  .valid
+		.stream_in_ready          (edge_scale_input_0_avalon_streaming_source_ready),         //                  .ready
+		.stream_in_data           (edge_scale_input_0_avalon_streaming_source_data),          //                  .data
+		.slave_read               (),                                                         //  avalon_rgb_slave.read
+		.slave_readdata           (),                                                         //                  .readdata
+		.stream_out_ready         (video_rgb_resampler_0_avalon_rgb_source_ready),            // avalon_rgb_source.ready
+		.stream_out_startofpacket (video_rgb_resampler_0_avalon_rgb_source_startofpacket),    //                  .startofpacket
+		.stream_out_endofpacket   (video_rgb_resampler_0_avalon_rgb_source_endofpacket),      //                  .endofpacket
+		.stream_out_valid         (video_rgb_resampler_0_avalon_rgb_source_valid),            //                  .valid
+		.stream_out_data          (video_rgb_resampler_0_avalon_rgb_source_data)              //                  .data
+	);
+
+	edge_detect_video_rgb_resampler_1 video_rgb_resampler_1 (
+		.clk                      (video_pll_0_vga_clk_clk),                                           //               clk.clk
+		.reset                    (rst_controller_reset_out_reset),                                    //             reset.reset
+		.stream_in_startofpacket  (video_edge_detection_0_avalon_edge_detection_source_startofpacket), //   avalon_rgb_sink.startofpacket
+		.stream_in_endofpacket    (video_edge_detection_0_avalon_edge_detection_source_endofpacket),   //                  .endofpacket
+		.stream_in_valid          (video_edge_detection_0_avalon_edge_detection_source_valid),         //                  .valid
+		.stream_in_ready          (video_edge_detection_0_avalon_edge_detection_source_ready),         //                  .ready
+		.stream_in_data           (video_edge_detection_0_avalon_edge_detection_source_data),          //                  .data
+		.slave_read               (),                                                                  //  avalon_rgb_slave.read
+		.slave_readdata           (),                                                                  //                  .readdata
+		.stream_out_ready         (video_rgb_resampler_1_avalon_rgb_source_ready),                     // avalon_rgb_source.ready
+		.stream_out_startofpacket (video_rgb_resampler_1_avalon_rgb_source_startofpacket),             //                  .startofpacket
+		.stream_out_endofpacket   (video_rgb_resampler_1_avalon_rgb_source_endofpacket),               //                  .endofpacket
+		.stream_out_valid         (video_rgb_resampler_1_avalon_rgb_source_valid),                     //                  .valid
+		.stream_out_data          (video_rgb_resampler_1_avalon_rgb_source_data)                       //                  .data
 	);
 
 	edge_detect_video_scaler_0 video_scaler_0 (

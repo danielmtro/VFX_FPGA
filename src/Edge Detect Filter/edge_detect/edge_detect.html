@@ -67,7 +67,7 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
   </table>
   <table class="blueBar">
    <tr>
-    <td class="l">2024.09.22.16:36:11</td>
+    <td class="l">2024.09.26.08:53:41</td>
     <td class="r">Datasheet</td>
    </tr>
   </table>
@@ -86,7 +86,13 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
     </table>
    </div><span style="display:inline-block ; width:28px"> </span>
    <div style="display:inline-block ; text-align:left"><span>
-     <br/></span>
+     <br/>All Components
+     <br/>&#160;&#160;
+     <a href="#module_video_rgb_resampler_0"><b>video_rgb_resampler_0</b>
+     </a> altera_up_avalon_video_rgb_resampler 18.0
+     <br/>&#160;&#160;
+     <a href="#module_video_rgb_resampler_1"><b>video_rgb_resampler_1</b>
+     </a> altera_up_avalon_video_rgb_resampler 18.0</span>
    </div>
   </div>
   <div style="width:100% ;  height:10px"> </div>
@@ -94,6 +100,24 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
   <table class="mmap">
    <tr>
     <td class="empty" rowspan="2"></td>
+   </tr>
+   <tr>
+    <td class="slavemodule">&#160;
+     <a href="#module_video_rgb_resampler_0"><b>video_rgb_resampler_0</b>
+     </a>
+    </td>
+   </tr>
+   <tr>
+    <td class="slaveb">avalon_rgb_slave&#160;</td>
+   </tr>
+   <tr>
+    <td class="slavemodule">&#160;
+     <a href="#module_video_rgb_resampler_1"><b>video_rgb_resampler_1</b>
+     </a>
+    </td>
+   </tr>
+   <tr>
+    <td class="slaveb">avalon_rgb_slave&#160;</td>
    </tr>
   </table>
   <a name="module_clk_0"> </a>
@@ -259,13 +283,13 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
       <td></td>
       <td class="from">avalon_streaming_source&#160;&#160;</td>
       <td class="neighbor" rowspan="2">
-       <a href="#module_video_csc_0">video_csc_0</a>
+       <a href="#module_video_rgb_resampler_0">video_rgb_resampler_0</a>
       </td>
      </tr>
      <tr>
       <td></td>
       <td></td>
-      <td class="to">&#160;&#160;avalon_csc_sink</td>
+      <td class="to">&#160;&#160;avalon_rgb_sink</td>
      </tr>
     </table>
    </div>
@@ -304,9 +328,9 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
     <table class="connectionboxes">
      <tr>
       <td class="neighbor" rowspan="2">
-       <a href="#module_video_csc_1">video_csc_1</a>
+       <a href="#module_video_rgb_resampler_1">video_rgb_resampler_1</a>
       </td>
-      <td class="from">avalon_csc_source&#160;&#160;</td>
+      <td class="from">avalon_rgb_source&#160;&#160;</td>
       <td class="main" rowspan="9">edge_scale_output_0</td>
      </tr>
      <tr>
@@ -435,230 +459,6 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
     </tr>
    </table>
   </div>
-  <a name="module_video_csc_0"> </a>
-  <div>
-   <hr/>
-   <h2>video_csc_0</h2>altera_up_avalon_video_csc v18.0
-   <br/>
-   <div class="greydiv">
-    <table class="connectionboxes">
-     <tr>
-      <td class="neighbor" rowspan="2">
-       <a href="#module_edge_scale_input_0">edge_scale_input_0</a>
-      </td>
-      <td class="from">avalon_streaming_source&#160;&#160;</td>
-      <td class="main" rowspan="9">video_csc_0</td>
-     </tr>
-     <tr>
-      <td class="to">&#160;&#160;avalon_csc_sink</td>
-     </tr>
-     <tr style="height:6px">
-      <td></td>
-     </tr>
-     <tr>
-      <td class="neighbor" rowspan="4">
-       <a href="#module_video_pll_0">video_pll_0</a>
-      </td>
-      <td class="from">vga_clk&#160;&#160;</td>
-     </tr>
-     <tr>
-      <td class="to">&#160;&#160;clk</td>
-     </tr>
-     <tr>
-      <td class="from">reset_source&#160;&#160;</td>
-     </tr>
-     <tr>
-      <td class="to">&#160;&#160;reset</td>
-     </tr>
-     <tr>
-      <td></td>
-      <td></td>
-      <td class="from">avalon_csc_source&#160;&#160;</td>
-      <td class="neighbor" rowspan="2">
-       <a href="#module_video_edge_detection_0">video_edge_detection_0</a>
-      </td>
-     </tr>
-     <tr>
-      <td></td>
-      <td></td>
-      <td class="to">&#160;&#160;avalon_edge_detection_sink</td>
-     </tr>
-    </table>
-   </div>
-   <br/>
-   <br/>
-   <table class="flowbox">
-    <tr>
-     <td class="parametersbox">
-      <h2>Parameters</h2>
-      <table>
-       <tr>
-        <td class="parametername">csc_type</td>
-        <td class="parametervalue">24-bit RGB to Grayscale (Y)</td>
-       </tr>
-       <tr>
-        <td class="parametername">input_type</td>
-        <td class="parametervalue">24-bit RGB</td>
-       </tr>
-       <tr>
-        <td class="parametername">output_type</td>
-        <td class="parametervalue">Grayscale (Y)</td>
-       </tr>
-       <tr>
-        <td class="parametername">input_bits</td>
-        <td class="parametervalue">8</td>
-       </tr>
-       <tr>
-        <td class="parametername">input_planes</td>
-        <td class="parametervalue">3</td>
-       </tr>
-       <tr>
-        <td class="parametername">output_bits</td>
-        <td class="parametervalue">8</td>
-       </tr>
-       <tr>
-        <td class="parametername">output_planes</td>
-        <td class="parametervalue">1</td>
-       </tr>
-       <tr>
-        <td class="parametername">AUTO_DEVICE_FAMILY</td>
-        <td class="parametervalue">CYCLONEIVE</td>
-       </tr>
-       <tr>
-        <td class="parametername">AUTO_CLK_CLOCK_RATE</td>
-        <td class="parametervalue">25000000</td>
-       </tr>
-       <tr>
-        <td class="parametername">deviceFamily</td>
-        <td class="parametervalue">Cyclone IV E</td>
-       </tr>
-       <tr>
-        <td class="parametername">generateLegacySim</td>
-        <td class="parametervalue">false</td>
-       </tr>
-      </table>
-     </td>
-    </tr>
-   </table>&#160;&#160;
-   <table class="flowbox">
-    <tr>
-     <td class="parametersbox">
-      <h2>Software Assignments</h2>(none)</td>
-    </tr>
-   </table>
-  </div>
-  <a name="module_video_csc_1"> </a>
-  <div>
-   <hr/>
-   <h2>video_csc_1</h2>altera_up_avalon_video_csc v18.0
-   <br/>
-   <div class="greydiv">
-    <table class="connectionboxes">
-     <tr>
-      <td class="neighbor" rowspan="2">
-       <a href="#module_video_edge_detection_0">video_edge_detection_0</a>
-      </td>
-      <td class="from">avalon_edge_detection_source&#160;&#160;</td>
-      <td class="main" rowspan="9">video_csc_1</td>
-     </tr>
-     <tr>
-      <td class="to">&#160;&#160;avalon_csc_sink</td>
-     </tr>
-     <tr style="height:6px">
-      <td></td>
-     </tr>
-     <tr>
-      <td class="neighbor" rowspan="4">
-       <a href="#module_video_pll_0">video_pll_0</a>
-      </td>
-      <td class="from">vga_clk&#160;&#160;</td>
-     </tr>
-     <tr>
-      <td class="to">&#160;&#160;clk</td>
-     </tr>
-     <tr>
-      <td class="from">reset_source&#160;&#160;</td>
-     </tr>
-     <tr>
-      <td class="to">&#160;&#160;reset</td>
-     </tr>
-     <tr>
-      <td></td>
-      <td></td>
-      <td class="from">avalon_csc_source&#160;&#160;</td>
-      <td class="neighbor" rowspan="2">
-       <a href="#module_edge_scale_output_0">edge_scale_output_0</a>
-      </td>
-     </tr>
-     <tr>
-      <td></td>
-      <td></td>
-      <td class="to">&#160;&#160;avalon_streaming_sink</td>
-     </tr>
-    </table>
-   </div>
-   <br/>
-   <br/>
-   <table class="flowbox">
-    <tr>
-     <td class="parametersbox">
-      <h2>Parameters</h2>
-      <table>
-       <tr>
-        <td class="parametername">csc_type</td>
-        <td class="parametervalue">Grayscale (Y) to 24-bit RGB</td>
-       </tr>
-       <tr>
-        <td class="parametername">input_type</td>
-        <td class="parametervalue">Grayscale (Y)</td>
-       </tr>
-       <tr>
-        <td class="parametername">output_type</td>
-        <td class="parametervalue">24-bit RGB</td>
-       </tr>
-       <tr>
-        <td class="parametername">input_bits</td>
-        <td class="parametervalue">8</td>
-       </tr>
-       <tr>
-        <td class="parametername">input_planes</td>
-        <td class="parametervalue">1</td>
-       </tr>
-       <tr>
-        <td class="parametername">output_bits</td>
-        <td class="parametervalue">8</td>
-       </tr>
-       <tr>
-        <td class="parametername">output_planes</td>
-        <td class="parametervalue">3</td>
-       </tr>
-       <tr>
-        <td class="parametername">AUTO_DEVICE_FAMILY</td>
-        <td class="parametervalue">CYCLONEIVE</td>
-       </tr>
-       <tr>
-        <td class="parametername">AUTO_CLK_CLOCK_RATE</td>
-        <td class="parametervalue">25000000</td>
-       </tr>
-       <tr>
-        <td class="parametername">deviceFamily</td>
-        <td class="parametervalue">Cyclone IV E</td>
-       </tr>
-       <tr>
-        <td class="parametername">generateLegacySim</td>
-        <td class="parametervalue">false</td>
-       </tr>
-      </table>
-     </td>
-    </tr>
-   </table>&#160;&#160;
-   <table class="flowbox">
-    <tr>
-     <td class="parametersbox">
-      <h2>Software Assignments</h2>(none)</td>
-    </tr>
-   </table>
-  </div>
   <a name="module_video_edge_detection_0"> </a>
   <div>
    <hr/>
@@ -668,9 +468,9 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
     <table class="connectionboxes">
      <tr>
       <td class="neighbor" rowspan="2">
-       <a href="#module_video_csc_0">video_csc_0</a>
+       <a href="#module_video_rgb_resampler_0">video_rgb_resampler_0</a>
       </td>
-      <td class="from">avalon_csc_source&#160;&#160;</td>
+      <td class="from">avalon_rgb_source&#160;&#160;</td>
       <td class="main" rowspan="9">video_edge_detection_0</td>
      </tr>
      <tr>
@@ -699,13 +499,13 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
       <td></td>
       <td class="from">avalon_edge_detection_source&#160;&#160;</td>
       <td class="neighbor" rowspan="2">
-       <a href="#module_video_csc_1">video_csc_1</a>
+       <a href="#module_video_rgb_resampler_1">video_rgb_resampler_1</a>
       </td>
      </tr>
      <tr>
       <td></td>
       <td></td>
-      <td class="to">&#160;&#160;avalon_csc_sink</td>
+      <td class="to">&#160;&#160;avalon_rgb_sink</td>
      </tr>
     </table>
    </div>
@@ -857,7 +657,7 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
       <td></td>
       <td class="from">vga_clk&#160;&#160;</td>
       <td class="neighbor" rowspan="4">
-       <a href="#module_video_csc_0">video_csc_0</a>
+       <a href="#module_video_rgb_resampler_1">video_rgb_resampler_1</a>
       </td>
      </tr>
      <tr>
@@ -883,7 +683,7 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
       <td></td>
       <td class="from">vga_clk&#160;&#160;</td>
       <td class="neighbor" rowspan="4">
-       <a href="#module_video_csc_1">video_csc_1</a>
+       <a href="#module_video_rgb_resampler_0">video_rgb_resampler_0</a>
       </td>
      </tr>
      <tr>
@@ -1065,6 +865,230 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
        <tr>
         <td class="parametername">deviceFamily</td>
         <td class="parametervalue">UNKNOWN</td>
+       </tr>
+       <tr>
+        <td class="parametername">generateLegacySim</td>
+        <td class="parametervalue">false</td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>&#160;&#160;
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Software Assignments</h2>(none)</td>
+    </tr>
+   </table>
+  </div>
+  <a name="module_video_rgb_resampler_0"> </a>
+  <div>
+   <hr/>
+   <h2>video_rgb_resampler_0</h2>altera_up_avalon_video_rgb_resampler v18.0
+   <br/>
+   <div class="greydiv">
+    <table class="connectionboxes">
+     <tr>
+      <td class="neighbor" rowspan="2">
+       <a href="#module_edge_scale_input_0">edge_scale_input_0</a>
+      </td>
+      <td class="from">avalon_streaming_source&#160;&#160;</td>
+      <td class="main" rowspan="9">video_rgb_resampler_0</td>
+     </tr>
+     <tr>
+      <td class="to">&#160;&#160;avalon_rgb_sink</td>
+     </tr>
+     <tr style="height:6px">
+      <td></td>
+     </tr>
+     <tr>
+      <td class="neighbor" rowspan="4">
+       <a href="#module_video_pll_0">video_pll_0</a>
+      </td>
+      <td class="from">vga_clk&#160;&#160;</td>
+     </tr>
+     <tr>
+      <td class="to">&#160;&#160;clk</td>
+     </tr>
+     <tr>
+      <td class="from">reset_source&#160;&#160;</td>
+     </tr>
+     <tr>
+      <td class="to">&#160;&#160;reset</td>
+     </tr>
+     <tr>
+      <td></td>
+      <td></td>
+      <td class="from">avalon_rgb_source&#160;&#160;</td>
+      <td class="neighbor" rowspan="2">
+       <a href="#module_video_edge_detection_0">video_edge_detection_0</a>
+      </td>
+     </tr>
+     <tr>
+      <td></td>
+      <td></td>
+      <td class="to">&#160;&#160;avalon_edge_detection_sink</td>
+     </tr>
+    </table>
+   </div>
+   <br/>
+   <br/>
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Parameters</h2>
+      <table>
+       <tr>
+        <td class="parametername">input_type</td>
+        <td class="parametervalue">24-bit RGB</td>
+       </tr>
+       <tr>
+        <td class="parametername">output_type</td>
+        <td class="parametervalue">8-bit Grayscale</td>
+       </tr>
+       <tr>
+        <td class="parametername">alpha</td>
+        <td class="parametervalue">1023</td>
+       </tr>
+       <tr>
+        <td class="parametername">input_bits</td>
+        <td class="parametervalue">8</td>
+       </tr>
+       <tr>
+        <td class="parametername">input_planes</td>
+        <td class="parametervalue">3</td>
+       </tr>
+       <tr>
+        <td class="parametername">output_bits</td>
+        <td class="parametervalue">8</td>
+       </tr>
+       <tr>
+        <td class="parametername">output_planes</td>
+        <td class="parametervalue">1</td>
+       </tr>
+       <tr>
+        <td class="parametername">AUTO_DEVICE_FAMILY</td>
+        <td class="parametervalue">CYCLONEIVE</td>
+       </tr>
+       <tr>
+        <td class="parametername">AUTO_CLK_CLOCK_RATE</td>
+        <td class="parametervalue">25000000</td>
+       </tr>
+       <tr>
+        <td class="parametername">deviceFamily</td>
+        <td class="parametervalue">Cyclone IV E</td>
+       </tr>
+       <tr>
+        <td class="parametername">generateLegacySim</td>
+        <td class="parametervalue">false</td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>&#160;&#160;
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Software Assignments</h2>(none)</td>
+    </tr>
+   </table>
+  </div>
+  <a name="module_video_rgb_resampler_1"> </a>
+  <div>
+   <hr/>
+   <h2>video_rgb_resampler_1</h2>altera_up_avalon_video_rgb_resampler v18.0
+   <br/>
+   <div class="greydiv">
+    <table class="connectionboxes">
+     <tr>
+      <td class="neighbor" rowspan="2">
+       <a href="#module_video_edge_detection_0">video_edge_detection_0</a>
+      </td>
+      <td class="from">avalon_edge_detection_source&#160;&#160;</td>
+      <td class="main" rowspan="9">video_rgb_resampler_1</td>
+     </tr>
+     <tr>
+      <td class="to">&#160;&#160;avalon_rgb_sink</td>
+     </tr>
+     <tr style="height:6px">
+      <td></td>
+     </tr>
+     <tr>
+      <td class="neighbor" rowspan="4">
+       <a href="#module_video_pll_0">video_pll_0</a>
+      </td>
+      <td class="from">vga_clk&#160;&#160;</td>
+     </tr>
+     <tr>
+      <td class="to">&#160;&#160;clk</td>
+     </tr>
+     <tr>
+      <td class="from">reset_source&#160;&#160;</td>
+     </tr>
+     <tr>
+      <td class="to">&#160;&#160;reset</td>
+     </tr>
+     <tr>
+      <td></td>
+      <td></td>
+      <td class="from">avalon_rgb_source&#160;&#160;</td>
+      <td class="neighbor" rowspan="2">
+       <a href="#module_edge_scale_output_0">edge_scale_output_0</a>
+      </td>
+     </tr>
+     <tr>
+      <td></td>
+      <td></td>
+      <td class="to">&#160;&#160;avalon_streaming_sink</td>
+     </tr>
+    </table>
+   </div>
+   <br/>
+   <br/>
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Parameters</h2>
+      <table>
+       <tr>
+        <td class="parametername">input_type</td>
+        <td class="parametervalue">8-bit Grayscale</td>
+       </tr>
+       <tr>
+        <td class="parametername">output_type</td>
+        <td class="parametervalue">24-bit RGB</td>
+       </tr>
+       <tr>
+        <td class="parametername">alpha</td>
+        <td class="parametervalue">1023</td>
+       </tr>
+       <tr>
+        <td class="parametername">input_bits</td>
+        <td class="parametervalue">8</td>
+       </tr>
+       <tr>
+        <td class="parametername">input_planes</td>
+        <td class="parametervalue">1</td>
+       </tr>
+       <tr>
+        <td class="parametername">output_bits</td>
+        <td class="parametervalue">8</td>
+       </tr>
+       <tr>
+        <td class="parametername">output_planes</td>
+        <td class="parametervalue">3</td>
+       </tr>
+       <tr>
+        <td class="parametername">AUTO_DEVICE_FAMILY</td>
+        <td class="parametervalue">CYCLONEIVE</td>
+       </tr>
+       <tr>
+        <td class="parametername">AUTO_CLK_CLOCK_RATE</td>
+        <td class="parametervalue">25000000</td>
+       </tr>
+       <tr>
+        <td class="parametername">deviceFamily</td>
+        <td class="parametervalue">Cyclone IV E</td>
        </tr>
        <tr>
         <td class="parametername">generateLegacySim</td>
@@ -1295,7 +1319,7 @@ div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; bord
   <table class="blueBar">
    <tr>
     <td class="l">generation took 0.00 seconds</td>
-    <td class="r">rendering took 0.00 seconds</td>
+    <td class="r">rendering took 0.02 seconds</td>
    </tr>
   </table>
  </body>
