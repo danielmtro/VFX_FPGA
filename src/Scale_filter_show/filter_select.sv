@@ -96,7 +96,7 @@ module filter_select(
 				sop_out			= inv_sop_out;
 				eop_out			= inv_eop_out;
 				valid_out		= inv_valid_out;
-				data_out			= inv_data;
+				data_out		= inv_data;
 				end
 			BLUR			: begin 
 				blur_ready_in	= ready_in;
