@@ -1,5 +1,11 @@
 # VFX_FPGA: Assignment 2 for MTRX3700.
 
+# TO DO
+
+1. Test Bench for Address Generator
+2. Test Bench for Data Expander (Adam have you done this already?)
+3. Test Bench for FFT 
+
 ## Rules
 1. Do not edit the main. Always branch before you edit, create new files, etc. Only push to the main once your module is complete and passes its test benches
 2. Once you have created a module, immediately make a test bench
@@ -49,11 +55,6 @@ Use the camera_enable.qsf file for pin assignments
 
 ## Responsibilities
 
-## General Ideas:
-### Adam
-1. receive data in buffer. 320x240 pixels.
-2. each pixel is 12 bits RGB
-3. turn 12 bit RGB (4R, 4G, 4B) into 30 bit RGB - repeat each twice with 00 padding in between
 
 # Modules
 
