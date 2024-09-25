@@ -13,6 +13,10 @@
 ## Branch Naming Convention
 name.date.whatever tf you're trying to do
 
+## DON'T USE OLD PIN ASSIGNMENTS
+
+Use the camera_enable.qsf file for pin assignments
+
 ## Things to Do:
 
 - Microphone working
