@@ -5,7 +5,7 @@ Needs to be modified to take in 12 bit data. But I don't have a hex file of that
 module inversion_filter (
 	input logic 			clk,
 	input logic 			reset,
-	input logic [2:0] 	freq_flag,
+	input logic [1:0] 	freq_flag,
 	
 	//Sink ports
 	input  logic [11:0] 	data_in,
@@ -51,10 +51,12 @@ module inversion_filter (
 	end 
 	
 	always_comb begin
-		data_out = {red, green, blue};
-		if (freq_flag > 1) begin
-			data_out = {red_inv, green_inv, blue_inv};
-		end
+			if (freq_flag > 1) begin
+				data_out = {red_inv, green_inv, blue_inv};
+			end
+			else begin
+				data_out = {red, green, blue};
+			end
 	end
 	
 endmodule 

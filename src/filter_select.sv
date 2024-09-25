@@ -1,8 +1,8 @@
 module filter_select(
 	input logic 			clk,
 	input logic 			reset,
-	input logic [2:0] 	freq_flag,
-	input logic [2:0] 	filter_num,
+	input logic [1:0] 	freq_flag,
+	input logic [1:0] 	filter_num,
 	
 	//Sink ports
 	input  logic [11:0] 	data_in,
@@ -29,16 +29,10 @@ module filter_select(
 	logic bri_ready_out, inv_ready_out, blur_ready_out, edge_ready_out;
 	logic bri_sop_out, inv_sop_out, blur_sop_out, edge_sop_out;
 	logic bri_eop_out, inv_eop_out, blur_eop_out, edge_eop_out;
-	logic bri_valid_out, inv_valid_out, blue_valid_out, edge_valid_out;
+	logic bri_valid_out, inv_valid_out, blur_valid_out, edge_valid_out;
 	logic [11:0] inv_data, blur_data, bri_data, edge_data;
 	
-	always_comb begin
-		ready_out = (bri_ready_out | inv_ready_out | blur_ready_out | edge_ready_out);
-		sop_out = (bri_sop_out | inv_sop_out | blur_sop_out | edge_sop_out);
-		eop_out = (bri_eop_out | inv_eop_out | blur_eop_out | edge_eop_out);
-		valid_out = (bri_valid_out | inv_valid_out | blue_valid_out | edge_valid_out);
-		data_out = (inv_data | blur_data | bri_data | edge_data);
-	end
+	
 	
 	
 	enum logic [1:0] {
@@ -54,6 +48,7 @@ module filter_select(
 		.clk(clk),
 		.reset(reset),
 		.freq_flag(freq_flag),
+		
 		.data_in(data_in),
 		.sop_in(sop_in),
 		.eop_in(eop_in),
@@ -71,6 +66,7 @@ module filter_select(
 		.clk(clk),
 		.reset(reset),
 		.freq_flag(freq_flag),
+		
 		.data_in(data_in),
 		.sop_in(sop_in),
 		.eop_in(eop_in),
@@ -86,17 +82,49 @@ module filter_select(
 	 
 	 //depending on case, set appropriate enable HIGH
 	 //for a specific filter
-	 
 	 always_comb begin
 		inv_ready_in 		= 0;
 		blur_ready_in 		= 0;
-		bri_ready_in 	= 0;
+		bri_ready_in 		= 0;
 		edge_ready_in 		= 0;
+
 		case (filter_num) 
-			COLOUR		: inv_ready_in 	= ready_in;
-			BLUR			: blur_ready_in	= ready_in;
-			BRIGHTNESS 	: bri_ready_in 	= ready_in;
-			EDGES			: edge_ready_in 	= ready_in;
+			COLOUR		: begin 
+				inv_ready_in 	= ready_in;
+				
+				ready_out		= inv_ready_out;
+				sop_out			= inv_sop_out;
+				eop_out			= inv_eop_out;
+				valid_out		= inv_valid_out;
+				data_out			= inv_data;
+				end
+			BLUR			: begin 
+				blur_ready_in	= ready_in;
+				
+				ready_out		= blur_ready_out;
+				sop_out			= blur_sop_out;
+				eop_out			= blur_eop_out;
+				valid_out		= blur_valid_out;
+				data_out			= blur_data;
+				end
+			BRIGHTNESS 	: begin 
+				bri_ready_in 	= ready_in;
+				
+				ready_out		= bri_ready_out;
+				sop_out			= bri_sop_out;
+				eop_out			= bri_eop_out;
+				valid_out		= bri_valid_out;
+				data_out			= bri_data;
+				end
+			EDGES			: begin
+				edge_ready_in 	= ready_in;
+				
+				ready_out		= edge_ready_out;
+				sop_out			= edge_sop_out;
+				eop_out			= edge_eop_out;
+				valid_out		= edge_valid_out;
+				data_out			= edge_data;
+				end
 	 endcase
 	end
 
