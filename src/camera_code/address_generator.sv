@@ -1,8 +1,10 @@
 module address_generator(
+    input clk_25_vga,
     input logic vga_ready,
+    input logic resend,
     output logic vga_start_out,
     output logic vga_end_out,
-    output logic [16:0] rdaddress;
+    output logic [16:0] rdaddress
 );
 
 // create counter with back pressure
@@ -50,5 +52,6 @@ module address_generator(
 
   assign vga_start_out = vga_start;
   assign vga_end_out = vga_end;
+  assign rdaddress = address;
 
 endmodule

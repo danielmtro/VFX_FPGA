@@ -78,28 +78,12 @@ module top_level(
 	wire [7:0] red; wire [7:0] green; wire [7:0] blue;
 	wire activeArea;
 
-	//  assign vga_r = red[7:0];
-	//  assign vga_g = green[7:0];
-	//  assign vga_b = blue[7:0];
   my_altpll Inst_vga_pll(
       .inclk0(clk_50),
     .c0(clk_50_camera),
     .c1(clk_25_vga));
 
-  // take the inverted push button because KEY0 on DE2-115 board generates
-  // a signal 111000111; with 1 with not pressed and 0 when pressed/pushed;
   assign resend =  ~btn_resend;
-//  assign vga_vsync = vSync;
-//  assign vga_blank_N = nBlank;
-
-  // VGA Inst_VGA(
-  //     .CLK25(clk_25_vga),
-  //   .clkout(vga_CLK),
-  //   .Hsync(vga_hsync),
-  //   .Vsync(vSync),
-  //   .Nblank(nBlank),
-  //   .Nsync(vga_sync_N),
-  //   .activeArea(activeArea));
 
   ov7670_controller Inst_ov7670_controller(
       .clk(clk_50_camera),
@@ -130,55 +114,18 @@ module top_level(
     .wren(wren));
 
 
-  // create counter with back pressure
-  integer row = 0, col = 0;
-  integer row_old = 0, col_old = 0;
-  reg vga_ready, vga_start, vga_end;
-  always_ff @(posedge clk_25_vga) begin
-    
-    
-    if(resend)
-      begin
-        col = 0; row= 0;
-      end
-    else if(vga_ready) begin
-      if(col >= 319) begin
-        col<= 0;
-        if(row >= 239) row <= 0;
-        else row <= row + 1;
-      end
-      else col <= col + 1;
 
-      row_old <= row;
-      col_old <= col;
-    end
-	
-  end
-  
-  // Set VGA start and end
-  always @(*) begin
+  reg vga_ready, vga_start, vga_end;  
 
-    // set start of packet
-		if(col_old == 0 && row_old == 0) begin
-			vga_start = 1;
-		end
-		else vga_start = 0;
-		
-    // set end of packet
-		if(col_old == 319 && row_old == 239) vga_end = 1;
-		else vga_end = 0;
-
-    // use the current row and column because there will be a 1 cycle delay
-    rdaddress = row * 320 + col;
-  end
-  
-  always @(*) begin
-		vga_data = {
-      {row[3:0]},
-      {row[3:0]},
-      {row[3:0]}
-    };
-  end
+  // create address generator
+  address_generator ag0(
+    .clk_25_vga(clk_25_vga),
+    .resend(resend),
+    .vga_ready(vga_ready),
+    .vga_start_out(vga_start),
+    .vga_end_out(vga_end),
+    .rdaddress(rdaddress)
+  );
 	 
   vga_interface vgai0 (
 			 .clk_clk(clk_25_vga),                                         //                                       clk.clk
