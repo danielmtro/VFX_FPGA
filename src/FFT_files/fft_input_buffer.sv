@@ -14,8 +14,14 @@ module fft_input_buffer #(
 
     logic full, wr_full;
     async_fifo u_fifo (.aclr(reset),
-                        .data(audio_input.data),.wrclk(audio_clk),.wrreq(audio_input.valid),.wrfull(wr_full),
-                        .q(fft_input),          .rdclk(clk),      .rdreq(fft_read),         .rdfull(full)    );
+                        .data(audio_input.data),
+                        .wrclk(audio_clk),
+                        .wrreq(audio_input.valid),
+                        .wrfull(wr_full),
+                        .q(fft_input),          
+                        .rdclk(clk),      
+                        .rdreq(fft_read),         
+                        .rdfull(full));
     assign audio_input.ready = !wr_full;
 
     assign fft_input_valid = fft_read; // The Async FIFO is set such that valid data is read out whenever the rdreq flag is high.

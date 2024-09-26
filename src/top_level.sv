@@ -49,14 +49,12 @@ module top_level(
    // Microphone inputs and outputs
 	output	     I2C_SCLK,
 	inout		 I2C_SDAT,
-	output [6:0] HEX0,
-	output [6:0] HEX1,
-	output [6:0] HEX2,
-	output [6:0] HEX3,
 	input		 AUD_ADCDAT,
 	input    	 AUD_BCLK,
 	output   	 AUD_XCK,
-	input    	 AUD_ADCLRCK
+	input    	 AUD_ADCLRCK,
+	
+	output [17:0] LEDR
 );
 
 
@@ -123,9 +121,27 @@ module top_level(
 		 .pitch_output(pitch_output)
     );
 	
-	display u_display (.clk(adc_clk),.value(pitch_output.data),.display0(HEX0),.display1(HEX1),.display2(HEX2),.display3(HEX3));
-
+	
+	// Visualise FFT output on LEDR 
+	assign LEDR[0] = pitch_output.data[0];
+	assign LEDR[1] = pitch_output.data[1];
+	
+	
+	// Create FIFO interface for Clock Domain Crossing
+	// We use fifo because we have a data stream and we
+	// don't want to miss information like in a synchroniser
+	
+	
+	logic [1:0] freq_flag; // this is the data to be passed on to the filters
+	
+	// Use a synchroniser to avoid metastable regions in clock domain crossing
+	nbit_synchroniser nbs1(.clk(clk_50),
+								  .x(pitch_output.data[1:0]),
+								  .y(freq_flag));
+	
 	/*
+	
+	
 	--------------------------------
 	--------------------------------
 	--------------------------------
@@ -141,10 +157,6 @@ module top_level(
 	logic [11:0] filtered_data;
 	logic filter_sop_out, filter_eop_out, filter_ready, filter_valid_out;
 
-	// create the frequency flag and set it as the two least signifficant
-	// bits of the pitch output data
-	logic [1:0] freq_flag;
-	assign freq_flag = pitch_output.data[1:0];
 
 	// We essentially cross clock domains in this step so we need to set up a FIFO
 	// We use this instead of a synchroniser as we stream microphone data so we don't
@@ -183,7 +195,6 @@ module top_level(
 	
 	
 	/*
-	
 	--------------------------------
 	--------------------------------
 	--------------------------------
