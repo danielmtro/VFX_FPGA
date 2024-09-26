@@ -97,6 +97,22 @@ module filter_select(
 	 .endofpacket_out(blur_eop_out),
     .data_out(blur_data)
 );
+
+
+	edge_filter edge_filt(
+		.clk(clk),
+		.freq_flag(freq_flag),  // Pitch input: 0 for 1x1, 1 for 3x3, 2 for 5x5
+		.ready_in(ready_in),
+		.valid_in(valid_in),
+		.startofpacket_in(sop_in),
+		.endofpacket_in(eop_in),
+		.data_in(data_in),
+		.ready_out(edge_ready_out),
+		.valid_out(edge_valid_out),
+		.startofpacket_out(edge_sop_out),
+		.endofpacket_out(edge_eop_out),
+		.data_out(edge_data)
+	);
 	 
 	 //depending on case, set appropriate enable HIGH
 	 //for a specific filter
