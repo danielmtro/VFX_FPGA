@@ -136,8 +136,9 @@ module top_level(
 	
 	// Use a synchroniser to avoid metastable regions in clock domain crossing
 	nbit_synchroniser nbs1(.clk(clk_50),
-								  .x(pitch_output.data[1:0]),
-								  .y(freq_flag));
+						   .x_valid(pitch_output.valid),
+						   .x(pitch_output.data[1:0]),
+						   .y(freq_flag));
 	
 	/*
 	
