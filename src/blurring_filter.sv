@@ -35,9 +35,9 @@ module blurring_filter (
 	
 	logic [9:0] buffer_col_count;
     logic [3:0] buffer_row_count;
-	 logic [9:0] start_buffer_count;
+	 logic [11:0] start_buffer_count;
 	 logic[3:0] calc_buffer;
-	 logic [9:0] end_buffer_count;
+	 logic [11:0] end_buffer_count;
 	 
 	 // Registers for intermediate results and pipeline stages
 	logic signed [16:0] partial_sum_3x3_stage1 [2:0];   // Row sums for 3x3 kernel (Stage 1)
@@ -150,7 +150,7 @@ module blurring_filter (
 	// Stage 4: Normalise and output the result
 	always_ff @(posedge clk) begin
 		 if (freq_flag == 1) begin
-			  ready_out <= 0;
+			  ready_out <= ready_in;
 			  startofpacket_out <= 0;
 			  endofpacket_out <= 0;
 			  
@@ -168,14 +168,14 @@ module blurring_filter (
 			  else if (start_buffer_count == (image_width + 1 + 4)) begin
 				  startofpacket_out <= 1;
 				  data_out <= 0;
-				  ready_out <= 1;
+				  ready_out <= ready_in;
 				  start_buffer_count <= start_buffer_count + 1;
 			  end
 			  
 			  // Continue image output as 0 until full kernel can be filled
 			  else if (start_buffer_count < (2*(image_width + 1) + 4)) begin
 				  data_out <= 0;
-				  ready_out <= 1;
+				  ready_out <= ready_in;
 				  start_buffer_count <= start_buffer_count + 1;
 			  end
 			  
@@ -183,27 +183,27 @@ module blurring_filter (
 			  else if (!endofpacket_in) begin
 			  // Normalise for the 5x5 kernel (divide by 64, right shift by 6)
 				  data_out <= conv_result_5x5_stage[17:6];
-				  ready_out <= 1;
+				  ready_out <= ready_in;
 			  end
 
 			  // Wait for remaining convoluted pixels in the pipeline to be calculated and output
 			  else if (calc_buffer < 4) begin
 				  data_out <= conv_result_5x5_stage[17:6];
-				  ready_out <= 1;
+				  ready_out <= ready_in;
 				  calc_buffer <= calc_buffer + 1;
 			  end
 
 			  // Outuput remaining pixels in image as 0
 			  else if (end_buffer_count < ((2*image_width) + 2)) begin
 			  	  data_out <= 0;
-				  ready_out <= 1;
+				  ready_out <= ready_in;
 				  end_buffer_count <= end_buffer_count + 1;
 			  end
 
 			  // Outuput final pixel in image as 0
 			  else if (end_buffer_count < ((2*image_width) + 2)) begin
 			  	  data_out <= 0;
-				  ready_out <= 1;
+				  ready_out <= ready_in;
 				  end_buffer_count <= end_buffer_count + 1;
 				  endofpacket_out <= 1;
 			  end
@@ -237,43 +237,46 @@ module blurring_filter (
 			  else if (start_buffer_count == ((2*image_width) + 2 + 4)) begin
 				  startofpacket_out <= 1;
 				  start_buffer_count <= start_buffer_count + 1;
+				  data_out <= conv_result_5x5_stage[17:6];
 			  end
 			  
 			  // Continue image output as 0 until full kernel can be filled
 			  else if (start_buffer_count < (2*((2*image_width) + 2) + 4)) begin
-				  data_out <= 0;
-				  ready_out <= 1;
+				  //data_out <= 0;
+				  ready_out <= ready_in;
 				  start_buffer_count <= start_buffer_count + 1;
+				  data_out <= conv_result_5x5_stage[17:6];
 			  end
 			  
 			  // Output convoluted result as kernel is full until end packet flag is read
 			  else if (!endofpacket_in) begin
 			  // Normalise for the 5x5 kernel (divide by 64, right shift by 6)
-				  data_out <= conv_result_5x5_stage[17:6];
-				  ready_out <= 1;
+				  //data_out <= conv_result_5x5_stage[17:6];
+				  ready_out <= ready_in;
 			  end 
 			  
 			  // Wait for remaining convoluted pixels in the pipeline to be calculated and output
 			  else if (calc_buffer < 4) begin
 				  data_out <= conv_result_5x5_stage[17:6];
-				  ready_out <= 1;
+				  ready_out <= ready_in;
 				  calc_buffer <= calc_buffer + 1;
 			  end
 
 			  // Outuput remaining pixels in image as 0
 			  else if (end_buffer_count < ((2*image_width) + 2)) begin
 			  	  data_out <= 0;
-				  ready_out <= 1;
-				  end_buffer_count <= end_buffer_count + 1;
-			  end
-
-			  // Outuput final pixel in image as 0
-			  else if (end_buffer_count < ((2*image_width) + 2)) begin
-			  	  data_out <= 0;
-				  ready_out <= 1;
+				  ready_out <= ready_in;
 				  end_buffer_count <= end_buffer_count + 1;
 				  endofpacket_out <= 1;
 			  end
+
+			  // Outuput final pixel in image as 0
+			  //else if (end_buffer_count < ((2*image_width) + 2)) begin
+			  //	  data_out <= 0;
+				//  ready_out <= ready_in;
+			//	  end_buffer_count <= end_buffer_count + 1;
+				  
+			  //end
 
 			  // Reset counters and flags to 0
 			  else begin
