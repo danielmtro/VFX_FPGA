@@ -10,18 +10,18 @@ preplace inst scaler.video_scaler_0 -pg 1 -lvl 5 -y 60
 preplace inst scaler -pg 1 -lvl 1 -y 40 -regy -20
 preplace inst scaler.video_vga_controller_0 -pg 1 -lvl 7 -y 140
 preplace inst scaler.filter_select_0 -pg 1 -lvl 4 -y 250
+preplace netloc EXPORT<net_container>scaler</net_container>(SLAVE)scaler.freq_flag,(SLAVE)filter_select_0.fre_flag) 1 0 4 NJ 320 NJ 320 NJ 320 NJ
 preplace netloc POINT_TO_POINT<net_container>scaler</net_container>(MASTER)static_data_0.avalon_streaming_source,(SLAVE)filter_select_0.avalon_streaming_sink) 1 3 1 860
 preplace netloc POINT_TO_POINT<net_container>scaler</net_container>(SLAVE)video_scaler_0.avalon_scaler_sink,(MASTER)filter_select_0.avalon_streaming_source) 1 4 1 1200
 preplace netloc EXPORT<net_container>scaler</net_container>(SLAVE)scaler.vga,(SLAVE)video_vga_controller_0.external_interface) 1 0 7 NJ 80 NJ 80 NJ 50 NJ 50 NJ 30 NJ 30 NJ
-preplace netloc POINT_TO_POINT<net_container>scaler</net_container>(MASTER)clk_0.clk_reset,(SLAVE)video_pll_0.ref_reset) 1 1 1 310
 preplace netloc POINT_TO_POINT<net_container>scaler</net_container>(SLAVE)video_pll_0.ref_clk,(MASTER)clk_0.clk) 1 1 1 290
 preplace netloc POINT_TO_POINT<net_container>scaler</net_container>(MASTER)data_expander_0.avalon_streaming_source,(SLAVE)video_vga_controller_0.avalon_vga_sink) 1 6 1 1710
-preplace netloc EXPORT<net_container>scaler</net_container>(SLAVE)scaler.filter_num,(SLAVE)filter_select_0.filter_num) 1 0 4 NJ 300 NJ 300 NJ 300 NJ
-preplace netloc EXPORT<net_container>scaler</net_container>(SLAVE)scaler.reset,(SLAVE)clk_0.clk_in_reset) 1 0 1 NJ
-preplace netloc FAN_OUT<net_container>scaler</net_container>(MASTER)video_pll_0.reset_source,(SLAVE)video_scaler_0.reset,(SLAVE)video_vga_controller_0.reset,(SLAVE)data_expander_0.reset,(SLAVE)static_data_0.reset,(SLAVE)filter_select_0.reset) 1 2 5 590 130 840 170 1220 150 1440 210 NJ
-preplace netloc EXPORT<net_container>scaler</net_container>(SLAVE)filter_select_0.fre_flag,(SLAVE)scaler.freq_flag) 1 0 4 NJ 320 NJ 320 NJ 320 NJ
-preplace netloc POINT_TO_POINT<net_container>scaler</net_container>(MASTER)video_scaler_0.avalon_scaler_source,(SLAVE)data_expander_0.avalon_streaming_sink) 1 5 1 1440
-preplace netloc FAN_OUT<net_container>scaler</net_container>(SLAVE)filter_select_0.clock,(SLAVE)data_expander_0.clock,(SLAVE)video_vga_controller_0.clk,(MASTER)video_pll_0.vga_clk,(SLAVE)video_scaler_0.clk,(SLAVE)static_data_0.clock) 1 2 5 570 150 880 150 1180 50 1460 50 1730
-preplace netloc EXPORT<net_container>scaler</net_container>(SLAVE)scaler.clk,(SLAVE)clk_0.clk_in) 1 0 1 NJ
+preplace netloc POINT_TO_POINT<net_container>scaler</net_container>(SLAVE)data_expander_0.avalon_streaming_sink,(MASTER)video_scaler_0.avalon_scaler_source) 1 5 1 1440
+preplace netloc FAN_OUT<net_container>scaler</net_container>(SLAVE)video_scaler_0.reset,(SLAVE)video_vga_controller_0.reset,(MASTER)video_pll_0.reset_source,(SLAVE)static_data_0.reset,(SLAVE)filter_select_0.reset,(SLAVE)data_expander_0.reset) 1 2 5 590 130 840 170 1220 150 1440 210 NJ
+preplace netloc FAN_OUT<net_container>scaler</net_container>(SLAVE)video_scaler_0.clk,(MASTER)video_pll_0.vga_clk,(SLAVE)video_vga_controller_0.clk,(SLAVE)data_expander_0.clock,(SLAVE)static_data_0.clock,(SLAVE)filter_select_0.clock) 1 2 5 570 150 880 150 1180 50 1460 50 1730
+preplace netloc EXPORT<net_container>scaler</net_container>(SLAVE)clk_0.clk_in_reset,(SLAVE)scaler.reset) 1 0 1 NJ
+preplace netloc EXPORT<net_container>scaler</net_container>(SLAVE)clk_0.clk_in,(SLAVE)scaler.clk) 1 0 1 NJ
+preplace netloc POINT_TO_POINT<net_container>scaler</net_container>(SLAVE)video_pll_0.ref_reset,(MASTER)clk_0.clk_reset) 1 1 1 310
+preplace netloc EXPORT<net_container>scaler</net_container>(SLAVE)filter_select_0.filter_num,(SLAVE)scaler.filter_num) 1 0 4 NJ 300 NJ 300 NJ 300 NJ
 levelinfo -pg 1 0 80 1950
 levelinfo -hier scaler 90 120 390 620 910 1250 1490 1780 1940
