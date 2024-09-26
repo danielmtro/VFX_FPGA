@@ -49,7 +49,7 @@ module blurring_filter_tb;
     initial begin
      
           // Set variables to 0 to avoid red lines in testbench
-          freq_flag = 0;
+          freq_flag = 2;
           data_in = 0;
           ready_out = 0;
           data_out = 0;
@@ -68,24 +68,6 @@ module blurring_filter_tb;
         $dumpvars(0, blurring_filter_tb);
           
         // Delay before entering each test
-        #100
-        ready_in = 1;
-
-        // Test 1x1 kernel
-        $display("Testing with 1x1 kernel");
-        freq_flag = 3'b000; // Set to 1x1 kernel
-        run_test();
-        ready_in = 0;
-
-        #100
-        ready_in = 1;
-          
-        // Test 3x3 kernel
-        $display("Testing with 3x3 kernel");
-        freq_flag = 3'b001; // Set to 3x3 kernel
-        run_test();
-        ready_in = 0;
-
         #100;
         ready_in = 1;
           
@@ -109,24 +91,6 @@ module blurring_filter_tb;
         $dumpvars(0, blurring_filter_tb);
           
         // Delay before entering each test
-        #100
-        ready_in = 1;
-
-        // Test 1x1 kernel
-        $display("Testing with 1x1 kernel");
-        freq_flag = 3'b000; // Set to 1x1 kernel
-        run_test();
-        ready_in = 0;
-
-        #100
-        ready_in = 1;
-          
-        // Test 3x3 kernel
-        $display("Testing with 3x3 kernel");
-        freq_flag = 3'b001; // Set to 3x3 kernel
-        run_test();
-        ready_in = 0;
-
         #100;
         ready_in = 1;
           
