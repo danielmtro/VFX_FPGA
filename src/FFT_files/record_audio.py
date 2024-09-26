@@ -45,12 +45,12 @@ for frame in Recordframes:
          signal.append(int.from_bytes(frame[i:i+2],byteorder="little", signed=True))
 
 # Write whole recording to file
-hexRecording = open("hex_recording.hex",'w')
+hexRecording = open("tb/hex_recording_1000_noisy.hex",'w')
 for n in signal:
     hexRecording.write(f"{n&0xFFFF:04x}\n") # 16-bit
 
 # Decimate (skip samples to increase resolution - SHOULD use low-pass filter!)
-decimation = 1 # Change up to 32
+decimation = 4 # Change up to 32
 decimated_sig = signal[-1024*decimation::decimation]
 
 plt.plot(decimated_sig)
