@@ -65,6 +65,14 @@
          type = "String";
       }
    }
+   element scaler
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone IV E";
+         type = "String";
+      }
+   }
    element static_data_0
    {
       datum _sortIndex
