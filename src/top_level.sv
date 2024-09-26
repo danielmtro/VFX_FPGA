@@ -14,7 +14,7 @@ module top_level(
 	
 	// GENERAL IO
 	input wire [3:0] KEY,
-	input wire [17:0]SW, // for resetting the camera on SW[0]
+	input wire [17:0]SW, // for resetting the camera on SW[0] and resetting FFT SW[1]
 	output wire led_config_finished, // LED To let us know if reset is running
 	
 	// VGA inputs and outputs
@@ -44,12 +44,28 @@ module top_level(
    output wire       LCD_BLON,    //                   .BLON
    output wire       LCD_EN,      //                   .EN
    output wire       LCD_RS,      //                   .RS
-   output wire       LCD_RW      //                   .RW
+   output wire       LCD_RW,      //                   .RW
+
+   // Microphone inputs and outputs
+	output	     I2C_SCLK,
+	inout		 I2C_SDAT,
+	input		 AUD_ADCDAT,
+	input    	 AUD_BCLK,
+	output   	 AUD_XCK,
+	input    	 AUD_ADCLRCK,
+	
+	output [17:0] LEDR
 );
 
 
 	/*
+	--------------------------------
+	--------------------------------
+	--------------------------------
 	THE SECTION BELOW IS FOR THE STATE MACHINE AND LCD STUFF
+	--------------------------------
+	--------------------------------
+	--------------------------------
 	*/
 	
 	logic [1:0] filter_type;
@@ -66,20 +82,93 @@ module top_level(
 	);
 	
 	/*
+	--------------------------------
+	--------------------------------
+	--------------------------------
 	THE SECTION BELOW IS FOR FFT STUFF
+	--------------------------------
+	--------------------------------
+	--------------------------------
 	*/
 
+	localparam W        = 16;   //NOTE: To change this, you must also change the Twiddle factor initialisations in r22sdf/Twiddle.v. You can use r22sdf/twiddle_gen.pl.
+   	
+	localparam NSamples = 1024; //NOTE: To change this, you must also change the SdfUnit instantiations in r22sdf/FFT.v accordingly.
+
+	logic adc_clk; adc_pll adc_pll_u (.areset(1'b0),.inclk0(clk_50),.c0(adc_clk)); // generate 18.432 MHz clock
+	logic i2c_clk; i2c_pll i2c_pll_u (.areset(1'b0),.inclk0(clk_50),.c0(i2c_clk)); // generate 20 kHz clock
+
+	set_audio_encoder set_codec_u (.i2c_clk(i2c_clk), .I2C_SCLK(I2C_SCLK), .I2C_SDAT(I2C_SDAT));
+
+	dstream #(.N(W))                audio_input ();
+   dstream #(.N($clog2(NSamples))) pitch_output ();
+	 
+	mic_load #(.N(W)) u_mic_load (
+    .adclrc(AUD_ADCLRCK),
+	 .bclk(AUD_BCLK),
+	 .adcdat(AUD_ADCDAT),
+    .sample_data(audio_input.data),
+	 .valid(audio_input.valid)
+   );
+			
+	assign AUD_XCK = adc_clk;
+	
+   fft_pitch_detect #(.W(W), .NSamples(NSamples)) DUT (
+	    .clk(adc_clk),
+		 .audio_clk(AUD_BCLK),
+		 .reset(~SW[1]),
+		 .audio_input(audio_input),
+		 .pitch_output(pitch_output)
+    );
+	
+	
+	// Visualise FFT output on LEDR 
+	assign LEDR[0] = pitch_output.data[0];
+	assign LEDR[1] = pitch_output.data[1];
+	
+	
+	// Create FIFO interface for Clock Domain Crossing
+	// We use fifo because we have a data stream and we
+	// don't want to miss information like in a synchroniser
+	
+	
+	logic [1:0] freq_flag; // this is the data to be passed on to the filters
+	
+	// Use a synchroniser to avoid metastable regions in clock domain crossing
+	nbit_synchroniser nbs1(.clk(clk_50),
+						   .x_valid(pitch_output.valid),
+						   .x(pitch_output.data[1:0]),
+						   .y(freq_flag));
+	
 	/*
+	
+	
+	--------------------------------
+	--------------------------------
+	--------------------------------
 	THE SECTION BELOW IS FOR THE CAMERA VISION STUFF
+	INCLUDING FILTERS AND FILTER SELECTION
+	--------------------------------
+	--------------------------------
+	--------------------------------
 	*/
 
-	//dummy frequency flag until FFT included here
-	logic [1:0] freq_flag = 2'b10;
 	logic valid;
 	assign valid = 1'b1;
 	logic [11:0] filtered_data;
 	logic filter_sop_out, filter_eop_out, filter_ready, filter_valid_out;
 
+
+	// We essentially cross clock domains in this step so we need to set up a FIFO
+	// We use this instead of a synchroniser as we stream microphone data so we don't
+	// want any lost data.
+	
+	// Since we write to the buffer at a slower clock speed for the microphone 
+	// and we read from the buffer at a higher clock speed for the convolutional filter
+	// this means that we won't lose any data overall
+	
+	// Perhaps implement a fifo buffer here to buffer the pitch output data
+	
 	filter_select fs0(
 		.clk(clk_50),
 		.reset(resend),
@@ -104,6 +193,21 @@ module top_level(
 	);
 	// DE2-115 board has an Altera Cyclone V E, which has ALTPLL's'
 	
+	
+	
+	/*
+	--------------------------------
+	--------------------------------
+	--------------------------------
+	
+	THE SECITON BELOW IS FOR THE CAMERA,
+	BUFFER, ADDRESS GENERATOR AND VGA 
+	INTERFACING 
+	
+	--------------------------------
+	--------------------------------
+	--------------------------------
+	*/
 	wire btn_resend;
 	assign btn_resend = SW[0];
 	
