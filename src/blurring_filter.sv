@@ -16,6 +16,7 @@ module blurring_filter (
 );
 
     // Pass through valid signal
+<<<<<<< HEAD
     assign valid_out = valid_in;
     assign ready_out = ready_in;
 
@@ -26,6 +27,10 @@ module blurring_filter (
     assign red_in   = data_in[11:8];  // Bits 11-8 for red
     assign green_in = data_in[7:4];   // Bits 7-4 for green
     assign blue_in  = data_in[3:0];   // Bits 3-0 for blue
+=======
+	 assign valid_out = valid_in;
+	 assign ready_out = ready_in;
+>>>>>>> 189c74fa0a589e9fd12aaf50a7fde1590279dab4
 
     // 320x240 image
     localparam image_height = 8'b11110000;
@@ -37,6 +42,7 @@ module blurring_filter (
     localparam KERNEL_SIZE_3x3 = 3'b011;
     localparam KERNEL_SIZE_5x5 = 3'b101;
 
+<<<<<<< HEAD
     // Image buffer for RGB components
     logic [3:0] red_buffer [0:(image_width*4 + 5)-1];
     logic [3:0] green_buffer [0:(image_width*4 + 5)-1];
@@ -46,6 +52,28 @@ module blurring_filter (
     logic signed [17:0] partial_sum_r_stage2 [4:0], partial_sum_g_stage2 [4:0], partial_sum_b_stage2 [4:0];
 
     logic signed [17:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
+=======
+    // Image buffer (maximum size for 5x5 kernel)
+    // For camera:
+    logic [12-1:0] image_buffer [0:(image_width*4 + 5)-1];
+    logic [12-1:0] kernel [0:KERNEL_SIZE_5x5-1][0:KERNEL_SIZE_5x5-1];
+    logic [2*12-1:0] conv_result;  // Double-width for intermediate result
+	
+	logic [9:0] buffer_col_count;
+    logic [3:0] buffer_row_count;
+	 logic [10:0] start_buffer_count;
+	 logic[3:0] calc_buffer;
+	 logic [9:0] end_buffer_count;
+	 logic end_flag;
+	 
+	 // Registers for intermediate results and pipeline stages
+	logic signed [16:0] partial_sum_3x3_stage1 [2:0];   // Row sums for 3x3 kernel (Stage 1)
+	logic signed [16:0] partial_sum_3x3_stage2 [2:0];   // Row sums for 3x3 kernel (Stage 2)
+	logic signed [17:0] partial_sum_5x5_stage1 [4:0];   // Row sums for 5x5 kernel (Stage 1)
+	logic signed [17:0] partial_sum_5x5_stage2 [4:0];   // Row sums for 5x5 kernel (Stage 2)
+	logic signed [16:0] conv_result_3x3_stage;          // Final conv result for 3x3 kernel
+	logic signed [17:0] conv_result_5x5_stage;          // Final conv result for 5x5 kernel
+>>>>>>> 189c74fa0a589e9fd12aaf50a7fde1590279dab4
 
     // Define the kernel weights (unchanged)
     logic [2:0] kernel [0:KERNEL_SIZE_5x5-1][0:KERNEL_SIZE_5x5-1];
@@ -147,6 +175,7 @@ module blurring_filter (
             end
         end
 
+<<<<<<< HEAD
         else if (freq_flag == 2) begin
             // Red component
             for (int i = 0; i < 5; i++) begin
@@ -247,9 +276,117 @@ module blurring_filter (
 
             // Continue image output as 0 until full kernel can be filled
 			  else if (endofpacket_in) begin
-				  endofpacket_out <= 1;
+=======
+	// Stage 4: Normalise and output the result
+	always_ff @(posedge clk) begin
+	
+	
+	
+	
+	
+	
+	// 3x3 Blur
+		 if (freq_flag == 1) begin
+		 
+			  startofpacket_out <= 0;
+			  endofpacket_out <= 0;
+			  
+			  // First packet reset buffer count and counters
+			  if (startofpacket_in) begin
+				  start_buffer_count <= 0;
+				  calc_buffer <= 0;
+				  end_flag <= 0;
+				  end_buffer_count <= 0;
+			  end
+			  
+			  // Wait until buffer count is on row 1 column 1 and account for the calculation buffer
+			  else if (start_buffer_count < (image_width + 1 + 4)) begin
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Start image output as 0
+			  else if (start_buffer_count == (image_width + 1 + 4)) begin
+				  startofpacket_out <= 1;
+				  data_out <= 0;
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Continue image output as 0 until full kernel can be filled
+			  else if (start_buffer_count < (2*(image_width + 1 + 4))) begin
+				  data_out <= 0;
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Output convoluted result as kernel is full until end packet flag is read
+			  else if ((!endofpacket_in) && (!end_flag)) begin
+			  // Normalise for the 3x3 kernel (divide by 32, right bit shift by 5)
+				  data_out <= conv_result_3x3_stage[16:5];
 			  end
 
+			  else if ((endofpacket_in) && (!end_flag)) begin
+				  data_out <= conv_result_5x5_stage[16:5];
+				  endofpacket_out <= 1;
+				  end_flag <= 1;
+			  end
+
+			  // Reset flags to 0
+			  else begin
+				  startofpacket_out <= 0;
+				  endofpacket_out <= 0;
+			  end
+		 end
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 // 5x5 Blur
+		 else if (freq_flag == 2) begin
+			  startofpacket_out <= 0;
+			  endofpacket_out <= 0;
+			  
+			  // First packet reset buffer count and counters
+			  if (startofpacket_in) begin
+				  start_buffer_count <= 0;
+				  calc_buffer <= 0;
+				  end_buffer_count <= 0;
+				  end_flag <= 0;
+			  end
+			  
+			  // Wait until buffer count is on row 2 column 2
+			  else if (start_buffer_count < ((2*image_width) + 2 + 4)) begin
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Start image output as 0
+			  else if (start_buffer_count == ((2*image_width) + 2 + 4)) begin
+				  startofpacket_out <= 1;
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Continue image output as 0 until full kernel can be filled
+			  else if (start_buffer_count < (2*((2*image_width) + 2 + 4))) begin
+				  data_out <= 0;
+				  start_buffer_count <= start_buffer_count + 1;
+			  end
+			  
+			  // Output convoluted result as kernel is full until end packet flag is read
+			  else if ((!endofpacket_in) && (!end_flag)) begin
+			  // Normalise for the 5x5 kernel (divide by 64, right bit shift by 6)
+				  data_out <= conv_result_5x5_stage[17:6];
+			  end
+			  
+			  else if ((endofpacket_in) && (!end_flag)) begin
+				  data_out <= conv_result_5x5_stage[17:6];
+>>>>>>> 189c74fa0a589e9fd12aaf50a7fde1590279dab4
+				  endofpacket_out <= 1;
+				  end_flag <= 1;
+			  end
+
+<<<<<<< HEAD
         end else if (freq_flag == 0) begin
             // For 1x1 kernel, directly pass through the data
             data_out <= data_in;
@@ -257,5 +394,24 @@ module blurring_filter (
             endofpacket_out <= endofpacket_in;
         end
     end
+=======
+			  // Reset flags to 0
+			  else begin
+				  startofpacket_out <= 0;
+				  endofpacket_out <= 0;
+			  end
+		 end
+		 else if (freq_flag == 0) begin
+			  // For 1x1 kernel, directly pass through the data
+			  data_out <= data_in;
+			  calc_buffer <= 0;
+			  end_flag <= 0;
+			  startofpacket_out <= startofpacket_in;
+			  endofpacket_out <= endofpacket_in;
+			  start_buffer_count <= 0;
+			  end_buffer_count <= 0;
+		 end
+	end
+>>>>>>> 189c74fa0a589e9fd12aaf50a7fde1590279dab4
 
 endmodule
