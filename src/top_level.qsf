@@ -850,41 +850,41 @@ set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[3]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[2]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[1]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX3[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX3[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX3[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX3[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX3[2]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX3[1]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX3[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX4[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX4[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX4[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX4[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX4[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX4[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX4[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX5[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX5[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX5[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX5[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX5[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX5[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX5[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX6[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX6[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX6[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX6[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX6[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX6[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX6[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX7[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX7[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX7[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX7[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX7[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX7[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX7[0]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HSMC_CLKIN0
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKIN_P1
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKIN_P2
@@ -1163,6 +1163,30 @@ set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N2
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N1
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/seven_seg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/low_pass_conv.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_pitch_detect_tb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_pitch_detect.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_mag_sq.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_input_buffer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_find_peak.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/dstream.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/display.sv
+set_global_assignment -name QIP_FILE FFT_files/async_fifo.qip
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/set_audio_encoder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/mic_load.sv
+set_global_assignment -name QIP_FILE FFT_files/mic/i2c_pll.qip
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/i2c_master.sv
+set_global_assignment -name QIP_FILE FFT_files/mic/adc_pll.qip
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/TwiddleConvert8.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/TwiddleConvert4.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Twiddle.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/SdfUnit2.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/SdfUnit_TC.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Multiply.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/FFT.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/DelayBuffer.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Butterfly.v
 set_global_assignment -name QSYS_FILE LCD/char_display.qsys
 set_global_assignment -name SYSTEMVERILOG_FILE LCD/lcd_inst_pkg.sv
 set_global_assignment -name SYSTEMVERILOG_FILE LCD/lcd_top_level.sv
