@@ -1,4 +1,4 @@
-module top_level (
+module top_level_microphone (
 	input    CLOCK_50,
 	output	I2C_SCLK,
 	inout		I2C_SDAT,
@@ -6,12 +6,12 @@ module top_level (
 	output [6:0] HEX1,
 	output [6:0] HEX2,
 	output [6:0] HEX3,
-	input  [3:0] KEY,
+	input  [17:0] SW,
 	input		AUD_ADCDAT,
 	input    AUD_BCLK,
 	output   AUD_XCK,
 	input    AUD_ADCLRCK,
-	output logic [17:0] LEDR
+	output  [1:0] k_output
 );
    localparam W        = 16;   //NOTE: To change this, you must also change the Twiddle factor initialisations in r22sdf/Twiddle.v. You can use r22sdf/twiddle_gen.pl.
    localparam NSamples = 1024; //NOTE: To change this, you must also change the SdfUnit instantiations in r22sdf/FFT.v accordingly.
@@ -37,11 +37,14 @@ module top_level (
    fft_pitch_detect #(.W(W), .NSamples(NSamples)) DUT (
 	    .clk(adc_clk),
 		 .audio_clk(AUD_BCLK),
-		 .reset(~KEY[0]),
+		 .reset(~SW[1]),
 		 .audio_input(audio_input),
 		 .pitch_output(pitch_output)
     );
 	
 	display u_display (.clk(adc_clk),.value(pitch_output.data),.display0(HEX0),.display1(HEX1),.display2(HEX2),.display3(HEX3));
+
+	assign k_output[0] = pitch_output.data[0];
+	assign k_output[1] = pitch_output.data[1];
 
 endmodule

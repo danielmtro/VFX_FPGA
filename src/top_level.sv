@@ -44,7 +44,20 @@ module top_level(
    output wire       LCD_BLON,    //                   .BLON
    output wire       LCD_EN,      //                   .EN
    output wire       LCD_RS,      //                   .RS
-   output wire       LCD_RW      //                   .RW
+   output wire       LCD_RW,      //                   .RW
+	
+	// Microphone inputs
+	output	I2C_SCLK,
+	inout		I2C_SDAT,
+	output [6:0] HEX0,
+	output [6:0] HEX1,
+	output [6:0] HEX2,
+	output [6:0] HEX3,
+	input		AUD_ADCDAT,
+	input    AUD_BCLK,
+	output   AUD_XCK,
+	input    AUD_ADCLRCK
+	
 );
 
 
@@ -69,12 +82,27 @@ module top_level(
 	THE SECTION BELOW IS FOR FFT STUFF
 	*/
 
+	top_level_microphone tlm0(
+	.CLOCK_50(clk_50),
+	.I2C_SCLK(I2C_SCLK),
+	.I2C_SDAT(I2C_SDAT),
+	.HEX0(HEX0),
+	.HEX1(HEX1),
+	.HEX2(HEX2),
+	.HEX3(HEX3),
+	.SW(SW),
+	.AUD_ADCDAT(AUD_ADCDAT),
+	.AUD_BCLK(AUD_BCLK),
+	.AUD_XCK(AUD_XCK),
+	.AUD_ADCLRCK(AUD_ADCLRCK),
+	.k_output(freq_flag)
+	);
 	/*
 	THE SECTION BELOW IS FOR THE CAMERA VISION STUFF
 	*/
 
 	//dummy frequency flag until FFT included here
-	logic [1:0] freq_flag = 2'b10;
+	logic [1:0] freq_flag;
 	logic valid;
 	assign valid = 1'b1;
 	logic [11:0] filtered_data;
