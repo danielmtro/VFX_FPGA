@@ -43,6 +43,20 @@ module filter_select(
     }state_type;
 
 	
+	blurring_filter bfilter(
+    .clk(clk),
+    .freq_flag(freq_flag),  // Pitch input: 0 for 1x1, 1 for 3x3, 2 for 5x5
+    .ready_in(ready_in),
+	 .valid_in(valid_in),
+	 .startofpacket_in(sop_in),
+	 .endofpacket_in(eop_in),
+	.data_in(data_in),
+	.ready_out(blur_ready_out),
+	.valid_out(blur_valid_out),
+	.startofpacket_out(blur_sop_out),
+	 .endofpacket_out(blur_eop_out),
+    .data_out(blur_data)
+);
 
 	inversion_filter inv_filt(
 		.clk(clk),
@@ -79,6 +93,21 @@ module filter_select(
 		.eop_out(bri_eop_out),
 		.valid_out(bri_valid_out)	
 	);
+	
+	edge_filter edge_filt(
+		.clk(clk),
+		.freq_flag(freq_flag),  // Pitch input: 0 for 1x1, 1 for 3x3, 2 for 5x5
+		.ready_in(ready_in),
+		.valid_in(valid_in),
+		.startofpacket_in(sop_in),
+		.endofpacket_in(eop_in),
+		.data_in(data_in),
+		.ready_out(edge_ready_out),
+		.valid_out(edge_valid_out),
+		.startofpacket_out(edge_sop_out),
+		.endofpacket_out(edge_eop_out),
+		.data_out(edge_data)
+	);
 	 
 	 //depending on case, set appropriate enable HIGH
 	 //for a specific filter
@@ -96,7 +125,7 @@ module filter_select(
 				sop_out			= inv_sop_out;
 				eop_out			= inv_eop_out;
 				valid_out		= inv_valid_out;
-				data_out			= inv_data;
+				data_out		= inv_data;
 				end
 			BLUR			: begin 
 				blur_ready_in	= ready_in;
@@ -123,11 +152,11 @@ module filter_select(
 				sop_out			= edge_sop_out;
 				eop_out			= edge_eop_out;
 				valid_out		= edge_valid_out;
-				data_out		= edge_data;
+				data_out			= edge_data;
 				end
 	 endcase
 	end
 
 	
 
-endmodule 
+endmodule
