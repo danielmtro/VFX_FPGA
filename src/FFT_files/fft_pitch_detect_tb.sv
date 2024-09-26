@@ -17,10 +17,15 @@ module fft_pitch_detect_tb;
     dstream #(.N(W)) audio_input ();
     dstream #(.N($clog2(NSamples))) pitch_output ();
 
-    fft_pitch_detect DUT (.clk(clk), .audio_clk(bclk), .reset(reset), .audio_input(audio_input), .pitch_output(pitch_output));
+    fft_pitch_detect DUT (
+		.clk(clk), 
+		.audio_clk(bclk), 
+		.reset(reset), 
+		.audio_input(audio_input), 
+		.pitch_output(pitch_output));
 
     logic [W-1:0] input_signal [NSamples];
-    initial $readmemh("test_waveform.hex", input_signal);
+    initial $readmemh("hex_recording_1900.hex", input_signal);
 
 
     logic start = 1'b0; // Use a start flag.
