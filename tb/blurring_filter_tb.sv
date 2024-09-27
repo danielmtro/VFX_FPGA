@@ -49,7 +49,7 @@ module blurring_filter_tb;
     initial begin
      
           // Set variables to 0 to avoid red lines in testbench
-          freq_flag = 2;
+          freq_flag = 0;
           data_in = 0;
           ready_out = 0;
           data_out = 0;
@@ -66,7 +66,27 @@ module blurring_filter_tb;
         // Open VCD file for waveform dumping
         $dumpfile("blurring_filter_tb.vcd");
         $dumpvars(0, blurring_filter_tb);
+
+        // Delay before entering each test
+        #100;
+        ready_in = 1;
           
+        // Test no blur
+        $display("Testing with no blur");
+        freq_flag = 3'b000; // Set to no blur
+        run_test();
+        ready_in = 0;
+
+        // Delay before entering each test
+        #100;
+        ready_in = 1;
+          
+        // Test 3x3 kernel
+        $display("Testing with 3x3 kernel");
+        freq_flag = 3'b001; // Set to 3x3 kernel
+        run_test();
+        ready_in = 0;
+        
         // Delay before entering each test
         #100;
         ready_in = 1;
@@ -74,6 +94,16 @@ module blurring_filter_tb;
         // Test 5x5 kernel
         $display("Testing with 5x5 kernel");
         freq_flag = 3'b010; // Set to 5x5 kernel
+        run_test();
+        ready_in = 0;
+
+        // Delay before entering each test
+        #100;
+        ready_in = 1;
+          
+        // Test 7x7 kernel
+        $display("Testing with 7x7 kernel");
+        freq_flag = 3'b011; // Set to 7x7 kernel
         run_test();
         ready_in = 0;
         
@@ -94,13 +124,43 @@ module blurring_filter_tb;
         #100;
         ready_in = 1;
           
+        // Test no blur
+        $display("Testing with no blur");
+        freq_flag = 3'b000; // Set to no blur
+        run_test();
+        ready_in = 0;
+          
+        // Delay before entering each test
+        #100;
+        ready_in = 1;
+          
+        // Test 3x3 kernel
+        $display("Testing with 3x3 kernel");
+        freq_flag = 3'b001; // Set to 3x3 kernel
+        run_test();
+        ready_in = 0;
+        
+        // Delay before entering each test
+        #100;
+        ready_in = 1;
+          
         // Test 5x5 kernel
         $display("Testing with 5x5 kernel");
         freq_flag = 3'b010; // Set to 5x5 kernel
         run_test();
         ready_in = 0;
+
+        // Delay before entering each test
+        #100;
+        ready_in = 1;
+          
+        // Test 7x7 kernel
+        $display("Testing with 7x7 kernel");
+        freq_flag = 3'b011; // Set to 7x7 kernel
+        run_test();
+        ready_in = 0;
         
-        #100
+        #1000
 
         // Finish simulation
         $finish;
