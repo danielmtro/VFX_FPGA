@@ -229,11 +229,12 @@ module blurring_filter (
 			  end
 
             // Continue image output as 0 until full kernel can be filled
-			  else if (endofpacket_in) begin
+		      if (endofpacket_in) begin
 				  endofpacket_out <= 1;
 			  end
         end
-        if (freq_flag == 1) begin
+
+        else if (freq_flag == 1) begin
             startofpacket_out <= 0;
             endofpacket_out <= 0;
 
@@ -246,7 +247,7 @@ module blurring_filter (
 			  end
 
             // Continue image output as 0 until full kernel can be filled
-			  else if (endofpacket_in) begin
+			  if (endofpacket_in) begin
 				  endofpacket_out <= 1;
 			  end
 
