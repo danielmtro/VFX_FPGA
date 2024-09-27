@@ -36,10 +36,11 @@ module blurring_filter (
     logic [3:0] green_buffer [0:(image_width*6 + 6)];
     logic [3:0] blue_buffer [0:(image_width*6 + 6)];
 
-    logic signed [17:0] partial_sum_r_stage1 [6:0], partial_sum_g_stage1 [6:0], partial_sum_b_stage1 [6:0];
-    logic signed [17:0] partial_sum_r_stage2 [6:0], partial_sum_g_stage2 [6:0], partial_sum_b_stage2 [6:0];
+    logic signed [10:0] partial_sum_r_stage1 [6:0], partial_sum_g_stage1 [6:0], partial_sum_b_stage1 [6:0];
+    logic signed [10:0] partial_sum_r_stage2 [6:0], partial_sum_g_stage2 [6:0], partial_sum_b_stage2 [6:0];
+	logic signed [10:0] partial_sum_r_stage3 [6:0], partial_sum_g_stage3 [6:0], partial_sum_b_stage3 [6:0];
 
-    logic signed [17:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
+    logic signed [10:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
 
     // Define the kernel weights (unchanged)
     logic [2:0] kernel [0:KERNEL_SIZE_7x7-1][0:KERNEL_SIZE_7x7-1];
@@ -58,9 +59,6 @@ module blurring_filter (
                     kernel[i][j] = (i == 1 || i == 5) ? 3'b010 : // 2
                                     (i == 2 || i == 4) ? 3'b011 : // 3
                                     3'b100; // 4 for the center row
-                end
-                else begin
-                    kernel[i][j] = 0; // Default value for inner rows (to be filled later)
                 end
             end
         end
@@ -97,15 +95,15 @@ module blurring_filter (
     always_ff @(posedge clk) begin : Image_buffer
         if (ready_in) begin
             // Shift the buffers left for red, green, and blue
-            for (int i = 0; i < (image_width*4 + 4); i++) begin
+            for (int i = 0; i < (image_width*6 + 6); i++) begin
                 red_buffer[i] <= red_buffer[i+1];
                 green_buffer[i] <= green_buffer[i+1];
                 blue_buffer[i] <= blue_buffer[i+1];
             end
             // Insert new data for each color component
-            red_buffer[(image_width*4 + 4)] <= red_in;
-            green_buffer[(image_width*4 + 4)] <= green_in;
-            blue_buffer[(image_width*4 + 4)] <= blue_in;
+            red_buffer[(image_width*6 + 6)] <= red_in;
+            green_buffer[(image_width*6 + 6)] <= green_in;
+            blue_buffer[(image_width*6 + 6)] <= blue_in;
         end
     end
 
@@ -114,69 +112,60 @@ module blurring_filter (
     // Stage 1: Load and multiply pixels for 3x3 kernel (RGB separately)
     always_ff @(posedge clk) begin
 
-        // For 3x3 blur, use middle kernel values from 2-4, complete first 2 rows sum
+        // For 3x3 blur, use middle kernel values from 2-4, complete first row sum
         if (freq_flag == 1) begin
             // Red component
             for (int i = 0; i < 3; i++) begin
-                partial_sum_r_stage1[i] <= red_buffer[(i * image_width) + 2] * kernel[i+2][2]
-                                        + red_buffer[(i * image_width) + 3] * kernel[i+2][3];
+                partial_sum_r_stage1[i] <= red_buffer[(i * image_width) + 2] * kernel[i+2][2];
             end
             // Green component
             for (int i = 0; i < 3; i++) begin
-                partial_sum_g_stage1[i] <= green_buffer[(i * image_width) + 2] * kernel[i+2][2]
-                                        + green_buffer[(i * image_width) + 3] * kernel[i+2][3];
+                partial_sum_g_stage1[i] <= green_buffer[(i * image_width) + 2] * kernel[i+2][2];
             end
             // Blue component
             for (int i = 0; i < 3; i++) begin
-                partial_sum_b_stage1[i] <= blue_buffer[(i * image_width) + 2] * kernel[i+2][2]
-                                        + blue_buffer[(i * image_width) + 3] * kernel[i+2][3];
+                partial_sum_b_stage1[i] <= blue_buffer[(i * image_width) + 2] * kernel[i+2][2];
             end
         end
 
-        // For 5x5 blur, use middle kernel values from 1-5, complete first 3 rows sum
+        // For 5x5 blur, use middle kernel values from 1-5, complete first 2 rows sum
         else if (freq_flag == 2) begin
             // Red component
             for (int i = 0; i < 5; i++) begin
                 partial_sum_r_stage1[i] <= red_buffer[(i * image_width) + 1] * kernel[i+1][1]
-                                        + red_buffer[(i * image_width) + 2] * kernel[i+1][2]
-                                        + red_buffer[(i * image_width) + 3] * kernel[i+1][3];
+                                        + red_buffer[(i * image_width) + 2] * kernel[i+1][2];
             end
             // Green component
             for (int i = 0; i < 5; i++) begin
                 partial_sum_g_stage1[i] <= green_buffer[(i * image_width) + 1] * kernel[i+1][1]
-                                        + green_buffer[(i * image_width) + 2] * kernel[i+1][2]
-                                        + green_buffer[(i * image_width) + 3] * kernel[i+1][3];
+                                        + green_buffer[(i * image_width) + 2] * kernel[i+1][2];
             end
             // Blue component
             for (int i = 0; i < 5; i++) begin
                 partial_sum_b_stage1[i] <= blue_buffer[(i * image_width) + 1] * kernel[i+1][1]
-                                        + blue_buffer[(i * image_width) + 2] * kernel[i+1][2]
-                                        + blue_buffer[(i * image_width) + 3] * kernel[i+1][3];
+                                        + blue_buffer[(i * image_width) + 2] * kernel[i+1][2];
             end
         end
 
-        // For 7x7 blur, use all kernel values from 0-6, complete first 4 rows sum
+        // For 7x7 blur, use all kernel values from 0-6, complete first 3 rows sum
         else if (freq_flag == 3) begin
             // Red component
             for (int i = 0; i < 7; i++) begin
                 partial_sum_r_stage1[i] <= red_buffer[(i * image_width)] * kernel[i][0]
                                         + red_buffer[(i * image_width) + 1] * kernel[i][1]
-                                        + red_buffer[(i * image_width) + 2] * kernel[i][2]
-                                        + red_buffer[(i * image_width) + 3] * kernel[i][3];
+                                        + red_buffer[(i * image_width) + 2] * kernel[i][2];
             end
             // Green component
             for (int i = 0; i < 7; i++) begin
                 partial_sum_g_stage1[i] <= green_buffer[(i * image_width)] * kernel[i][0]
                                         + green_buffer[(i * image_width) + 1] * kernel[i][1]
-                                        + green_buffer[(i * image_width) + 2] * kernel[i][2]
-                                        + green_buffer[(i * image_width) + 3] * kernel[i][3];
+                                        + green_buffer[(i * image_width) + 2] * kernel[i][2];
             end
             // Blue component
             for (int i = 0; i < 7; i++) begin
                 partial_sum_b_stage1[i] <= blue_buffer[(i * image_width)] * kernel[i][0]
                                         + blue_buffer[(i * image_width) + 1] * kernel[i][1]
-                                        + blue_buffer[(i * image_width) + 2] * kernel[i][2]
-                                        + blue_buffer[(i * image_width) + 3] * kernel[i][3];
+                                        + blue_buffer[(i * image_width) + 2] * kernel[i][2];
             end
         end
     end
@@ -184,147 +173,215 @@ module blurring_filter (
     // Stage 2: Complete row-wise multiplication for RGB components (3x3)
     always_ff @(posedge clk) begin
 
-        // For 3x3 blur, use middle kernel values from 2-4, complete last row sum and add to previous sum
+        // For 3x3 blur, use middle kernel values from 2-4, complete middle row sum and add to previous sum
         if (freq_flag == 1) begin
             // Red component
             for (int i = 0; i < 3; i++) begin
                 partial_sum_r_stage2[i] <= partial_sum_r_stage1[i]
-                    + red_buffer[(i * image_width) + 4] * kernel[i+2][4];
+                    + red_buffer[(i * image_width) + 3] * kernel[i+2][3];
             end
             // Green component
             for (int i = 0; i < 3; i++) begin
                 partial_sum_g_stage2[i] <= partial_sum_g_stage1[i]
-                    + green_buffer[(i * image_width) + 4] * kernel[i+2][4];
+                    + green_buffer[(i * image_width) + 3] * kernel[i+2][3];
             end
             // Blue component
             for (int i = 0; i < 3; i++) begin
                 partial_sum_b_stage2[i] <= partial_sum_b_stage1[i]
-                    + blue_buffer[(i * image_width) + 4] * kernel[i+2][4];
+                    + blue_buffer[(i * image_width) + 3] * kernel[i+2][3];
             end
         end
 
-        // For 5x5 blur, use middle kernel values from 1-5, complete last 2 rows sum and add to previous sum
+        // For 5x5 blur, use middle kernel values from 1-5, complete middle 2 rows sum and add to previous sum
         else if (freq_flag == 2) begin
             // Red component
             for (int i = 0; i < 5; i++) begin
                 partial_sum_r_stage2[i] <= partial_sum_r_stage1[i]
-                    + red_buffer[(i * image_width) + 4] * kernel[i+1][4]
-                    + red_buffer[(i * image_width) + 5] * kernel[i+1][5];
+                    + red_buffer[(i * image_width) + 3] * kernel[i+1][3]
+                    + red_buffer[(i * image_width) + 4] * kernel[i+1][4];
             end
             // Green component
             for (int i = 0; i < 5; i++) begin
                 partial_sum_g_stage2[i] <= partial_sum_g_stage1[i] 
-                    + green_buffer[(i * image_width) + 4] * kernel[i+1][4]
-                    + green_buffer[(i * image_width) + 5] * kernel[i+1][5];
+                    + green_buffer[(i * image_width) + 3] * kernel[i+1][3]
+                    + green_buffer[(i * image_width) + 4] * kernel[i+1][4];
             end
             // Blue component
             for (int i = 0; i < 5; i++) begin
-                partial_sum_b_stage2[i] <= partial_sum_g_stage1[i] 
-                    + blue_buffer[(i * image_width) + 4] * kernel[i+1][4]
-                    + blue_buffer[(i * image_width) + 5] * kernel[i+1][5];
+                partial_sum_b_stage2[i] <= partial_sum_b_stage1[i] 
+                    + blue_buffer[(i * image_width) + 3] * kernel[i+1][3]
+                    + blue_buffer[(i * image_width) + 4] * kernel[i+1][4];
             end
         end
 
-        // For 7x7 blur, use all kernel values from 0-6, complete last 3 rows sum and add to previous sum
+        // For 7x7 blur, use all kernel values from 0-6, complete middle 3 rows sum and add to previous sum
         else if (freq_flag == 3) begin
             // Red component
             for (int i = 0; i < 7; i++) begin
                 partial_sum_r_stage2[i] <= partial_sum_r_stage1[i]
-                    + red_buffer[(i * image_width) + 4] * kernel[i][4]
+                    + red_buffer[(i * image_width) + 3] * kernel[i][3]
+                    + red_buffer[(i * image_width) + 4] * kernel[i][4];
+            end
+            // Green component
+            for (int i = 0; i < 7; i++) begin
+                partial_sum_g_stage2[i] <= partial_sum_g_stage1[i]
+                    + green_buffer[(i * image_width) + 3] * kernel[i][3]
+                    + green_buffer[(i * image_width) + 4] * kernel[i][4];
+            end
+            // Blue component
+            for (int i = 0; i < 7; i++) begin
+                partial_sum_b_stage2[i] <= partial_sum_b_stage1[i]
+                    + blue_buffer[(i * image_width) + 3] * kernel[i][3]
+                    + blue_buffer[(i * image_width) + 4] * kernel[i][4];
+            end
+        end
+    end
+	 
+	 // Stage 3: Complete row-wise multiplication for RGB components (3x3)
+    always_ff @(posedge clk) begin
+
+        // For 3x3 blur, use middle kernel values from 2-4, complete last row sum and add to previous sum
+        if (freq_flag == 1) begin
+            // Red component
+            for (int i = 0; i < 3; i++) begin
+                partial_sum_r_stage3[i] <= partial_sum_r_stage2[i]
+                    + red_buffer[(i * image_width) + 4] * kernel[i+2][4];
+            end
+            // Green component
+            for (int i = 0; i < 3; i++) begin
+                partial_sum_g_stage3[i] <= partial_sum_g_stage2[i]
+                    + green_buffer[(i * image_width) + 4] * kernel[i+2][4];
+            end
+            // Blue component
+            for (int i = 0; i < 3; i++) begin
+                partial_sum_b_stage3[i] <= partial_sum_b_stage2[i]
+                    + blue_buffer[(i * image_width) + 4] * kernel[i+2][4];
+            end
+        end
+
+        // For 5x5 blur, use middle kernel values from 1-5, complete last row sum and add to previous sum
+        else if (freq_flag == 2) begin
+            // Red component
+            for (int i = 0; i < 5; i++) begin
+                partial_sum_r_stage3[i] <= partial_sum_r_stage2[i]
+                    + red_buffer[(i * image_width) + 5] * kernel[i+1][5];
+            end
+            // Green component
+            for (int i = 0; i < 5; i++) begin
+                partial_sum_g_stage3[i] <= partial_sum_g_stage2[i]
+                    + green_buffer[(i * image_width) + 5] * kernel[i+1][5];
+            end
+            // Blue component
+            for (int i = 0; i < 5; i++) begin
+                partial_sum_b_stage3[i] <= partial_sum_b_stage2[i]
+                    + blue_buffer[(i * image_width) + 5] * kernel[i+1][5];
+            end
+        end
+
+        // For 7x7 blur, use all kernel values from 0-6, complete last 2 rows sum and add to previous sum
+        else if (freq_flag == 3) begin
+            // Red component
+            for (int i = 0; i < 7; i++) begin
+                partial_sum_r_stage3[i] <= partial_sum_r_stage2[i]
                     + red_buffer[(i * image_width) + 5] * kernel[i][5]
                     + red_buffer[(i * image_width) + 6] * kernel[i][6];
             end
             // Green component
             for (int i = 0; i < 7; i++) begin
-                partial_sum_g_stage2[i] <= partial_sum_g_stage1[i]
-                    + green_buffer[(i * image_width) + 4] * kernel[i][4]
+                partial_sum_g_stage3[i] <= partial_sum_g_stage2[i]
                     + green_buffer[(i * image_width) + 5] * kernel[i][5]
                     + green_buffer[(i * image_width) + 6] * kernel[i][6];
             end
             // Blue component
             for (int i = 0; i < 7; i++) begin
-                partial_sum_b_stage2[i] <= partial_sum_g_stage1[i]
-                    + blue_buffer[(i * image_width) + 4] * kernel[i][4]
+                partial_sum_b_stage3[i] <= partial_sum_b_stage2[i]
                     + blue_buffer[(i * image_width) + 5] * kernel[i][5]
                     + blue_buffer[(i * image_width) + 6] * kernel[i][6];
             end
         end
     end
 
-    // Stage 3: Accumulate rows for the final convolution result (RGB)
+    // Stage 4: Accumulate rows for the final convolution result (RGB)
     always_ff @(posedge clk) begin
-
+		  
+		  // For no blur
+		  if (freq_flag == 0) begin
+			  conv_result_r <= red_in;
+			  conv_result_g <= green_in;
+			  conv_result_b <= blue_in;
+		  end
+		  
         // For 3x3 blur, add all 3 partial sums
-        if (freq_flag == 1) begin
+        else if (freq_flag == 1) begin
             // Red component
-            conv_result_r <= partial_sum_r_stage2[0] 
-                + partial_sum_r_stage2[1] 
-                + partial_sum_r_stage2[2];
+            conv_result_r <= partial_sum_r_stage3[0] 
+                + partial_sum_r_stage3[1] 
+                + partial_sum_r_stage3[2];
             // Green component
-            conv_result_g <= partial_sum_g_stage2[0] 
-                + partial_sum_g_stage2[1] 
-                + partial_sum_g_stage2[2];
+            conv_result_g <= partial_sum_g_stage3[0] 
+                + partial_sum_g_stage3[1] 
+                + partial_sum_g_stage3[2];
             // Blue component
-            conv_result_b <= partial_sum_b_stage2[0] 
-                + partial_sum_b_stage2[1] 
-                + partial_sum_b_stage2[2];
+            conv_result_b <= partial_sum_b_stage3[0] 
+                + partial_sum_b_stage3[1] 
+                + partial_sum_b_stage3[2];
         end
 
         // For 5x5 blur, add all 5 partial sums
         if (freq_flag == 2) begin
             // Red component
-            conv_result_r <= partial_sum_r_stage2[0] 
-                + partial_sum_r_stage2[1] 
-                + partial_sum_r_stage2[2]
-                + partial_sum_r_stage2[3] 
-                + partial_sum_r_stage2[4];
+            conv_result_r <= partial_sum_r_stage3[0] 
+                + partial_sum_r_stage3[1] 
+                + partial_sum_r_stage3[2]
+                + partial_sum_r_stage3[3] 
+                + partial_sum_r_stage3[4];
             // Green component
-            conv_result_g <= partial_sum_g_stage2[0] 
-                + partial_sum_g_stage2[1] 
-                + partial_sum_g_stage2[2]
-                + partial_sum_g_stage2[3] 
-                + partial_sum_g_stage2[4];
+            conv_result_g <= partial_sum_g_stage3[0] 
+                + partial_sum_g_stage3[1] 
+                + partial_sum_g_stage3[2]
+                + partial_sum_g_stage3[3] 
+                + partial_sum_g_stage3[4];
             // Blue component
-            conv_result_b <= partial_sum_b_stage2[0] 
-                + partial_sum_b_stage2[1] 
-                + partial_sum_b_stage2[2]
-                + partial_sum_b_stage2[3] 
-                + partial_sum_b_stage2[4];
+            conv_result_b <= partial_sum_b_stage3[0] 
+                + partial_sum_b_stage3[1] 
+                + partial_sum_b_stage3[2]
+                + partial_sum_b_stage3[3] 
+                + partial_sum_b_stage3[4];
         end
 
         // For 7x7 blur, add all 7 partial sums
         if (freq_flag == 3) begin
             // Red component
-            conv_result_r <= partial_sum_r_stage2[0] 
-                + partial_sum_r_stage2[1] 
-                + partial_sum_r_stage2[2]
-                + partial_sum_r_stage2[3] 
-                + partial_sum_r_stage2[4]
-                + partial_sum_r_stage2[5] 
-                + partial_sum_r_stage2[6];
+            conv_result_r <= partial_sum_r_stage3[0] 
+                + partial_sum_r_stage3[1] 
+                + partial_sum_r_stage3[2]
+                + partial_sum_r_stage3[3] 
+                + partial_sum_r_stage3[4]
+                + partial_sum_r_stage3[5] 
+                + partial_sum_r_stage3[6];
             // Green component
-            conv_result_g <= partial_sum_g_stage2[0] 
-                + partial_sum_g_stage2[1] 
-                + partial_sum_g_stage2[2]
-                + partial_sum_g_stage2[3] 
-                + partial_sum_g_stage2[4]
-                + partial_sum_g_stage2[5] 
-                + partial_sum_g_stage2[6];
+            conv_result_g <= partial_sum_g_stage3[0] 
+                + partial_sum_g_stage3[1] 
+                + partial_sum_g_stage3[2]
+                + partial_sum_g_stage3[3] 
+                + partial_sum_g_stage3[4]
+                + partial_sum_g_stage3[5] 
+                + partial_sum_g_stage3[6];
             // Blue component
-            conv_result_b <= partial_sum_b_stage2[0] 
-                + partial_sum_b_stage2[1] 
-                + partial_sum_b_stage2[2]
-                + partial_sum_b_stage2[3] 
-                + partial_sum_b_stage2[4]
-                + partial_sum_b_stage2[5] 
-                + partial_sum_b_stage2[6];
+            conv_result_b <= partial_sum_b_stage3[0] 
+                + partial_sum_b_stage3[1] 
+                + partial_sum_b_stage3[2]
+                + partial_sum_b_stage3[3] 
+                + partial_sum_b_stage3[4]
+                + partial_sum_b_stage3[5] 
+                + partial_sum_b_stage3[6];
         end
     end
 
-    // Stage 4: Normalise and output the result (RGB)
+    // Stage 5: Normalise and output the result (RGB)
     always_ff @(posedge clk) begin
 
-        // For 7x7 blur, output rgb values bit shifted by 7 (Diveide by 128)
+        // For 7x7 blur, output rgb values bit shifted by 7 (Divide by 128)
         if (freq_flag == 3) begin
             startofpacket_out <= 0;
             endofpacket_out <= 0;
@@ -343,7 +400,7 @@ module blurring_filter (
 			  end
         end
 
-        // For 5x5 blur, output rgb values bit shifted by 6 (Diveide by 64)
+        // For 5x5 blur, output rgb values bit shifted by 6 (Divide by 64)
         if (freq_flag == 2) begin
             startofpacket_out <= 0;
             endofpacket_out <= 0;
@@ -362,7 +419,7 @@ module blurring_filter (
 			  end
         end
 
-         // For 3x3 blur, output rgb values bit shifted by 5 (Diveide by 32)
+         // For 3x3 blur, output rgb values bit shifted by 5 (Divide by 32)
         else if (freq_flag == 1) begin
             startofpacket_out <= 0;
             endofpacket_out <= 0;
