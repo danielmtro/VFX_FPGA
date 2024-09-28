@@ -86,6 +86,14 @@ module blurring_filter (
 
     // Stage 1: Load and multiply pixels for 3x3 kernel (RGB separately)
     always_ff @(posedge clk) begin
+		  // Initialize partial sums
+        for (int i = 0; i < 5; i++) begin
+            partial_sum_r_stage1[i] <= 0;
+            partial_sum_g_stage1[i] <= 0;
+            partial_sum_b_stage1[i] <= 0;
+        end
+	 
+        // 3x3 Kernel
         if (freq_flag == 1) begin
             // Red component
             for (int i = 0; i < 3; i++) begin
@@ -101,6 +109,7 @@ module blurring_filter (
             end
         end
 
+        // 5x5 Kernel
         else if (freq_flag == 2) begin
             // Red component
             for (int i = 0; i < 5; i++) begin
@@ -122,6 +131,13 @@ module blurring_filter (
 
     // Stage 2: Complete row-wise multiplication for RGB components (3x3)
     always_ff @(posedge clk) begin
+		  // Initialize partial sums
+        for (int i = 0; i < 5; i++) begin
+            partial_sum_r_stage2[i] <= 0;
+            partial_sum_g_stage2[i] <= 0;
+            partial_sum_b_stage2[i] <= 0;
+        end
+	 
         if (freq_flag == 1) begin
             // Red component
             for (int i = 0; i < 3; i++) begin
@@ -164,6 +180,13 @@ module blurring_filter (
 
     // Stage 3: Complete row-wise multiplication for RGB components (3x3)
     always_ff @(posedge clk) begin
+		  // Initialize partial sums
+        for (int i = 0; i < 5; i++) begin
+            partial_sum_r_stage3[i] <= 0;
+            partial_sum_g_stage3[i] <= 0;
+            partial_sum_b_stage3[i] <= 0;
+        end
+		  
         if (freq_flag == 1) begin
             // Red component
             for (int i = 0; i < 3; i++) begin
@@ -203,6 +226,14 @@ module blurring_filter (
 
     // Stage 4: Accumulate rows for the final convolution result (RGB)
     always_ff @(posedge clk) begin
+		  // Initialize partial sums
+        for (int i = 0; i < 5; i++) begin
+            conv_result_r[i] <= 0;
+            conv_result_g[i] <= 0;
+            conv_result_b[i] <= 0;
+        end
+	 
+        // 3x3 Kernel
         if (freq_flag == 1) begin
             // Red component
             conv_result_r <= partial_sum_r_stage3[0] 
@@ -218,6 +249,7 @@ module blurring_filter (
                 + partial_sum_b_stage3[2];
         end
 
+        // 5x5 Kernel
         if (freq_flag == 2) begin
             // Red component
             conv_result_r <= partial_sum_r_stage3[0] 
@@ -242,46 +274,24 @@ module blurring_filter (
 
     // Stage 5: Normalise and output the result (RGB)
     always_ff @(posedge clk) begin
-        if (freq_flag == 2) begin
-            startofpacket_out <= 0;
-            endofpacket_out <= 0;
+		  startofpacket_out <= startofpacket_in;
+		  endofpacket_out <= endofpacket_in;
 
+        // 5x5 Kernel
+        if (freq_flag == 2) begin
             // Combine the normalized results for each color component
             data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
-            
-            // First packet reset buffer count and counters
-			  if (startofpacket_in) begin
-				  startofpacket_out <= 1;
-			  end
-
-            // Continue image output as 0 until full kernel can be filled
-		      if (endofpacket_in) begin
-				  endofpacket_out <= 1;
-			  end
         end
 
+        // 3x3 Kernel
         else if (freq_flag == 1) begin
-            startofpacket_out <= 0;
-            endofpacket_out <= 0;
-
             // Combine the normalized results for each color component
             data_out <= {conv_result_r[8:5], conv_result_g[8:5], conv_result_b[8:5]};
-            
-            // First packet reset buffer count and counters
-			  if (startofpacket_in) begin
-				  startofpacket_out <= 1;
-			  end
-
-            // Continue image output as 0 until full kernel can be filled
-			  if (endofpacket_in) begin
-				  endofpacket_out <= 1;
-			  end
-
-        end else if (freq_flag == 0) begin
-            // For 1x1 kernel, directly pass through the data
+        end
+		
+        // For no blur, directly pass through the data
+		else if (freq_flag == 0) begin
             data_out <= data_in;
-            startofpacket_out <= startofpacket_in;
-            endofpacket_out <= endofpacket_in;
         end
     end
 
