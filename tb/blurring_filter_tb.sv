@@ -59,7 +59,7 @@ module blurring_filter_tb;
         // Initialize image with a 1's to ensure base functionality
         for (i = 0; i < IMG_LENGTH; i = i + 1) begin
             for (j = 0; j < IMG_WIDTH; j = j + 1) begin
-                image[i * IMG_LENGTH + j] = 12'h001; // Simple gradient
+                image[i * IMG_LENGTH + j] = 12'b010101010101; // Simple gradient
             end
         end
 
@@ -94,16 +94,6 @@ module blurring_filter_tb;
         // Test 5x5 kernel
         $display("Testing with 5x5 kernel");
         freq_flag = 3'b010; // Set to 5x5 kernel
-        run_test();
-        ready_in = 0;
-
-        // Delay before entering each test
-        #100;
-        ready_in = 1;
-          
-        // Test 7x7 kernel
-        $display("Testing with 7x7 kernel");
-        freq_flag = 3'b011; // Set to 7x7 kernel
         run_test();
         ready_in = 0;
         
@@ -112,7 +102,7 @@ module blurring_filter_tb;
         // Initialize image with a simple pattern (gradient)
         for (i = 0; i < IMG_LENGTH; i = i + 1) begin
             for (j = 0; j < IMG_WIDTH; j = j + 1) begin
-                     image[i * IMG_LENGTH + j] = (i * IMG_LENGTH + j) & 12'hFFF; // Simple gradient
+                     image[i * IMG_LENGTH + j] = (i * IMG_LENGTH + j) & 12'b111111111111; // Simple gradient
             end
         end
 
@@ -147,16 +137,6 @@ module blurring_filter_tb;
         // Test 5x5 kernel
         $display("Testing with 5x5 kernel");
         freq_flag = 3'b010; // Set to 5x5 kernel
-        run_test();
-        ready_in = 0;
-
-        // Delay before entering each test
-        #100;
-        ready_in = 1;
-          
-        // Test 7x7 kernel
-        $display("Testing with 7x7 kernel");
-        freq_flag = 3'b011; // Set to 7x7 kernel
         run_test();
         ready_in = 0;
         

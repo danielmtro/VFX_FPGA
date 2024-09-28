@@ -2,7 +2,7 @@
 
 module blurring_filter (
     input logic clk,
-    input logic [2:0] freq_flag,  // Kernel size: 0 for 1x1, 1 for 3x3, 2 for 5x5
+    input logic [2:0] freq_flag,  // Kernel size: 0 for No blur, 1 for 3x3, 2 for 5x5
     input logic ready_in,
     input logic valid_in,
     input logic startofpacket_in,
@@ -33,8 +33,6 @@ module blurring_filter (
 
     // Kernel sizes
     logic [2:0] KERNEL_SIZE;
-    localparam KERNEL_SIZE_1x1 = 3'b001;
-    localparam KERNEL_SIZE_3x3 = 3'b011;
     localparam KERNEL_SIZE_5x5 = 3'b101;
 
     // Image buffer for RGB components
@@ -42,10 +40,10 @@ module blurring_filter (
     logic [3:0] green_buffer [0:(image_width*4 + 5)-1];
     logic [3:0] blue_buffer [0:(image_width*4 + 5)-1];
 
-    logic signed [17:0] partial_sum_r_stage1 [0:4], partial_sum_g_stage1 [0:4], partial_sum_b_stage1 [0:4];
-    logic signed [17:0] partial_sum_r_stage2 [0:4], partial_sum_g_stage2 [0:4], partial_sum_b_stage2 [0:4];
+    logic [17:0] partial_sum_r_stage1 [0:4], partial_sum_g_stage1 [0:4], partial_sum_b_stage1 [0:4];
+    logic [17:0] partial_sum_r_stage2 [0:4], partial_sum_g_stage2 [0:4], partial_sum_b_stage2 [0:4];
 
-    logic signed [17:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
+    logic [17:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
 
     // Define the kernel weights (unchanged)
     logic [2:0] kernel [0:KERNEL_SIZE_5x5-1][0:KERNEL_SIZE_5x5-1];
