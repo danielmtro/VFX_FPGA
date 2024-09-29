@@ -39,7 +39,7 @@ module blurring_filter (
     logic signed [11:0] partial_sum_r_stage2 [4:0], partial_sum_g_stage2 [4:0], partial_sum_b_stage2 [4:0];
     logic signed [11:0] partial_sum_r_stage3 [4:0], partial_sum_g_stage3 [4:0], partial_sum_b_stage3 [4:0];
 
-    logic signed [9:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
+    logic signed [11:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
 
     // Define the kernel weights (unchanged)
     logic [2:0] kernel [0:4][0:4];
