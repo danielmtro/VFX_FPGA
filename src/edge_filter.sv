@@ -42,11 +42,11 @@ module edge_filter (
     logic signed [3:0] green_buffer [0:(image_width*4 + 4)];
     logic signed [3:0] blue_buffer [0:(image_width*4 + 4)];
 
-    logic [8:0] partial_sum_r_stage1 [0:4], partial_sum_g_stage1 [0:4], partial_sum_b_stage1 [0:4];
-    logic [8:0] partial_sum_r_stage2 [0:4], partial_sum_g_stage2 [0:4], partial_sum_b_stage2 [0:4];
-    logic [8:0] partial_sum_r_stage3 [0:4], partial_sum_g_stage3 [0:4], partial_sum_b_stage3 [0:4];
+    logic [9:0] partial_sum_r_stage1 [0:4], partial_sum_g_stage1 [0:4], partial_sum_b_stage1 [0:4];
+    logic [9:0] partial_sum_r_stage2 [0:4], partial_sum_g_stage2 [0:4], partial_sum_b_stage2 [0:4];
+    logic [9:0] partial_sum_r_stage3 [0:4], partial_sum_g_stage3 [0:4], partial_sum_b_stage3 [0:4];
 
-    logic [8:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
+    logic [9:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
 
     // Define the kernel weights
     logic signed [2:0] kernel [0:4][0:4];

@@ -36,11 +36,11 @@ module blurring_filter (
     logic [3:0] green_buffer [0:(image_width*4 + 4)];
     logic [3:0] blue_buffer [0:(image_width*4 + 4)];
 
-    logic [8:0] partial_sum_r_stage1 [0:4], partial_sum_g_stage1 [0:4], partial_sum_b_stage1 [0:4];
-    logic [8:0] partial_sum_r_stage2 [0:4], partial_sum_g_stage2 [0:4], partial_sum_b_stage2 [0:4];
-    logic [8:0] partial_sum_r_stage3 [0:4], partial_sum_g_stage3 [0:4], partial_sum_b_stage3 [0:4];
+    logic [9:0] partial_sum_r_stage1 [0:4], partial_sum_g_stage1 [0:4], partial_sum_b_stage1 [0:4];
+    logic [9:0] partial_sum_r_stage2 [0:4], partial_sum_g_stage2 [0:4], partial_sum_b_stage2 [0:4];
+    logic [9:0] partial_sum_r_stage3 [0:4], partial_sum_g_stage3 [0:4], partial_sum_b_stage3 [0:4];
 
-    logic [8:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
+    logic [9:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
 
     // Define the kernel weights (unchanged)
     logic [2:0] kernel [0:4][0:4];
@@ -288,9 +288,9 @@ module blurring_filter (
             // Combine the normalized results for each color component
             data_out <= {conv_result_r[8:5], conv_result_g[8:5], conv_result_b[8:5]};
         end
-		
-        // For no blur, directly pass through the data
-		else if (freq_flag == 0) begin
+		  
+		  // For no blur, directly pass through the data
+		  else if (freq_flag == 0) begin
             data_out <= data_in;
         end
     end
