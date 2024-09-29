@@ -35,9 +35,9 @@ module blurring_filter (
     logic [3:0] green_buffer [0:(image_width*4 + 4)];
     logic [3:0] blue_buffer [0:(image_width*4 + 4)];
 
-    logic signed [9:0] partial_sum_r_stage1 [4:0], partial_sum_g_stage1 [4:0], partial_sum_b_stage1 [4:0];
-    logic signed [9:0] partial_sum_r_stage2 [4:0], partial_sum_g_stage2 [4:0], partial_sum_b_stage2 [4:0];
-    logic signed [9:0] partial_sum_r_stage3 [4:0], partial_sum_g_stage3 [4:0], partial_sum_b_stage3 [4:0];
+    logic signed [11:0] partial_sum_r_stage1 [4:0], partial_sum_g_stage1 [4:0], partial_sum_b_stage1 [4:0];
+    logic signed [11:0] partial_sum_r_stage2 [4:0], partial_sum_g_stage2 [4:0], partial_sum_b_stage2 [4:0];
+    logic signed [11:0] partial_sum_r_stage3 [4:0], partial_sum_g_stage3 [4:0], partial_sum_b_stage3 [4:0];
 
     logic signed [9:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
 
