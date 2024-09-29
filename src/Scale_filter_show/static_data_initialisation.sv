@@ -19,7 +19,10 @@ module static_data_initialisation #(
 	//and Verilator will ignore it.
 
     (* ram_init_file = "chad-ho-320x240.mif" *)  logic [DATA_WIDTH-1:0]  linear_grad [NumPixels];
-
+	 
+	 initial begin: memset
+	 $readmemh("chad-ho-320x240.hex", linear_grad);
+		end 
     // The pixel counter/index. Set pixel_index_next in an always_comb block.
     // Set pixel_index <= pixel_index_next in an always_ff block.
     logic [18:0] pixel_index = 0, pixel_index_next; 

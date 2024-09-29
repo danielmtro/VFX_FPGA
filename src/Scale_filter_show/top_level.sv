@@ -1,7 +1,7 @@
 module top_level (
 		input  wire        CLOCK_50,
 		input  wire [17:0] SW,
-		input logic 			 KEY[3:0],
+		input logic 		[3:0]	 KEY,
 		
 		output wire        VGA_CLK,    
 		output wire        VGA_HS,     
