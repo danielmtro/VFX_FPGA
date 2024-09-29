@@ -20,33 +20,26 @@ module edge_filter (
     assign ready_out = ready_in;
 
     // Extract RGB components from input data
-    logic signed [3:0] red_in, green_in, blue_in;
-    logic signed [3:0] red_out, green_out, blue_out;
+    logic [3:0] red_in, green_in, blue_in;
 
     assign red_in   = data_in[11:8];  // Bits 11-8 for red
     assign green_in = data_in[7:4];   // Bits 7-4 for green
     assign blue_in  = data_in[3:0];   // Bits 3-0 for blue
 
-    // 320x240 image dimensions
+    // 320x240 image
     localparam image_height = 8'b11110000;
     localparam image_width = 9'b101000000;
 
-    // Kernel sizes
-    logic [2:0] KERNEL_SIZE;
-    localparam KERNEL_SIZE_1x1 = 3'b001;
-    localparam KERNEL_SIZE_3x3 = 3'b011;
-    localparam KERNEL_SIZE_5x5 = 3'b101;
-
     // Image buffer for RGB components
-    logic signed [3:0] red_buffer [0:(image_width*4 + 4)];
-    logic signed [3:0] green_buffer [0:(image_width*4 + 4)];
-    logic signed [3:0] blue_buffer [0:(image_width*4 + 4)];
+    logic [3:0] red_buffer [0:(image_width*4 + 4)];
+    logic [3:0] green_buffer [0:(image_width*4 + 4)];
+    logic [3:0] blue_buffer [0:(image_width*4 + 4)];
 
-    logic [9:0] partial_sum_r_stage1 [0:4], partial_sum_g_stage1 [0:4], partial_sum_b_stage1 [0:4];
-    logic [9:0] partial_sum_r_stage2 [0:4], partial_sum_g_stage2 [0:4], partial_sum_b_stage2 [0:4];
-    logic [9:0] partial_sum_r_stage3 [0:4], partial_sum_g_stage3 [0:4], partial_sum_b_stage3 [0:4];
+    logic signed [9:0] partial_sum_r_stage1 [4:0], partial_sum_g_stage1 [4:0], partial_sum_b_stage1 [4:0];
+    logic signed [9:0] partial_sum_r_stage2 [4:0], partial_sum_g_stage2 [4:0], partial_sum_b_stage2 [4:0];
+    logic signed [9:0] partial_sum_r_stage3 [4:0], partial_sum_g_stage3 [4:0], partial_sum_b_stage3 [4:0];
 
-    logic [9:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
+    logic signed [9:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
 
     // Define the kernel weights
     logic signed [2:0] kernel [0:4][0:4];
@@ -106,7 +99,7 @@ module edge_filter (
         end
     end
 
-    // Pipelined convolution for each color component
+    // Pipelined convolution for each colour component
 
     // Stage 1: Load and multiply pixels for 3x3 kernel (RGB separately)
     always_ff @(posedge clk) begin
@@ -117,51 +110,46 @@ module edge_filter (
             partial_sum_b_stage1[i] <= 0;
         end
 
-        // 3x3 Kernel
         if (freq_flag == 1) begin
             // Red component
             for (int i = 0; i < 3; i++) begin
-                partial_sum_r_stage1[i] <= red_buffer[(i * image_width)] * kernel[i + 1][1];
+                partial_sum_r_stage1[i] <= red_buffer[(i * image_width)] * kernel[i+1][1];
             end
             // Green component
             for (int i = 0; i < 3; i++) begin
-                partial_sum_g_stage1[i] <= green_buffer[(i * image_width)] * kernel[i + 1][1];
+                partial_sum_g_stage1[i] <= green_buffer[(i * image_width)] * kernel[i+1][1];
             end
             // Blue component
             for (int i = 0; i < 3; i++) begin
-                partial_sum_b_stage1[i] <= blue_buffer[(i * image_width)] * kernel[i + 1][1];
+                partial_sum_b_stage1[i] <= blue_buffer[(i * image_width)] * kernel[i+1][1];
             end
         end
-        
-        // 5x5 Kernel
-        else if (freq_flag == 2) begin
+
+        else if ((freq_flag == 2) || (freq_flag == 3)) begin
             // Red component
             for (int i = 0; i < 5; i++) begin
-                partial_sum_r_stage1[i] <= red_buffer[(i * image_width)] * kernel[i][0]
-                                        + red_buffer[(i * image_width) + 1] * kernel[i][1];
+                partial_sum_r_stage1[i] <= red_buffer[(i * image_width)] * kernel[i][0];
             end
             // Green component
             for (int i = 0; i < 5; i++) begin
-                partial_sum_g_stage1[i] <= green_buffer[(i * image_width)] * kernel[i][0]
-                                        + green_buffer[(i * image_width) + 1] * kernel[i][1];
+                partial_sum_g_stage1[i] <= green_buffer[(i * image_width)] * kernel[i][0];
             end
             // Blue component
             for (int i = 0; i < 5; i++) begin
-                partial_sum_b_stage1[i] <= blue_buffer[(i * image_width)] * kernel[i][0]
-                                        + blue_buffer[(i * image_width) + 1] * kernel[i][1];
+                partial_sum_b_stage1[i] <= blue_buffer[(i * image_width)] * kernel[i][0];
             end
         end
     end
 
     // Stage 2: Complete row-wise multiplication for RGB components (3x3)
     always_ff @(posedge clk) begin
-		  // Initialize partial sums
+        // Initialize partial sums
         for (int i = 0; i < 5; i++) begin
             partial_sum_r_stage2[i] <= 0;
             partial_sum_g_stage2[i] <= 0;
             partial_sum_b_stage2[i] <= 0;
         end
-	 
+
         if (freq_flag == 1) begin
             // Red component
             for (int i = 0; i < 3; i++) begin
@@ -180,69 +168,72 @@ module edge_filter (
             end
         end
 
-        else if (freq_flag == 2) begin
+        else if ((freq_flag == 2) || (freq_flag == 3)) begin
             // Red component
             for (int i = 0; i < 5; i++) begin
                 partial_sum_r_stage2[i] <= partial_sum_r_stage1[i]
-                    + red_buffer[(i * image_width) + 2] * kernel[i][2]
-                    + red_buffer[(i * image_width) + 3] * kernel[i][3];
+                    + red_buffer[(i * image_width) + 1] * kernel[i][1]
+                    + red_buffer[(i * image_width) + 2] * kernel[i][2];
             end
             // Green component
             for (int i = 0; i < 5; i++) begin
-                partial_sum_g_stage2[i] <= partial_sum_g_stage1[i]
-                    + green_buffer[(i * image_width) + 1] * kernel[i][2]
-                    + green_buffer[(i * image_width) + 3] * kernel[i][3];
+                partial_sum_g_stage2[i] <= partial_sum_g_stage1[i] 
+                    + green_buffer[(i * image_width) + 1] * kernel[i][1]
+                    + green_buffer[(i * image_width) + 1] * kernel[i][2];
             end
             // Blue component
             for (int i = 0; i < 5; i++) begin
-                partial_sum_b_stage2[i] <= partial_sum_g_stage1[i]
-                    + blue_buffer[(i * image_width) + 1] * kernel[i][2]
-                    + blue_buffer[(i * image_width) + 3] * kernel[i][3];
+                partial_sum_b_stage2[i] <= partial_sum_b_stage1[i] 
+                    + blue_buffer[(i * image_width) + 1] * kernel[i][1]
+                    + blue_buffer[(i * image_width) + 1] * kernel[i][2];
             end
         end
     end
 
     // Stage 3: Complete row-wise multiplication for RGB components (3x3)
     always_ff @(posedge clk) begin
-		  // Initialize partial sums
+        // Initialize partial sums
         for (int i = 0; i < 5; i++) begin
             partial_sum_r_stage3[i] <= 0;
             partial_sum_g_stage3[i] <= 0;
             partial_sum_b_stage3[i] <= 0;
         end
-		  
+
         if (freq_flag == 1) begin
             // Red component
             for (int i = 0; i < 3; i++) begin
-                partial_sum_r_stage3[i] <= partial_sum_r_stage1[i]
+                partial_sum_r_stage3[i] <= partial_sum_r_stage2[i] 
                     + red_buffer[(i * image_width) + 2] * kernel[i+1][3];
             end
             // Green component
             for (int i = 0; i < 3; i++) begin
-                partial_sum_g_stage3[i] <= partial_sum_g_stage1[i]
+                partial_sum_g_stage3[i] <= partial_sum_g_stage2[i] 
                     + green_buffer[(i * image_width) + 2] * kernel[i+1][3];
             end
             // Blue component
             for (int i = 0; i < 3; i++) begin
-                partial_sum_b_stage3[i] <= partial_sum_b_stage1[i]
+                partial_sum_b_stage3[i] <= partial_sum_b_stage2[i] 
                     + blue_buffer[(i * image_width) + 2] * kernel[i+1][3];
             end
         end
 
-        else if (freq_flag == 2) begin
+        else if ((freq_flag == 2) || (freq_flag == 3)) begin
             // Red component
             for (int i = 0; i < 5; i++) begin
-                partial_sum_r_stage2[i] <= partial_sum_r_stage1[i]
+                partial_sum_r_stage3[i] <= partial_sum_r_stage2[i]
+                    + red_buffer[(i * image_width) + 3] * kernel[i][3]
                     + red_buffer[(i * image_width) + 4] * kernel[i][4];
             end
             // Green component
             for (int i = 0; i < 5; i++) begin
-                partial_sum_g_stage2[i] <= partial_sum_g_stage1[i] 
+                partial_sum_g_stage3[i] <= partial_sum_g_stage2[i] 
+                    + green_buffer[(i * image_width) + 3] * kernel[i][3]
                     + green_buffer[(i * image_width) + 4] * kernel[i][4];
             end
             // Blue component
             for (int i = 0; i < 5; i++) begin
-                partial_sum_b_stage2[i] <= partial_sum_g_stage1[i]
+                partial_sum_b_stage3[i] <= partial_sum_b_stage2[i] 
+                    + blue_buffer[(i * image_width) + 3] * kernel[i][3]
                     + blue_buffer[(i * image_width) + 4] * kernel[i][4];
             end
         end
@@ -250,14 +241,11 @@ module edge_filter (
 
     // Stage 4: Accumulate rows for the final convolution result (RGB)
     always_ff @(posedge clk) begin
-		  // Initialize partial sums
-        for (int i = 0; i < 5; i++) begin
-            conv_result_r[i] <= 0;
-            conv_result_g[i] <= 0;
-            conv_result_b[i] <= 0;
-        end
+        // Initialize convoluted result
+        conv_result_r <= 0;
+        conv_result_g <= 0;
+        conv_result_b <= 0;
 
-        // 3x3 Kernel
         if (freq_flag == 1) begin
             // Red component
             conv_result_r <= partial_sum_r_stage3[0] 
@@ -273,8 +261,7 @@ module edge_filter (
                 + partial_sum_b_stage3[2];
         end
 
-        // 5x5 Kernel
-        if (freq_flag == 2) begin
+        if ((freq_flag == 2) || (freq_flag == 3)) begin
             // Red component
             conv_result_r <= partial_sum_r_stage3[0] 
                 + partial_sum_r_stage3[1] 
@@ -308,7 +295,7 @@ module edge_filter (
 			if (conv_result_b[9:6] > 0) begin
 				data_out <= 12'b111111111111; // White (all bits set)
 			end
-            
+
             else begin
 				data_out <= 12'b000000000000; // Black (all bits cleared)
 			end
@@ -319,7 +306,7 @@ module edge_filter (
             if (conv_result_b[8:5] > 0) begin
                 data_out <= 12'b111111111111; // White (all bits set)
             end
-            
+
             else begin
                 data_out <= 12'b000000000000; // Black (all bits cleared)
             end
