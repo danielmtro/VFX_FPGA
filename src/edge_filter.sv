@@ -289,7 +289,7 @@ module edge_filter (
         endofpacket_out <= endofpacket_in;
 
         // 5x5 Kernel
-        if (freq_flag == 2) begin
+        if ((freq_flag == 2) || (freq_flag == 3)) begin
 
             // Combine the normalized results for each color component
 			if (conv_result_b[9:6] > 0) begin
