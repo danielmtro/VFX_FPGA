@@ -173,7 +173,7 @@ module top_level(
 			 .reset_reset_n(1'b1),                                   //                                     reset.reset_n
 			 .video_scaler_0_avalon_scaler_sink_startofpacket(filter_sop_out), //         video_scaler_0_avalon_scaler_sink.startofpacket
 			 .video_scaler_0_avalon_scaler_sink_endofpacket(filter_eop_out),   //                                          .endofpacket
-			 .video_scaler_0_avalon_scaler_sink_valid(1'b1),         //                                          .valid
+			 .video_scaler_0_avalon_scaler_sink_valid(filter_valid_out),         //                                          .valid
 			.video_scaler_0_avalon_scaler_sink_ready(vga_ready),         //                                          .ready
 		   .video_scaler_0_avalon_scaler_sink_data(filtered_data),          //                                          .data
 			.video_vga_controller_0_external_interface_CLK(vga_CLK),   // video_vga_controller_0_external_interface.CLK
