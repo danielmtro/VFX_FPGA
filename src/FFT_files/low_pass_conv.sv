@@ -40,7 +40,7 @@ module low_pass_conv #(parameter W, W_FRAC) (
             // multiply each register value by the h value
             mult_result[i] = shift_reg[i] * h[i];
         end
-
+    
     end
 
     // 4. Add all of the multiplication results together and shift the result into the output buffer.
@@ -56,18 +56,20 @@ module low_pass_conv #(parameter W, W_FRAC) (
 
     // 5. Output reg: use y.data as a register, load the result of the MACC into y.data if x.valid and x.ready are high (i.e. data is moving).
     // y.valid should be set as a register here too.
-    logic overflow; // Optional (not marked): detect for overflow.
-    logic x_valid_q = 1'b0; // Delay x.valid by 1 clock cycle
+    logic overflow;
+    logic x_valid_q = 1'b0;
     always_ff @(posedge clk) begin : output_reg
+        y.valid <= 1'b0; /*FIX*/
         if (x.valid & x.ready) begin
-            //y.data <= FILL-IN; // Remember to truncate the fixed point properly!!!
-            //overflow <= FILL-IN; // (Optional) Check if our INTEGER truncation causes overflow (remember 2's complement!!!)
-            y.data <= macc[$clog2(N) + 2*W - 1: W_FRAC]; // Take one less bit to truncate and then go to only the integer part
+            y.data <= macc[W-1+W_FRAC:W_FRAC];
             overflow <= (macc < 0) ? 1 : 0;
-
-            x_valid_q <= 1'b1;    // Delay x.valid by 1 clock cycle
+            x_valid_q <= 1'b1;
             y.valid <= x_valid_q; // 2 clock cycles for valid data to get from x to y
         end
     end
+
+    
+
+    
 
 endmodule
