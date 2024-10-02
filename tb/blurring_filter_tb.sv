@@ -10,10 +10,10 @@ module blurring_filter_tb;
 
     logic clk = 0;
     logic ready_in = 0;
-	logic valid_in = 1;
+	logic valid_in = 0;
 	logic startofpacket_in = 0;
 	logic endofpacket_in = 0;
-    logic [2:0] freq_flag; // Kernel size control
+    logic is_underage; // Kernel size control
     logic [11:0] data_in;
     logic ready_out;
 	logic valid_out;
@@ -28,7 +28,7 @@ module blurring_filter_tb;
 		.valid_in(valid_in),
 		.startofpacket_in(startofpacket_in),
 		.endofpacket_in(endofpacket_in),
-        .freq_flag(freq_flag),
+        .is_underage(is_underage),
         .data_in(data_in),
         .ready_out(ready_out),
 		.valid_out(valid_out),
@@ -49,7 +49,7 @@ module blurring_filter_tb;
     initial begin
 
         // Set variables to 0 to avoid red lines in testbench
-        freq_flag = 0;
+        is_underage = 0;
         data_in = 0;
         ready_out = 0;
         data_out = 0;
@@ -59,7 +59,7 @@ module blurring_filter_tb;
         // Initialize image with a 1's to ensure base functionality
         for (i = 0; i < IMG_LENGTH; i = i + 1) begin
             for (j = 0; j < IMG_WIDTH; j = j + 1) begin
-                image[i * IMG_LENGTH + j] = 12'b010101010101; // Simple gradient
+                image[i * IMG_LENGTH + j] = 12'b010101101010; // Simple colour
             end
         end
 
@@ -70,49 +70,34 @@ module blurring_filter_tb;
         // Delay before entering each test
         #100;
         ready_in = 1;
+        valid_in = 1;
 
         // Test no blur
         $display("Testing with no blur");
-        freq_flag = 3'b000; // Set to no blur
+        is_underage = 0; // Set to no blur
         run_test();
         ready_in = 0;
+        valid_in = 0;
 
         // Delay before entering each test
         #100;
         ready_in = 1;
+        valid_in = 1;
 
-        // Test 3x3 kernel
-        $display("Testing with 3x3 kernel");
-        freq_flag = 3'b001; // Set to 3x3 kernel
+        // Test blur
+        $display("Testing with blur");
+        is_underage = 1;
         run_test();
         ready_in = 0;
-
-        // Delay before entering each test
-        #100;
-        ready_in = 1;
-
-        // Test 5x5 kernel
-        $display("Testing with 5x5 kernel");
-        freq_flag = 3'b010; // Set to 5x5 kernel
-        run_test();
-        ready_in = 0;
-
-        // Delay before entering each test
-        #100;
-        ready_in = 1;
-
-        // Test 5x5 kernel
-        $display("Testing with 5x5 kernel");
-        freq_flag = 3'b011; // Set to 5x5 kernel
-        run_test();
-        ready_in = 0;
+        valid_in = 0;
 
         #1000
 
         // Initialize image with a simple pattern (gradient)
         for (i = 0; i < IMG_LENGTH; i = i + 1) begin
             for (j = 0; j < IMG_WIDTH; j = j + 1) begin
-                    image[i * IMG_LENGTH + j] = (i * IMG_LENGTH + j) & 12'b111111111111; // Simple gradient
+                if (i > 20 && i < 60) || (j > 80 && j < 120) 
+                    image[i * IMG_LENGTH + j] = 12'b111111111111;
             end
         end
 
@@ -123,42 +108,26 @@ module blurring_filter_tb;
         // Delay before entering each test
         #100;
         ready_in = 1;
+        valid_in = 1;
 
         // Test no blur
         $display("Testing with no blur");
-        freq_flag = 3'b000; // Set to no blur
+        is_underage = 0; // Set to no blur
         run_test();
         ready_in = 0;
+        valid_in = 0;
 
         // Delay before entering each test
         #100;
         ready_in = 1;
+        valid_in = 1;
 
-        // Test 3x3 kernel
-        $display("Testing with 3x3 kernel");
-        freq_flag = 3'b001; // Set to 3x3 kernel
+        // Test blur
+        $display("Testing with blur");
+        is_underage = 1;
         run_test();
         ready_in = 0;
-
-        // Delay before entering each test
-        #100;
-        ready_in = 1;
-
-        // Test 5x5 kernel
-        $display("Testing with 5x5 kernel");
-        freq_flag = 3'b010; // Set to 5x5 kernel
-        run_test();
-        ready_in = 0;
-
-        // Delay before entering each test
-        #100;
-        ready_in = 1;
-
-        // Test 5x5 kernel
-        $display("Testing with 5x5 kernel");
-        freq_flag = 3'b011; // Set to 5x5 kernel
-        run_test();
-        ready_in = 0;
+        valid_in = 0;
 
         #1000
 
@@ -187,6 +156,19 @@ module blurring_filter_tb;
                     end
                     data_in = image[i * IMG_LENGTH + j];
                     #TCLK; // Wait for processing
+
+                    // Test handshaking
+                    if ((i % 10 == 0) || (j % 10 == 0)) begin
+                        valid_in = 0;
+                        #100
+                        valid_in = 1;
+                    end
+
+                    if ((i % 15 == 0) || (j % 15 == 0)) begin
+                        ready_in = 0;
+                        #100
+                        ready_in = 1;
+                    end
                 end
             end
         end

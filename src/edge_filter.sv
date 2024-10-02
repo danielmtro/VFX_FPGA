@@ -179,13 +179,13 @@ module edge_filter (
             for (int i = 0; i < 5; i++) begin
                 partial_sum_g_stage2[i] <= partial_sum_g_stage1[i] 
                     + green_buffer[(i * image_width) + 1] * kernel[i][1]
-                    + green_buffer[(i * image_width) + 1] * kernel[i][2];
+                    + green_buffer[(i * image_width) + 2] * kernel[i][2];
             end
             // Blue component
             for (int i = 0; i < 5; i++) begin
                 partial_sum_b_stage2[i] <= partial_sum_b_stage1[i] 
                     + blue_buffer[(i * image_width) + 1] * kernel[i][1]
-                    + blue_buffer[(i * image_width) + 1] * kernel[i][2];
+                    + blue_buffer[(i * image_width) + 2] * kernel[i][2];
             end
         end
     end
