@@ -93,11 +93,14 @@ module blurring_filter_tb;
 
         #1000
 
-        // Initialize image with a simple pattern (gradient)
+       // Initialize image with a simple pattern (thick line)
         for (i = 0; i < IMG_LENGTH; i = i + 1) begin
             for (j = 0; j < IMG_WIDTH; j = j + 1) begin
-                if (j > 80 && j < 120) begin
+                if (j > 80 && j < 120)  begin
                     image[i * IMG_LENGTH + j] = 12'b111111111111;
+                end
+                else begin
+                    image[i * IMG_LENGTH + j] = 12'b000000000000;
                 end
             end
         end
