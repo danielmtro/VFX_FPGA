@@ -48,13 +48,13 @@ module dm_blurring_filter (
     localparam N = 320 * 4 + 5;
 
     // Extract RGB components from input data
-    logic [W - 1:0] red_in, green_n, blue_in;
+    logic [W - 1:0] red_in, green_in, blue_in;
 
     // extract our bit values - pad them with zeroes on the start and the end
     // to turn them into 14/7 fixed point computations
     assign red_in   = {3'b000, data_in[11:8], 7'b0000000};  // Bits 11-8 for red
-    assign green_in = {3'b000, data_in[7:4], 7'b0000000};   // Bits 7-4 for green
-    assign blue_in  = {3'b000, data_in[3:0], 7'b0000000};   // Bits 3-0 for blue
+    assign green_in = {3'b000, data_in[7:4],  7'b0000000};   // Bits 7-4 for green
+    assign blue_in  = {3'b000, data_in[3:0],  7'b0000000};   // Bits 3-0 for blue
 
 
     // Image buffer for RGB components
@@ -141,9 +141,9 @@ module dm_blurring_filter (
         if (valid_in & ready_in) begin
 
             // extract the relevant information
-            data_out <= {r_macc[BITS_PER_COLOUR + -1 + W_FRAC:W_FRAC], 
-                         g_macc[BITS_PER_COLOUR + -1 + W_FRAC:W_FRAC], 
-                         b_macc[BITS_PER_COLOUR + -1 + W_FRAC:W_FRAC]};
+            data_out <= {r_macc[BITS_PER_COLOUR -1 + W_FRAC:W_FRAC], 
+                         g_macc[BITS_PER_COLOUR -1 + W_FRAC:W_FRAC], 
+                         b_macc[BITS_PER_COLOUR -1 + W_FRAC:W_FRAC]};
 
             // check if we have overflowed the buffers
             overflow <= (r_macc < 0 || g_macc < 0 || b_macc < 0) ? 1 : 0;
