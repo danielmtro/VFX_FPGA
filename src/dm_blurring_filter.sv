@@ -171,8 +171,9 @@ module dm_blurring_filter (
             end
 
             // if we've reached the buffer width, then we are at the start of the frame ready 
-            // to output
-            if(pixel_delay_counter <= N - 1) begin
+            // check that the current pixel count has exceeded the size of the frame before resetting
+            if(pixel_delay_counter <= N - 1 && pixel_count >= TOTAL_PIXELS) begin
+
                 pixel_count <= 0;
             end
             else begin
