@@ -22,7 +22,7 @@ module blurring_filter_tb;
     logic [11:0] data_out;
 
     // Instantiate the blurring filter
-    dm_blurring_filter DUT (
+    blurring_filter DUT (
         .clk(clk),
         .ready_in(ready_in),
 		.valid_in(valid_in),
@@ -151,7 +151,7 @@ module blurring_filter_tb;
         // Open VCD file for waveform dumping
         $dumpfile("blurring_filter_tb.vcd");
         $dumpvars(0, blurring_filter_tb);
-
+/*
         // Delay before entering each test
         #100;
         ready_in = 1;
@@ -163,7 +163,7 @@ module blurring_filter_tb;
         run_test();
         ready_in = 0;
         valid_in = 0;
-/*
+*/
         // Delay before entering each test
         #100;
         ready_in = 1;
@@ -175,7 +175,7 @@ module blurring_filter_tb;
         run_test();
         ready_in = 0;
         valid_in = 0;
-*/
+
         #1000
 
         // Finish simulation
@@ -212,7 +212,7 @@ module blurring_filter_tb;
                     data_in = image[i * IMG_LENGTH + j];
                     #TCLK; // Wait for processing
 
-                    // Test handshaking
+                    /*// Test handshaking
                     if ((i % 10 == 0) || (j % 10 == 0)) begin
                         valid_in = 0;
                         #100
@@ -223,7 +223,7 @@ module blurring_filter_tb;
                         ready_in = 0;
                         #100
                         ready_in = 1;
-                    end
+                    end*/
 
                     // Example: write the pixel data in binary format
                     $fwrite(image_file_out, "%b\n", data_out);
