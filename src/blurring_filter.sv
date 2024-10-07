@@ -64,53 +64,53 @@ module blurring_filter (
     always_comb begin
     // Blur
         kernel_blur[0] = 15;
-        kernel_blur[1] = 15;
+        kernel_blur[1] = 0;
         kernel_blur[2] = 0;
         kernel_blur[3] = 0;
-        kernel_blur[4] = 0;
+        kernel_blur[4] = 1;
         kernel_blur[5] = 1;
         kernel_blur[6] = 1;
 
         kernel_blur[7] = 15;
         kernel_blur[8] = 0;
         kernel_blur[9] = 0;
-        kernel_blur[10] = 0;
+        kernel_blur[10] = 1;
         kernel_blur[11] = 1;
         kernel_blur[12] = 1;
         kernel_blur[13] = 1;
 
         kernel_blur[14] = 0;
         kernel_blur[15] = 0;
-        kernel_blur[16] = 0;
+        kernel_blur[16] = 1;
         kernel_blur[17] = 1;
         kernel_blur[18] = 1;
         kernel_blur[19] = 1;
-        kernel_blur[20] = 2;
+        kernel_blur[20] = 1;
 
         kernel_blur[21] = 0;
-        kernel_blur[22] = 0;
+        kernel_blur[22] = 1;
         kernel_blur[23] = 1;
         kernel_blur[24] = 1;
         kernel_blur[25] = 1;
-        kernel_blur[26] = 2;
+        kernel_blur[26] = 1;
         kernel_blur[27] = 2;
 
-        kernel_blur[28] = 0;
+        kernel_blur[28] = 1;
         kernel_blur[29] = 1;
         kernel_blur[30] = 1;
         kernel_blur[31] = 1;
-        kernel_blur[32] = 2;
+        kernel_blur[32] = 1;
         kernel_blur[33] = 2;
         kernel_blur[34] = 2;
 
         /*
         Sum is 64
         Weights
-        0 0 1 1 1 2 2
         0 1 1 1 2 2 2
-        1 1 1 2 2 2 4
-        1 1 2 2 2 4 4
-        1 2 2 2 4 4 4
+        0 1 1 2 2 2 2
+        1 1 2 2 2 2 2
+        1 2 2 2 2 2 4
+        2 2 2 2 2 4 4
         */
 
     // Kernel for top to bottom edge detection

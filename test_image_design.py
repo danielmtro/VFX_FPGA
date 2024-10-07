@@ -60,7 +60,7 @@ for i in range(IMG_HEIGHT):
             # Bottom half of the inner diamond
             elif (j - 160) <= (220 - i) and (j - 160) >= (i - 220):
                 # Add diagonal lines every 40 pixels
-                if (j - i) % 40 < 5:  # Continuous 5-pixel thick diagonal line
+                if (80 + j - i) % 40 < 5:  # Continuous 5-pixel thick diagonal line
                     image[i, j] = GREEN  # Green
                 else:
                     image[i, j] = WHITE  # White

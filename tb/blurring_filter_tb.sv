@@ -120,7 +120,7 @@ module blurring_filter_tb;
                     if ((j - 160) <= (220 - i)) begin
                         if ((j - 160) >= (i - 220)) begin
                             // Bottom half of the inner diamond (create diagonal lines every 40 pixels)
-                            if ((j - i) % 40 < 5) begin  // This ensures a continuous 5-pixel thick diagonal line
+                            if ((80 + j - i) % 40 < 5) begin  // This ensures a continuous 5-pixel thick diagonal line
                                 image[(i * IMG_WIDTH) + j] = 12'b000011110000;  // Diagonal colour (green)
                             end
                             else begin
