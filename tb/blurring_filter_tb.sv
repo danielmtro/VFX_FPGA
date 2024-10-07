@@ -58,72 +58,74 @@ module blurring_filter_tb;
         data_out = 0;
 			startofpacket_out = 0;
 			endofpacket_out = 0;
-/*
-        // Initialize image with a 1's to ensure base functionality
-        for (i = 0; i < IMG_LENGTH; i = i + 1) begin
-            for (j = 0; j < IMG_WIDTH; j = j + 1) begin
-                image[i * IMG_LENGTH + j] = 12'b010101101010; // Simple colour
-            end
-        end
 
-        // Open VCD file for waveform dumping
-        $dumpfile("blurring_filter_tb.vcd");
-        $dumpvars(0, blurring_filter_tb);
-
-        // Delay before entering each test
-        #100;
-        ready_in = 1;
-        valid_in = 1;
-
-        // Test no blur
-        $display("Testing with no blur");
-        is_underage = 0; // Set to no blur
-        run_test();
-        ready_in = 0;
-        valid_in = 0;
-
-        // Delay before entering each test
-        #100;
-        ready_in = 1;
-        valid_in = 1;
-
-        // Test blur
-        $display("Testing with blur");
-        is_underage = 1;
-        run_test();
-        ready_in = 0;
-        valid_in = 0;
-
-        #1000
-*/
-        // Initialize image with a simple pattern (diamond with lines)
+        // Initialize image with a pattern mimicking a face and outside noise
         for (i = 0; i < IMG_LENGTH; i = i + 1) begin
             for (j = 0; j < IMG_WIDTH; j = j + 1) begin
 
-                // Base color for the image
+                // Base colour for the image
                 image[(i * IMG_WIDTH) + j] = 12'b010101101010; // Base colour (grey)
 
-
-                // Add two lines to detect edges for
-                if (((j > 9) && (j < 11)) || ((j > 209) && (j < 211))) begin
-                    image[(i * IMG_WIDTH) + j] = 12'b000000000000; // Simple color (black)
+                // Add two vertical lines to simulate noise
+                if (((j > 7) && (j < 13)) || ((j > 307) && (j < 313))) begin
+                    image[(i * IMG_WIDTH) + j] = 12'b000000000000; // Simple colour (black)
                 end
 
-                // Make the diamond
-                // Top half of the diamond
+                // Add one horizontal line outside of blurring scope
+                if ((i > 227) && (i < 233)) begin
+                    image[(i * IMG_WIDTH) + j] = 12'b000000000000; // Simple colour (black)
+                end
+
+                // Make the outer and inner diamonds
                 if (i <= 120) begin
+
+                    // Outer diamond top left half
+                    if ((j >= 140 - i) && (j <= 140 - i + 5)) begin
+                        image[(i * IMG_WIDTH) + j] = 12'b000000001111;  // Left outer diamond colour (blue)
+                    end
+
+                    // Outer diamond top right half
+                    if ((j >= 180 + i) && (j <= 180 + i + 5)) begin
+                        image[(i * IMG_WIDTH) + j] = 12'b000000001111;  // Right outer diamond colour (blue)
+                    end
+
+                    // Top half of the inner diamond
                     if ((j - 160) <= (i - 20)) begin
                         if ((j - 160) >= (20 - i)) begin
-                            image[(i * IMG_WIDTH) + j] = 12'b111111111111;  // Diamond color (white)
+                            // Add a thick diagonal line every 40 pixels
+                            if ((i + j) % 40 < 5) begin  // This ensures a continuous 5-pixel thick diagonal line
+                                image[(i * IMG_WIDTH) + j] = 12'b111100000000;  // Diagonal colour (red)
+                            end
+                            else begin
+                                image[(i * IMG_WIDTH) + j] = 12'b111111111111;  // Diamond colour (white)
+                            end
                         end
                     end
                 end
 
-                // Bottom half of the diamond
+                
                 else begin
+
+                    // Outer diamond bottom left half
+                    if ((j >= i - 100) && (j <= i - 100 + 5)) begin
+                        image[(i * IMG_WIDTH) + j] = 12'b000000001111;  // Left outer diamond colour (blue)
+                    end
+
+                    // Outer diamond bottom right half
+                    if ((j >= 420 - i) && (j <= 420 - i + 5)) begin
+                        image[(i * IMG_WIDTH) + j] = 12'b000000001111;  // Right outer diamond colour (blue)
+                    end
+
+                    // Bottom half of the inner diamond
                     if ((j - 160) <= (220 - i)) begin
                         if ((j - 160) >= (i - 220)) begin
-                            image[(i * IMG_WIDTH) + j] = 12'b111111111111;  // Diamond color (white)
+                            // Bottom half of the inner diamond (create diagonal lines every 40 pixels)
+                            if ((j - i) % 40 < 5) begin  // This ensures a continuous 5-pixel thick diagonal line
+                                image[(i * IMG_WIDTH) + j] = 12'b000011110000;  // Diagonal colour (green)
+                            end
+                            else begin
+                                image[(i * IMG_WIDTH) + j] = 12'b111111111111;  // Diamond colour (white)
+                            end
                         end
                     end
                 end
