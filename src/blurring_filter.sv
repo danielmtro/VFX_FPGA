@@ -30,8 +30,18 @@ module blurring_filter (
     assign green_in = data_in[7:4];   // Bits 7-4 for green
     assign blue_in  = data_in[3:0];   // Bits 3-0 for blue
 
-    // 320 wide image
+    // 320x240 image
     localparam image_width = 9'b101000000;
+    localparam image_length = 8'b11110000;
+
+    logic [9:0] col_count;
+    logic [8:0] row_count;
+
+    logic head_detected;
+    logic finish_blur;
+    logic blur_pixels;
+    logic face_ending;
+    logic [9:0] blur_start, blur_end, temp_blur_start, temp_blur_end;
 
     // Image buffer for RGB components
     logic [3:0] red_buffer [0:(image_width*4 + 6)];
@@ -39,14 +49,17 @@ module blurring_filter (
     logic [3:0] blue_buffer [0:(image_width*4 + 6)];
 
     logic [9:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
-    logic signed [7:0] ledge_result, redge_result; // Final edge detection results
+    logic signed [9:0] TtoB_edge_result_r, TtoB_edge_result_g, TtoB_edge_result_b, 
+        LtoR_edge_result_r, LtoR_edge_result_g, LtoR_edge_result_b; // Intermediray edge detection results
+
+    logic signed [16:0] TtoB_grey_result, LtoR_grey_result;
 
     // Define the bitshift kernel_blur
     logic [3:0] kernel_blur [0:34];
     
     // Define the edge kernels
-    logic [3:0] kernel_L_edge [0:14];
-    logic [3:0] kernel_R_edge [0:14];
+    logic [5:0] kernel_TtoB [0:24];
+    logic [5:0] kernel_LtoR [0:24];
 
     always_comb begin
     // Blur
@@ -100,54 +113,82 @@ module blurring_filter (
         1 2 2 2 4 4 4
         */
 
-    // Left Edge
-        kernel_L_edge[0] = 0;
-        kernel_L_edge[1] = 0;
-        kernel_L_edge[2] = 15;
-        kernel_L_edge[3] = 0;
-        kernel_L_edge[4] = 0;
+    // Kernel for top to bottom edge detection
+        kernel_TtoB[0] = 1;
+        kernel_TtoB[1] = 1;
+        kernel_TtoB[2] = 2;
+        kernel_TtoB[3] = 1;
+        kernel_TtoB[4] = 1;
 
-        kernel_L_edge[5] = 1;
-        kernel_L_edge[6] = 1;
-        kernel_L_edge[7] = 15;
-        kernel_L_edge[8] = 1;
-        kernel_L_edge[9] = 1;
+        kernel_TtoB[5] = 0;
+        kernel_TtoB[6] = 1;
+        kernel_TtoB[7] = 1;
+        kernel_TtoB[8] = 1;
+        kernel_TtoB[9] = 0;
 
-        kernel_L_edge[10] = 0;
-        kernel_L_edge[11] = 0;
-        kernel_L_edge[12] = 15;
-        kernel_L_edge[13] = 0;
-        kernel_L_edge[14] = 0;
+        kernel_TtoB[10] = 15;
+        kernel_TtoB[11] = 15;
+        kernel_TtoB[12] = 15;
+        kernel_TtoB[13] = 15;
+        kernel_TtoB[14] = 15;
+
+        kernel_TtoB[15] = 0;
+        kernel_TtoB[16] = 1;
+        kernel_TtoB[17] = 1;
+        kernel_TtoB[18] = 1;
+        kernel_TtoB[19] = 0;
+
+        kernel_TtoB[20] = 1;
+        kernel_TtoB[21] = 1;
+        kernel_TtoB[22] = 2;
+        kernel_TtoB[23] = 1;
+        kernel_TtoB[24] = 1;
 
         /*
-        1 1 0 -1 -1
-        2 2 0 -2 -2
-        1 1 0 -1 -1
+        2  2  4  2  2
+        1  2  2  2  1
+        0  0  0  0  0
+       -1 -2 -2 -2 -1
+       -2 -2 -4 -2 -2
         */
 
-    // Right Edge
-        kernel_R_edge[0] = 0;
-        kernel_R_edge[1] = 0;
-        kernel_R_edge[2] = 15;
-        kernel_R_edge[3] = 0;
-        kernel_R_edge[4] = 0;
+    // Kernel for left to right edge detection
+        kernel_LtoR[0] = 1;
+        kernel_LtoR[1] = 0;
+        kernel_LtoR[2] = 15;
+        kernel_LtoR[3] = 1;
+        kernel_LtoR[4] = 1;
 
-        kernel_R_edge[5] = 1;
-        kernel_R_edge[6] = 1;
-        kernel_R_edge[7] = 15;
-        kernel_R_edge[8] = 1;
-        kernel_R_edge[9] = 1;
+        kernel_LtoR[5] = 1;
+        kernel_LtoR[6] = 1;
+        kernel_LtoR[7] = 0;
+        kernel_LtoR[8] = 1;
+        kernel_LtoR[9] = 1;
 
-        kernel_R_edge[10] = 0;
-        kernel_R_edge[11] = 0;
-        kernel_R_edge[12] = 15;
-        kernel_R_edge[13] = 0;
-        kernel_R_edge[14] = 0;
+        kernel_LtoR[10] = 2;
+        kernel_LtoR[11] = 1;
+        kernel_LtoR[12] = 15;
+        kernel_LtoR[13] = 1;
+        kernel_LtoR[14] = 2;
 
-        /*
-        -1 -1 0 1 1
-        -2 -2 0 2 2
-        -1 -1 0 1 1
+        kernel_LtoR[15] = 1;
+        kernel_LtoR[16] = 1;
+        kernel_LtoR[17] = 0;
+        kernel_LtoR[18] = 1;
+        kernel_LtoR[19] = 1;
+
+        kernel_LtoR[20] = 1;
+        kernel_LtoR[21] = 0;
+        kernel_LtoR[22] = 15;
+        kernel_LtoR[23] = 1;
+        kernel_LtoR[24] = 1;
+
+       /*
+        2  1  0 -2 -2
+        2  2  0 -2 -2
+        4  2  0 -2 -4
+        2  2  0 -2 -2
+        2  1  0 -2 -2
         */
 
     end
@@ -155,6 +196,9 @@ module blurring_filter (
     // Shift incoming data into separate RGB buffers
     always_ff @(posedge clk) begin : Image_buffer
         if (startofpacket_in) begin
+            row_count <= 0;
+            col_count <= 0;
+
             for (int i = 0; i < (image_width*4 + 6); i++) begin
                 red_buffer[i] <= 0;
                 green_buffer[i] <= 0;
@@ -173,168 +217,218 @@ module blurring_filter (
             red_buffer[(image_width*4 + 6)] <= red_in;
             green_buffer[(image_width*4 + 6)] <= green_in;
             blue_buffer[(image_width*4 + 6)] <= blue_in;
+
+            if (col_count == 319) begin
+                col_count <= 0;
+                row_count <= row_count + 1;
+            end
+
+            else begin
+                col_count <= col_count + 1;
+            end
         end
     end
 
+    // Blur images and detect edges
     always_ff @(posedge clk) begin : Convolution
-        conv_result_r <= 0;
-        conv_result_g <= 0;
-        conv_result_b <= 0;
-        ledge_result <= 0;
-        redge_result <= 0;
-
-        conv_result_r <= (red_buffer[(0 * image_width) + 0] << kernel_blur[0])
-                        + (red_buffer[(0 * image_width) + 1] << kernel_blur[1])
-                        + (red_buffer[(0 * image_width) + 2] << kernel_blur[2])
-                        + (red_buffer[(0 * image_width) + 3] << kernel_blur[3])
-                        + (red_buffer[(0 * image_width) + 4] << kernel_blur[4])
-                        + (red_buffer[(0 * image_width) + 5] << kernel_blur[5])
-                        + (red_buffer[(0 * image_width) + 6] << kernel_blur[6])
-                        + (red_buffer[(1 * image_width) + 0] << kernel_blur[7])
-                        + (red_buffer[(1 * image_width) + 1] << kernel_blur[8])
-                        + (red_buffer[(1 * image_width) + 2] << kernel_blur[9])
-                        + (red_buffer[(1 * image_width) + 3] << kernel_blur[10])
-                        + (red_buffer[(1 * image_width) + 4] << kernel_blur[11])
-                        + (red_buffer[(1 * image_width) + 5] << kernel_blur[12])
-                        + (red_buffer[(1 * image_width) + 6] << kernel_blur[13])
-                        + (red_buffer[(2 * image_width) + 0] << kernel_blur[14])
-                        + (red_buffer[(2 * image_width) + 1] << kernel_blur[15])
-                        + (red_buffer[(2 * image_width) + 2] << kernel_blur[16])
-                        + (red_buffer[(2 * image_width) + 3] << kernel_blur[17])
-                        + (red_buffer[(2 * image_width) + 4] << kernel_blur[18])
-                        + (red_buffer[(2 * image_width) + 5] << kernel_blur[19])
-                        + (red_buffer[(2 * image_width) + 6] << kernel_blur[20])
-                        + (red_buffer[(3 * image_width) + 0] << kernel_blur[21])
-                        + (red_buffer[(3 * image_width) + 1] << kernel_blur[22])
-                        + (red_buffer[(3 * image_width) + 2] << kernel_blur[23])
-                        + (red_buffer[(3 * image_width) + 3] << kernel_blur[24])
-                        + (red_buffer[(3 * image_width) + 4] << kernel_blur[25])
-                        + (red_buffer[(3 * image_width) + 5] << kernel_blur[26])
-                        + (red_buffer[(3 * image_width) + 6] << kernel_blur[27])
-                        + (red_buffer[(4 * image_width) + 0] << kernel_blur[28])
-                        + (red_buffer[(4 * image_width) + 1] << kernel_blur[29])
-                        + (red_buffer[(4 * image_width) + 2] << kernel_blur[30])
-                        + (red_buffer[(4 * image_width) + 3] << kernel_blur[31])
-                        + (red_buffer[(4 * image_width) + 4] << kernel_blur[32])
-                        + (red_buffer[(4 * image_width) + 5] << kernel_blur[33])
-                        + (red_buffer[(4 * image_width) + 6] << kernel_blur[34]);
+        // Reset variables for every pixel
+        conv_result_r = 0;
+        conv_result_g = 0;
+        conv_result_b = 0;
         
-        conv_result_g <= (green_buffer[(0 * image_width) + 0] << kernel_blur[0])
-                        + (green_buffer[(0 * image_width) + 1] << kernel_blur[1])
-                        + (green_buffer[(0 * image_width) + 2] << kernel_blur[2])
-                        + (green_buffer[(0 * image_width) + 3] << kernel_blur[3])
-                        + (green_buffer[(0 * image_width) + 4] << kernel_blur[4])
-                        + (green_buffer[(0 * image_width) + 5] << kernel_blur[5])
-                        + (green_buffer[(0 * image_width) + 6] << kernel_blur[6])
-                        + (green_buffer[(1 * image_width) + 0] << kernel_blur[7])
-                        + (green_buffer[(1 * image_width) + 1] << kernel_blur[8])
-                        + (green_buffer[(1 * image_width) + 2] << kernel_blur[9])
-                        + (green_buffer[(1 * image_width) + 3] << kernel_blur[10])
-                        + (green_buffer[(1 * image_width) + 4] << kernel_blur[11])
-                        + (green_buffer[(1 * image_width) + 5] << kernel_blur[12])
-                        + (green_buffer[(1 * image_width) + 6] << kernel_blur[13])
-                        + (green_buffer[(2 * image_width) + 0] << kernel_blur[14])
-                        + (green_buffer[(2 * image_width) + 1] << kernel_blur[15])
-                        + (green_buffer[(2 * image_width) + 2] << kernel_blur[16])
-                        + (green_buffer[(2 * image_width) + 3] << kernel_blur[17])
-                        + (green_buffer[(2 * image_width) + 4] << kernel_blur[18])
-                        + (green_buffer[(2 * image_width) + 5] << kernel_blur[19])
-                        + (green_buffer[(2 * image_width) + 6] << kernel_blur[20])
-                        + (green_buffer[(3 * image_width) + 0] << kernel_blur[21])
-                        + (green_buffer[(3 * image_width) + 1] << kernel_blur[22])
-                        + (green_buffer[(3 * image_width) + 2] << kernel_blur[23])
-                        + (green_buffer[(3 * image_width) + 3] << kernel_blur[24])
-                        + (green_buffer[(3 * image_width) + 4] << kernel_blur[25])
-                        + (green_buffer[(3 * image_width) + 5] << kernel_blur[26])
-                        + (green_buffer[(3 * image_width) + 6] << kernel_blur[27])
-                        + (green_buffer[(4 * image_width) + 0] << kernel_blur[28])
-                        + (green_buffer[(4 * image_width) + 1] << kernel_blur[29])
-                        + (green_buffer[(4 * image_width) + 2] << kernel_blur[30])
-                        + (green_buffer[(4 * image_width) + 3] << kernel_blur[31])
-                        + (green_buffer[(4 * image_width) + 4] << kernel_blur[32])
-                        + (green_buffer[(4 * image_width) + 5] << kernel_blur[33])
-                        + (green_buffer[(4 * image_width) + 6] << kernel_blur[34]);
+        TtoB_edge_result_r = 0;
+        TtoB_edge_result_g = 0;
+        TtoB_edge_result_b = 0;
+        LtoR_edge_result_r = 0;
+        LtoR_edge_result_g = 0;
+        LtoR_edge_result_b = 0;
 
-        conv_result_b <= (blue_buffer[(0 * image_width) + 0] << kernel_blur[0])
-                        + (blue_buffer[(0 * image_width) + 1] << kernel_blur[1])
-                        + (blue_buffer[(0 * image_width) + 2] << kernel_blur[2])
-                        + (blue_buffer[(0 * image_width) + 3] << kernel_blur[3])
-                        + (blue_buffer[(0 * image_width) + 4] << kernel_blur[4])
-                        + (blue_buffer[(0 * image_width) + 5] << kernel_blur[5])
-                        + (blue_buffer[(0 * image_width) + 6] << kernel_blur[6])
-                        + (blue_buffer[(1 * image_width) + 0] << kernel_blur[7])
-                        + (blue_buffer[(1 * image_width) + 1] << kernel_blur[8])
-                        + (blue_buffer[(1 * image_width) + 2] << kernel_blur[9])
-                        + (blue_buffer[(1 * image_width) + 3] << kernel_blur[10])
-                        + (blue_buffer[(1 * image_width) + 4] << kernel_blur[11])
-                        + (blue_buffer[(1 * image_width) + 5] << kernel_blur[12])
-                        + (blue_buffer[(1 * image_width) + 6] << kernel_blur[13])
-                        + (blue_buffer[(2 * image_width) + 0] << kernel_blur[14])
-                        + (blue_buffer[(2 * image_width) + 1] << kernel_blur[15])
-                        + (blue_buffer[(2 * image_width) + 2] << kernel_blur[16])
-                        + (blue_buffer[(2 * image_width) + 3] << kernel_blur[17])
-                        + (blue_buffer[(2 * image_width) + 4] << kernel_blur[18])
-                        + (blue_buffer[(2 * image_width) + 5] << kernel_blur[19])
-                        + (blue_buffer[(2 * image_width) + 6] << kernel_blur[20])
-                        + (blue_buffer[(3 * image_width) + 0] << kernel_blur[21])
-                        + (blue_buffer[(3 * image_width) + 1] << kernel_blur[22])
-                        + (blue_buffer[(3 * image_width) + 2] << kernel_blur[23])
-                        + (blue_buffer[(3 * image_width) + 3] << kernel_blur[24])
-                        + (blue_buffer[(3 * image_width) + 4] << kernel_blur[25])
-                        + (blue_buffer[(3 * image_width) + 5] << kernel_blur[26])
-                        + (blue_buffer[(3 * image_width) + 6] << kernel_blur[27])
-                        + (blue_buffer[(4 * image_width) + 0] << kernel_blur[28])
-                        + (blue_buffer[(4 * image_width) + 1] << kernel_blur[29])
-                        + (blue_buffer[(4 * image_width) + 2] << kernel_blur[30])
-                        + (blue_buffer[(4 * image_width) + 3] << kernel_blur[31])
-                        + (blue_buffer[(4 * image_width) + 4] << kernel_blur[32])
-                        + (blue_buffer[(4 * image_width) + 5] << kernel_blur[33])
-                        + (blue_buffer[(4 * image_width) + 6] << kernel_blur[34]);
+        TtoB_grey_result = 0;
+        LtoR_grey_result = 0;
 
-        ledge_result <= (red_buffer[(2 * image_width) + 2] << kernel_L_edge[0])
-                        + (red_buffer[(2 * image_width) + 3] << kernel_L_edge[1])
-                        + (red_buffer[(2 * image_width) + 4] << kernel_L_edge[2])
-                        - (red_buffer[(2 * image_width) + 5] << kernel_L_edge[3])
-                        - (red_buffer[(2 * image_width) + 6] << kernel_L_edge[4])
-                        + (red_buffer[(3 * image_width) + 2] << kernel_L_edge[5])
-                        + (red_buffer[(3 * image_width) + 3] << kernel_L_edge[6])
-                        + (red_buffer[(3 * image_width) + 4] << kernel_L_edge[7])
-                        - (red_buffer[(3 * image_width) + 5] << kernel_L_edge[8])
-                        - (red_buffer[(3 * image_width) + 6] << kernel_L_edge[9])
-                        + (red_buffer[(4 * image_width) + 2] << kernel_L_edge[10])
-                        + (red_buffer[(4 * image_width) + 3] << kernel_L_edge[11])
-                        + (red_buffer[(4 * image_width) + 4] << kernel_L_edge[12])
-                        - (red_buffer[(4 * image_width) + 5] << kernel_L_edge[13])
-                        - (red_buffer[(4 * image_width) + 6] << kernel_L_edge[14]);
+        // Reset variables at the start of a new image
+        if ((row_count == 0) && (col_count == 0)) begin
+            blur_start <= 9'b0010100000;
+            blur_end <= 9'b0010100000;
+            head_detected <= 0;
+            finish_blur <= 0;
+            temp_blur_start <= 0;
+            temp_blur_end <= 0;
+            blur_pixels = 0;
+            face_ending <= 0;
+        end
 
-        redge_result <= - (red_buffer[(2 * image_width) + 2] << kernel_R_edge[0])
-                        - (red_buffer[(2 * image_width) + 3] << kernel_R_edge[1])
-                        + (red_buffer[(2 * image_width) + 4] << kernel_R_edge[2])
-                        + (red_buffer[(2 * image_width) + 5] << kernel_R_edge[3])
-                        + (red_buffer[(2 * image_width) + 6] << kernel_R_edge[4])
-                        - (red_buffer[(3 * image_width) + 2] << kernel_R_edge[5])
-                        - (red_buffer[(3 * image_width) + 3] << kernel_R_edge[6])
-                        + (red_buffer[(3 * image_width) + 4] << kernel_R_edge[7])
-                        + (red_buffer[(3 * image_width) + 5] << kernel_R_edge[8])
-                        + (red_buffer[(3 * image_width) + 6] << kernel_R_edge[9])
-                        - (red_buffer[(4 * image_width) + 2] << kernel_R_edge[10])
-                        - (red_buffer[(4 * image_width) + 3] << kernel_R_edge[11])
-                        + (red_buffer[(4 * image_width) + 4] << kernel_R_edge[12])
-                        + (red_buffer[(4 * image_width) + 5] << kernel_R_edge[13])
-                        + (red_buffer[(4 * image_width) + 6] << kernel_R_edge[14]);
+        // Reset variables at th start of a new line
+        if (col_count == 319) begin
+            if ((temp_blur_start != 0) && (temp_blur_end != 0)) begin
+                blur_start <= temp_blur_start;
+                blur_end <= temp_blur_end;
+            end
+
+            temp_blur_start <= 0;
+            temp_blur_end <= 0;
+        end
+
+        // Convolute RGB
+        for (int i = 0; i < 5; i++) begin
+            for (int j = 0; j < 7; j++) begin
+                conv_result_r = conv_result_r + (red_buffer[(i * image_width) + j] << kernel_blur[((7 * i) + j)]);
+                conv_result_g = conv_result_g + (green_buffer[(i * image_width) + j] << kernel_blur[((7 * i) + j)]);
+                conv_result_b = conv_result_b + (blue_buffer[(i * image_width) + j] << kernel_blur[((7 * i) + j)]);
+            end
+        end
+
+        // Apply edge detection to RGB
+        for (int i = 0; i < 5; i++) begin
+            for (int j = 0; j < 5; j++) begin
+                // Top to bottom edge filter
+                if (i < 3) begin
+                    TtoB_edge_result_r = TtoB_edge_result_r + (red_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                    TtoB_edge_result_g = TtoB_edge_result_g + (green_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                    TtoB_edge_result_b = TtoB_edge_result_b + (blue_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                end
+                else begin
+                    TtoB_edge_result_r = TtoB_edge_result_r - (red_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                    TtoB_edge_result_g = TtoB_edge_result_g - (green_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                    TtoB_edge_result_b = TtoB_edge_result_b - (blue_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                end
+
+                // Left to right edge filter
+                if (j < 3) begin
+                    LtoR_edge_result_r = LtoR_edge_result_r + (red_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                    LtoR_edge_result_g = LtoR_edge_result_g + (green_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                    LtoR_edge_result_b = LtoR_edge_result_b + (blue_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                end
+                else begin
+                    LtoR_edge_result_r = LtoR_edge_result_r - (red_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                    LtoR_edge_result_g = LtoR_edge_result_g - (green_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                    LtoR_edge_result_b = LtoR_edge_result_b - (blue_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                end
+            end
+        end
+
+        // Convert edge data from RGB to greyscale
+        TtoB_grey_result = (TtoB_edge_result_r << 5) // Multiply by 32
+                            + (TtoB_edge_result_g << 6) // Multiply by 64
+                            + (TtoB_edge_result_b << 4); // Multiply by 16
+        
+        LtoR_grey_result = (LtoR_edge_result_r << 5) // Multiply by 32
+                            + (LtoR_edge_result_g << 6) // Multiply by 64
+                            + (LtoR_edge_result_b << 4); // Multiply by 16
 
         if (ready_in && valid_in) begin
             if (is_underage) begin
-                // // Combine the normalized results for each color component
-                // data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
+                // If the top of the head is detected at the middle of the image, raise a flag (must be past row 5 for valid convolution)
+                if (!head_detected) begin
+                    if (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && (col_count == blur_start) && (row_count > 5)) begin
+                        head_detected <= 1;
+                        blur_start <= blur_start - 5;
+                        blur_end <= blur_end + 5;
+                    end
 
-                // Combine the normalized results for each color component
-                if (ledge_result[7:4] > 0) begin
-                    data_out <= 12'b111111111111; // White (all bits set)
+                    // For no blur, pass through the data
+                    data_out <= data_in;
                 end
 
+                // Check if blurring is finished or if pixels are within blurring bounds
                 else begin
-                    data_out <= 12'b000000000000; // Black (all bits cleared)
+                    if (finish_blur) begin
+                        // For no blur, pass through the data
+                        data_out <= data_in;
+                    end
+
+                    else begin
+                        // Check if pixel is not within dynamic blurring boundary (must be past column 5 for valid convolution)
+                        if ((col_count < blur_start - 5) || (col_count > blur_end + 5) || (col_count < 5)) begin
+                            // For no blur, pass through the data
+                            data_out <= data_in;
+                            blur_pixels = 0;
+                        end
+
+                        // Blur face and check for edges on face
+                        else begin
+                            // Check that pixel is edge
+                            if ((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) begin
+
+                                // Continuously check for the last edge in the image
+                                if (blur_pixels) begin
+                                    temp_blur_end <= col_count;
+                                end
+
+                                // For first edge pixel on left side, raise a flag and set temp_blur_start
+                                else begin
+                                    temp_blur_start <= col_count;
+                                    temp_blur_end <= col_count;
+                                    blur_pixels = 1;
+
+                                    // If the face start pixel begins to move to the right
+                                    if (temp_blur_start > blur_start) begin
+                                        face_ending <= 1;
+                                    end
+                                end
+                            end                     // FIX BLUR_PIXELS FLAG
+
+                            // Where face edge not detected properly, assume face continues down at 22.5 degrees
+                            if ((col_count > blur_start + 5) && (temp_blur_start == 0)); begin
+                                if (col_count % 2 == 0) begin
+                                    temp_blur_start <= blur_start + 1;
+                                    blur_pixels = 1;
+                                end
+                                else begin
+                                    temp_blur_start <= blur_start;
+                                    blur_pixels = 1;
+                                end
+                            end
+
+                            if ((col_count > blur_end + 5) && (temp_blur_end == 0)); begin
+                                if (col_count % 2 == 0) begin
+                                    temp_blur_end <= blur_end + 1;
+                                    blur_pixels = 0;
+                                end
+                                else begin
+                                    temp_blur_end <= blur_end;
+                                    blur_pixels = 0;
+                                end
+                            end
+
+                            // If the face is ending, slowly narrow down until face is finished
+                            if (face_ending) begin
+                                if (temp_blur_start < blur_start) begin
+                                    if (col_count % 2 == 0) begin
+                                        temp_blur_start <= blur_start + 1;
+                                    end
+                                    else begin
+                                        temp_blur_start <= blur_start;
+                                    end
+                                end
+
+                                if (temp_blur_end < blur_end) begin
+                                    if (col_count % 2 == 0) begin
+                                        temp_blur_end <= blur_end - 1;
+                                    end
+                                    else begin
+                                        temp_blur_end <= blur_end;
+                                    end
+                                end
+
+                                if (blur_start - blur_end <= 5) begin
+                                    finish_blur <= 1;
+                                end
+                            end
+                        end
+                    end
+                end
+
+                // Blur the pixels
+                if (blur_pixels) begin 
+                    // Combine the normalized results for each color component
+                    data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
+                end
+
+                // Output the input pixel
+                else begin
+                    // For no blur, pass through the data
+                    data_out <= data_in;
                 end
             end
 

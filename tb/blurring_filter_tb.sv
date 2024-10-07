@@ -45,6 +45,9 @@ module blurring_filter_tb;
     logic [11:0] image [0:LEN-1];
 
     integer i, j;
+    
+    // Declare the file handle
+    integer image_file_in, image_file_out;
 
     initial begin
 
@@ -55,7 +58,7 @@ module blurring_filter_tb;
         data_out = 0;
 			startofpacket_out = 0;
 			endofpacket_out = 0;
-
+/*
         // Initialize image with a 1's to ensure base functionality
         for (i = 0; i < IMG_LENGTH; i = i + 1) begin
             for (j = 0; j < IMG_WIDTH; j = j + 1) begin
@@ -92,18 +95,58 @@ module blurring_filter_tb;
         valid_in = 0;
 
         #1000
-
-       // Initialize image with a simple pattern (thick line)
+*/
+        // Initialize image with a simple pattern (diamond with lines)
         for (i = 0; i < IMG_LENGTH; i = i + 1) begin
             for (j = 0; j < IMG_WIDTH; j = j + 1) begin
-                if (j > 80 && j < 120)  begin
-                    image[i * IMG_LENGTH + j] = 12'b111111111111;
+
+                // Base color for the image
+                image[(i * IMG_WIDTH) + j] = 12'b010101101010; // Base colour (grey)
+
+
+                // Add two lines to detect edges for
+                if (((j > 9) && (j < 11)) || ((j > 209) && (j < 211))) begin
+                    image[(i * IMG_WIDTH) + j] = 12'b000000000000; // Simple color (black)
                 end
+
+                // Make the diamond
+                // Top half of the diamond
+                if (i <= 120) begin
+                    if ((j - 160) <= (i - 20)) begin
+                        if ((j - 160) >= (20 - i)) begin
+                            image[(i * IMG_WIDTH) + j] = 12'b111111111111;  // Diamond color (white)
+                        end
+                    end
+                end
+
+                // Bottom half of the diamond
                 else begin
-                    image[i * IMG_LENGTH + j] = 12'b000000000000;
+                    if ((j - 160) <= (220 - i)) begin
+                        if ((j - 160) >= (i - 220)) begin
+                            image[(i * IMG_WIDTH) + j] = 12'b111111111111;  // Diamond color (white)
+                        end
+                    end
                 end
             end
         end
+
+        // Open the file for input writing (in write mode)
+        image_file_in = $fopen("input_image_data.txt", "w");
+        if (image_file_in == 0) begin
+            $display("Error opening file!");
+            $finish; // Exit simulation if file opening fails
+        end
+
+        // Initialize the image data
+        for (i = 0; i < IMG_LENGTH; i = i + 1) begin
+            for (j = 0; j < IMG_WIDTH; j = j + 1) begin
+                // Example: write the pixel data in binary format
+                $fwrite(image_file_in, "%b\n", image[(i * IMG_WIDTH) + j]);
+            end
+        end
+
+        // Close the file
+        $fclose(image_file_in);
 
         // Open VCD file for waveform dumping
         $dumpfile("blurring_filter_tb.vcd");
@@ -120,7 +163,7 @@ module blurring_filter_tb;
         run_test();
         ready_in = 0;
         valid_in = 0;
-
+/*
         // Delay before entering each test
         #100;
         ready_in = 1;
@@ -132,7 +175,7 @@ module blurring_filter_tb;
         run_test();
         ready_in = 0;
         valid_in = 0;
-
+*/
         #1000
 
         // Finish simulation
@@ -141,6 +184,14 @@ module blurring_filter_tb;
 
     task run_test;
         begin
+
+        // Open the file for output writing (in write mode)
+        image_file_out = $fopen("output_image_data.txt", "w");
+        if (image_file_out == 0) begin
+            $display("Error opening file!");
+            $finish; // Exit simulation if file opening fails
+        end
+
             // Feed image data to the filter
             for (i = 0; i < IMG_LENGTH; i = i + 1) begin
                 for (j = 0; j < IMG_WIDTH; j = j + 1) begin
@@ -173,9 +224,16 @@ module blurring_filter_tb;
                         #100
                         ready_in = 1;
                     end
+
+                    // Example: write the pixel data in binary format
+                    $fwrite(image_file_out, "%b\n", data_out);
                 end
             end
         end
+
+        // Close the file
+        $fclose(image_file_out);
+
     endtask
 
 endmodule
