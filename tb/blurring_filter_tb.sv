@@ -22,7 +22,7 @@ module blurring_filter_tb;
     logic [11:0] data_out;
 
     // Instantiate the blurring filter
-    blurring_filter DUT (
+    dm_blurring_filter DUT (
         .clk(clk),
         .ready_in(ready_in),
 		.valid_in(valid_in),

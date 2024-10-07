@@ -48,13 +48,13 @@ module dm_blurring_filter (
     localparam N = 320 * 4 + 5;
 
     // Extract RGB components from input data
-    logic [W - 1:0] red_in, green_n, blue_in;
+    logic [W - 1:0] red_in, green_in, blue_in;
 
     // extract our bit values - pad them with zeroes on the start and the end
     // to turn them into 14/7 fixed point computations
     assign red_in   = {3'b000, data_in[11:8], 7'b0000000};  // Bits 11-8 for red
-    assign green_in = {3'b000, data_in[7:4], 7'b0000000};   // Bits 7-4 for green
-    assign blue_in  = {3'b000, data_in[3:0], 7'b0000000};   // Bits 3-0 for blue
+    assign green_in = {3'b000, data_in[7:4],  7'b0000000};   // Bits 7-4 for green
+    assign blue_in  = {3'b000, data_in[3:0],  7'b0000000};   // Bits 3-0 for blue
 
 
     // Image buffer for RGB components
@@ -63,9 +63,9 @@ module dm_blurring_filter (
     logic signed [W - 1:0] b_shift_reg [0:N - 1];
 
     // multiply outputs
-    logic signed [2*W-1:0] r_mult_result [0:KERNEL_WIDTH-1];
-    logic signed [2*W-1:0] g_mult_result [0:KERNEL_WIDTH-1];
-    logic signed [2*W-1:0] b_mult_result [0:KERNEL_WIDTH-1];
+    logic signed [2*W-1:0] r_mult_result [0:KERNEL_SIZE-1];
+    logic signed [2*W-1:0] g_mult_result [0:KERNEL_SIZE-1];
+    logic signed [2*W-1:0] b_mult_result [0:KERNEL_SIZE-1];
 
     // accumulate outputs
     logic signed [$clog2(N)+2*W:0] r_macc; // $clog2(N)+1 to accomodate for overflows over the additions.
@@ -86,7 +86,7 @@ module dm_blurring_filter (
         if(valid_in && ready_in) begin
 
             // shift all the values down
-            for(int i = 0; i < N; i += 1) begin
+            for(int i = 0; i < N - 1; i += 1) begin
                 r_shift_reg[i + 1] <= r_shift_reg[i];
                 g_shift_reg[i + 1] <= g_shift_reg[i];
                 b_shift_reg[i + 1] <= b_shift_reg[i];
@@ -136,16 +136,14 @@ module dm_blurring_filter (
 
 
     logic overflow;
-    logic x_valid_q = 1'b0;
  
     always_ff @(posedge clk) begin : output_reg
-        valid_out <= 1'b0; /*FIX*/
         if (valid_in & ready_in) begin
 
             // extract the relevant information
-            data_out <= {r_macc[BITS_PER_COLOUR + -1 + W_FRAC:W_FRAC], 
-                         g_macc[BITS_PER_COLOUR + -1 + W_FRAC:W_FRAC], 
-                         b_macc[BITS_PER_COLOUR + -1 + W_FRAC:W_FRAC]};
+            data_out <= {r_macc[BITS_PER_COLOUR -1 + W_FRAC:W_FRAC], 
+                         g_macc[BITS_PER_COLOUR -1 + W_FRAC:W_FRAC], 
+                         b_macc[BITS_PER_COLOUR -1 + W_FRAC:W_FRAC]};
 
             // check if we have overflowed the buffers
             overflow <= (r_macc < 0 || g_macc < 0 || b_macc < 0) ? 1 : 0;
@@ -156,7 +154,7 @@ module dm_blurring_filter (
 
     integer pixel_delay_counter = 0;    // How many pixels are we behind the current SOP
     integer pixel_count = 0;              // What pixel in the frame itself are we up to?
-    always_ff @(posedge clk) begin : pixel_counter
+    always_ff @(posedge clk) begin : count_pixels
 
         // on the handshake increment the counters
         if(valid_in && ready_in) begin
@@ -173,11 +171,12 @@ module dm_blurring_filter (
             end
 
             // if we've reached the buffer width, then we are at the start of the frame ready 
-            // to output
-            if(pixel_delay_counter <= N - 1) begin
+            // check that the current pixel count has exceeded the size of the frame before resetting
+            if(pixel_delay_counter <= N - 1 && pixel_count >= TOTAL_PIXELS) begin
+
                 pixel_count <= 0;
             end
-            else if(pixel_delay_counter > N - 1) begin
+            else begin
                 pixel_count <= pixel_count + 1;
             end
 
@@ -202,10 +201,12 @@ module dm_blurring_filter (
 
         // if we haven't reached the buffer region yet or we've finished 
         // outputting a frame then set valid to be low
-        valid_out = 1'b1;
         if((pixel_delay_counter < N - 1) || pixel_count >= TOTAL_PIXELS) begin 
             valid_out = 1'b0;
-        end
+        end 
+		  else begin
+				valid_out = 1'b1;
+		  end
 
     end
 

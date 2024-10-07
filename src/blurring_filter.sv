@@ -62,46 +62,45 @@ module blurring_filter (
     logic [5:0] kernel_LtoR [0:24];
 
     always_comb begin
-    // Blur
-        kernel_blur[0] = 15;
-        kernel_blur[1] = 15;
-        kernel_blur[2] = 0;
-        kernel_blur[3] = 0;
-        kernel_blur[4] = 0;
-        kernel_blur[5] = 1;
-        kernel_blur[6] = 1;
+        kernel[0] = 15;
+        kernel[1] = 15;
+        kernel[2] = 0;
+        kernel[3] = 0;
+        kernel[4] = 0;
+        kernel[5] = 1;
+        kernel[6] = 1;
 
-        kernel_blur[7] = 15;
-        kernel_blur[8] = 0;
-        kernel_blur[9] = 0;
-        kernel_blur[10] = 0;
-        kernel_blur[11] = 1;
-        kernel_blur[12] = 1;
-        kernel_blur[13] = 1;
+        kernel[7] = 15;
+        kernel[8] = 0;
+        kernel[9] = 0;
+        kernel[10] = 0;
+        kernel[11] = 1;
+        kernel[12] = 1;
+        kernel[13] = 1;
 
-        kernel_blur[14] = 0;
-        kernel_blur[15] = 0;
-        kernel_blur[16] = 0;
-        kernel_blur[17] = 1;
-        kernel_blur[18] = 1;
-        kernel_blur[19] = 1;
-        kernel_blur[20] = 2;
+        kernel[14] = 0;
+        kernel[15] = 0;
+        kernel[16] = 0;
+        kernel[17] = 1;
+        kernel[18] = 1;
+        kernel[19] = 1;
+        kernel[20] = 2;
 
-        kernel_blur[21] = 0;
-        kernel_blur[22] = 0;
-        kernel_blur[23] = 1;
-        kernel_blur[24] = 1;
-        kernel_blur[25] = 1;
-        kernel_blur[26] = 2;
-        kernel_blur[27] = 2;
+        kernel[21] = 0;
+        kernel[22] = 0;
+        kernel[23] = 1;
+        kernel[24] = 1;
+        kernel[25] = 1;
+        kernel[26] = 2;
+        kernel[27] = 2;
 
-        kernel_blur[28] = 0;
-        kernel_blur[29] = 1;
-        kernel_blur[30] = 1;
-        kernel_blur[31] = 1;
-        kernel_blur[32] = 2;
-        kernel_blur[33] = 2;
-        kernel_blur[34] = 2;
+        kernel[28] = 0;
+        kernel[29] = 1;
+        kernel[30] = 1;
+        kernel[31] = 1;
+        kernel[32] = 2;
+        kernel[33] = 2;
+        kernel[34] = 2;
 
         /*
         Sum is 64
