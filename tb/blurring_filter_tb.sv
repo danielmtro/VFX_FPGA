@@ -209,10 +209,10 @@ module blurring_filter_tb;
                         endofpacket_in = 0;
                         
                     end
-                    data_in = image[i * IMG_LENGTH + j];
+                    data_in = image[i * IMG_WIDTH + j];
                     #TCLK; // Wait for processing
 
-                    /*// Test handshaking
+                    // Test handshaking
                     if ((i % 10 == 0) || (j % 10 == 0)) begin
                         valid_in = 0;
                         #100
@@ -223,7 +223,7 @@ module blurring_filter_tb;
                         ready_in = 0;
                         #100
                         ready_in = 1;
-                    end*/
+                    end
 
                     // Example: write the pixel data in binary format
                     $fwrite(image_file_out, "%b\n", data_out);

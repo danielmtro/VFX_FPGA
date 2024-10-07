@@ -248,25 +248,14 @@ module blurring_filter (
 
         // Reset variables at the start of a new image
         if ((row_count == 0) && (col_count == 0)) begin
-            blur_start <= 9'b0010100000;
-            blur_end <= 9'b0010100000;
+            blur_start <= 9'b0010100010;
+            blur_end <= 9'b0010100010;
             head_detected <= 0;
             finish_blur <= 0;
             temp_blur_start <= 0;
             temp_blur_end <= 0;
             blur_pixels = 0;
             face_ending <= 0;
-        end
-
-        // Reset variables at th start of a new line
-        if (col_count == 319) begin
-            if ((temp_blur_start != 0) && (temp_blur_end != 0)) begin
-                blur_start <= temp_blur_start;
-                blur_end <= temp_blur_end;
-            end
-
-            temp_blur_start <= 0;
-            temp_blur_end <= 0;
         end
 
         // Convolute RGB
@@ -318,12 +307,28 @@ module blurring_filter (
 
         if (ready_in && valid_in) begin
             if (is_underage) begin
+                // Reset variables at th start of a new line
+                if (col_count == 319) begin
+                    if ((temp_blur_start != 0) && (temp_blur_end != 0)) begin
+                        blur_start <= temp_blur_start;
+                        blur_end <= temp_blur_end;
+                    end
+
+                    if ((head_detected) && (!face_ending))begin
+                        blur_start <= temp_blur_start - 5;
+                    end
+
+                    temp_blur_start <= 0;
+                    temp_blur_end <= 0;
+                end
+
                 // If the top of the head is detected at the middle of the image, raise a flag (must be past row 5 for valid convolution)
                 if (!head_detected) begin
-                    if (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && (col_count == blur_start) && (row_count > 5)) begin
+                    if (((TtoB_grey_result < 0) || (LtoR_grey_result < 0)) && (col_count == blur_start) && (row_count > 5)) begin
                         head_detected <= 1;
-                        blur_start <= blur_start - 5;
-                        blur_end <= blur_end + 5;
+                        blur_pixels = 1;
+                        temp_blur_start <= col_count;
+                        temp_blur_end <= col_count;
                     end
 
                     // For no blur, pass through the data
@@ -339,7 +344,7 @@ module blurring_filter (
 
                     else begin
                         // Check if pixel is not within dynamic blurring boundary (must be past column 5 for valid convolution)
-                        if ((col_count < blur_start - 5) || (col_count > blur_end + 5) || (col_count < 5)) begin
+                        if ((col_count < blur_start - 5) || (col_count > (blur_end + 5)) || (col_count < 5)) begin
                             // For no blur, pass through the data
                             data_out <= data_in;
                             blur_pixels = 0;
@@ -348,11 +353,15 @@ module blurring_filter (
                         // Blur face and check for edges on face
                         else begin
                             // Check that pixel is edge
-                            if ((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) begin
-
+                            if (((TtoB_grey_result < 0) || (LtoR_grey_result < 0)) || (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && (face_ending))) begin
                                 // Continuously check for the last edge in the image
                                 if (blur_pixels) begin
                                     temp_blur_end <= col_count;
+
+                                    // If the face start pixel begins to move to the right
+                                    if (temp_blur_start > (blur_start + 4)) begin
+                                        face_ending <= 1;
+                                    end
                                 end
 
                                 // For first edge pixel on left side, raise a flag and set temp_blur_start
@@ -360,38 +369,35 @@ module blurring_filter (
                                     temp_blur_start <= col_count;
                                     temp_blur_end <= col_count;
                                     blur_pixels = 1;
+                                end
+                            end
 
-                                    // If the face start pixel begins to move to the right
-                                    if (temp_blur_start > blur_start) begin
-                                        face_ending <= 1;
+                            // Where face edge not detected properly, assume face broadens out at 22.5 degrees
+                            if (!face_ending) begin
+                                if ((col_count > (blur_start + 10)) && (temp_blur_start == 0)) begin
+                                    if (col_count % 2 == 0) begin
+                                        temp_blur_start <= blur_start - 1;
+                                        blur_pixels = 1;
+                                    end
+                                    else begin
+                                        temp_blur_start <= blur_start;
+                                        blur_pixels = 1;
+                                    end
+                                end
+
+                                if ((col_count > (blur_end + 10)) && (temp_blur_end == 0)) begin
+                                    if (col_count % 2 == 0) begin
+                                        temp_blur_end <= blur_end + 1;
+                                        blur_pixels = 0;
+                                    end
+                                    else begin
+                                        temp_blur_end <= blur_end;
+                                        blur_pixels = 0;
                                     end
                                 end
                             end
 
-                            // Where face edge not detected properly, assume face continues down at 22.5 degrees
-                            if ((col_count > blur_start + 5) && (temp_blur_start == 0)); begin
-                                if (col_count % 2 == 0) begin
-                                    temp_blur_start <= blur_start + 1;
-                                    blur_pixels = 1;
-                                end
-                                else begin
-                                    temp_blur_start <= blur_start;
-                                    blur_pixels = 1;
-                                end
-                            end
-
-                            if ((col_count > blur_end + 5) && (temp_blur_end == 0)); begin
-                                if (col_count % 2 == 0) begin
-                                    temp_blur_end <= blur_end + 1;
-                                    blur_pixels = 0;
-                                end
-                                else begin
-                                    temp_blur_end <= blur_end;
-                                    blur_pixels = 0;
-                                end
-                            end
-
-                            // If the face is ending, slowly narrow down until face is finished
+                            // If the face is ending, where face edge not detected properly, slowly narrow down until face is finished
                             if (face_ending) begin
                                 if (temp_blur_start < blur_start) begin
                                     if (col_count % 2 == 0) begin
@@ -402,7 +408,7 @@ module blurring_filter (
                                     end
                                 end
 
-                                if (temp_blur_end < blur_end) begin
+                                if ((temp_blur_end > blur_end) || (temp_blur_end < blur_end - 10)) begin
                                     if (col_count % 2 == 0) begin
                                         temp_blur_end <= blur_end - 1;
                                     end
@@ -411,7 +417,7 @@ module blurring_filter (
                                     end
                                 end
 
-                                if (blur_start - blur_end <= 5) begin
+                                if (blur_end - blur_start <= 5) begin
                                     finish_blur <= 1;
                                 end
                             end
