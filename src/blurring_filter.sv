@@ -31,6 +31,7 @@ module blurring_filter (
     assign blue_in  = data_in[3:0];   // Bits 3-0 for blue
 
     // 320x240 image
+<<<<<<< Updated upstream
     localparam image_width = 9'b101000000;
     localparam image_length = 8'b11110000;
 
@@ -42,6 +43,10 @@ module blurring_filter (
     logic blur_pixels;
     logic face_ending;
     logic [9:0] blur_start, blur_end, temp_blur_start, temp_blur_end;
+=======
+    localparam image_height = 9'b101000000;
+    localparam image_width =  8'b11110000;
+>>>>>>> Stashed changes
 
     // Image buffer for RGB components
     logic [3:0] red_buffer [0:(image_width*4 + 6)];
