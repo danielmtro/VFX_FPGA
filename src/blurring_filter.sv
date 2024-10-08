@@ -2,11 +2,11 @@
 
 module blurring_filter (
     input logic clk,
-    input logic [2:0] freq_flag,  // Kernel size: 0 for No blur, 1 for 3x3, 2 for 5x5
     input logic ready_in,
     input logic valid_in,
     input logic startofpacket_in,
     input logic endofpacket_in,
+    input logic is_underage,
     input logic [12-1:0] data_in,
     output logic ready_out,
     output logic valid_out,
@@ -19,279 +19,434 @@ module blurring_filter (
     assign valid_out = valid_in;
     assign ready_out = ready_in;
 
+    // Pass through the sop and eop signals
+    assign startofpacket_out = startofpacket_in;
+    assign endofpacket_out = endofpacket_in;
+
     // Extract RGB components from input data
     logic [3:0] red_in, green_in, blue_in;
-    logic [3:0] red_out, green_out, blue_out;
 
     assign red_in   = data_in[11:8];  // Bits 11-8 for red
     assign green_in = data_in[7:4];   // Bits 7-4 for green
     assign blue_in  = data_in[3:0];   // Bits 3-0 for blue
 
     // 320x240 image
-    localparam image_height = 8'b11110000;
+<<<<<<< Updated upstream
     localparam image_width = 9'b101000000;
+    localparam image_length = 8'b11110000;
+
+    logic [9:0] col_count;
+    logic [8:0] row_count;
+
+    logic head_detected;
+    logic finish_blur;
+    logic blur_pixels;
+    logic face_ending;
+    logic [9:0] blur_start, blur_end, temp_blur_start, temp_blur_end;
+=======
+    localparam image_height = 9'b101000000;
+    localparam image_width =  8'b11110000;
+>>>>>>> Stashed changes
 
     // Image buffer for RGB components
-    logic [3:0] red_buffer [0:(image_width*4 + 4)];
-    logic [3:0] green_buffer [0:(image_width*4 + 4)];
-    logic [3:0] blue_buffer [0:(image_width*4 + 4)];
-
-    logic [9:0] partial_sum_r_stage1 [0:4], partial_sum_g_stage1 [0:4], partial_sum_b_stage1 [0:4];
-    logic [9:0] partial_sum_r_stage2 [0:4], partial_sum_g_stage2 [0:4], partial_sum_b_stage2 [0:4];
-    logic [9:0] partial_sum_r_stage3 [0:4], partial_sum_g_stage3 [0:4], partial_sum_b_stage3 [0:4];
+    logic [3:0] red_buffer [0:(image_width*4 + 6)];
+    logic [3:0] green_buffer [0:(image_width*4 + 6)];
+    logic [3:0] blue_buffer [0:(image_width*4 + 6)];
 
     logic [9:0] conv_result_r, conv_result_g, conv_result_b;  // Final convolution results for RGB
+    logic signed [9:0] TtoB_edge_result_r, TtoB_edge_result_g, TtoB_edge_result_b, 
+        LtoR_edge_result_r, LtoR_edge_result_g, LtoR_edge_result_b; // Intermediray edge detection results
 
-    // Define the kernel weights (unchanged)
-    logic [2:0] kernel [0:4][0:4];
+    logic signed [16:0] TtoB_grey_result, LtoR_grey_result;
+
+    // Define the bitshift kernel_blur
+    logic [3:0] kernel_blur [0:34];
+    
+    // Define the edge kernels
+    logic [5:0] kernel_TtoB [0:24];
+    logic [5:0] kernel_LtoR [0:24];
+
     always_comb begin
-        for (int i = 0; i < 5; i++) begin
-            for (int j = 0; j < 5; j++) begin
-                if (i == 0 || i == 4) begin
-                    kernel[i][j] = (j == 0 || j == 4) ? 3'b001 : (j == 1 || j == 3) ? 3'b010 : 3'b011;
-                end else if (i == 1 || i == 3) begin
-                    kernel[i][j] = (j == 0 || j == 4) ? 3'b010 : (j == 1 || j == 3) ? 3'b011 : 3'b100;
-                end else begin
-                    kernel[i][j] = (j == 0 || j == 4) ? 3'b011 : (j == 1 || j == 3) ? 3'b100 : 3'b100;
-                end
-            end
-        end
+    // Blur
+        kernel_blur[0] = 15;
+        kernel_blur[1] = 0;
+        kernel_blur[2] = 0;
+        kernel_blur[3] = 0;
+        kernel_blur[4] = 1;
+        kernel_blur[5] = 1;
+        kernel_blur[6] = 1;
+
+        kernel_blur[7] = 15;
+        kernel_blur[8] = 0;
+        kernel_blur[9] = 0;
+        kernel_blur[10] = 1;
+        kernel_blur[11] = 1;
+        kernel_blur[12] = 1;
+        kernel_blur[13] = 1;
+
+        kernel_blur[14] = 0;
+        kernel_blur[15] = 0;
+        kernel_blur[16] = 1;
+        kernel_blur[17] = 1;
+        kernel_blur[18] = 1;
+        kernel_blur[19] = 1;
+        kernel_blur[20] = 1;
+
+        kernel_blur[21] = 0;
+        kernel_blur[22] = 1;
+        kernel_blur[23] = 1;
+        kernel_blur[24] = 1;
+        kernel_blur[25] = 1;
+        kernel_blur[26] = 1;
+        kernel_blur[27] = 2;
+
+        kernel_blur[28] = 1;
+        kernel_blur[29] = 1;
+        kernel_blur[30] = 1;
+        kernel_blur[31] = 1;
+        kernel_blur[32] = 1;
+        kernel_blur[33] = 2;
+        kernel_blur[34] = 2;
 
         /*
-		1 2 3 2 1
-		2 3 4 3 2
-		3 4 4 4 3
-		2 3 4 3 2
-		1 2 3 2 1
-		*/
+        Sum is 64
+        Weights
+        0 1 1 1 2 2 2
+        0 1 1 2 2 2 2
+        1 1 2 2 2 2 2
+        1 2 2 2 2 2 4
+        2 2 2 2 2 4 4
+        */
+
+    // Kernel for top to bottom edge detection
+        kernel_TtoB[0] = 1;
+        kernel_TtoB[1] = 1;
+        kernel_TtoB[2] = 2;
+        kernel_TtoB[3] = 1;
+        kernel_TtoB[4] = 1;
+
+        kernel_TtoB[5] = 0;
+        kernel_TtoB[6] = 1;
+        kernel_TtoB[7] = 1;
+        kernel_TtoB[8] = 1;
+        kernel_TtoB[9] = 0;
+
+        kernel_TtoB[10] = 15;
+        kernel_TtoB[11] = 15;
+        kernel_TtoB[12] = 15;
+        kernel_TtoB[13] = 15;
+        kernel_TtoB[14] = 15;
+
+        kernel_TtoB[15] = 0;
+        kernel_TtoB[16] = 1;
+        kernel_TtoB[17] = 1;
+        kernel_TtoB[18] = 1;
+        kernel_TtoB[19] = 0;
+
+        kernel_TtoB[20] = 1;
+        kernel_TtoB[21] = 1;
+        kernel_TtoB[22] = 2;
+        kernel_TtoB[23] = 1;
+        kernel_TtoB[24] = 1;
+
+        /*
+        2  2  4  2  2
+        1  2  2  2  1
+        0  0  0  0  0
+       -1 -2 -2 -2 -1
+       -2 -2 -4 -2 -2
+        */
+
+    // Kernel for left to right edge detection
+        kernel_LtoR[0] = 1;
+        kernel_LtoR[1] = 0;
+        kernel_LtoR[2] = 15;
+        kernel_LtoR[3] = 1;
+        kernel_LtoR[4] = 1;
+
+        kernel_LtoR[5] = 1;
+        kernel_LtoR[6] = 1;
+        kernel_LtoR[7] = 0;
+        kernel_LtoR[8] = 1;
+        kernel_LtoR[9] = 1;
+
+        kernel_LtoR[10] = 2;
+        kernel_LtoR[11] = 1;
+        kernel_LtoR[12] = 15;
+        kernel_LtoR[13] = 1;
+        kernel_LtoR[14] = 2;
+
+        kernel_LtoR[15] = 1;
+        kernel_LtoR[16] = 1;
+        kernel_LtoR[17] = 0;
+        kernel_LtoR[18] = 1;
+        kernel_LtoR[19] = 1;
+
+        kernel_LtoR[20] = 1;
+        kernel_LtoR[21] = 0;
+        kernel_LtoR[22] = 15;
+        kernel_LtoR[23] = 1;
+        kernel_LtoR[24] = 1;
+
+       /*
+        2  1  0 -2 -2
+        2  2  0 -2 -2
+        4  2  0 -2 -4
+        2  2  0 -2 -2
+        2  1  0 -2 -2
+        */
+
     end
 
     // Shift incoming data into separate RGB buffers
     always_ff @(posedge clk) begin : Image_buffer
-        if (ready_in) begin
+        if (startofpacket_in) begin
+            row_count <= 0;
+            col_count <= 0;
+
+            for (int i = 0; i < (image_width*4 + 6); i++) begin
+                red_buffer[i] <= 0;
+                green_buffer[i] <= 0;
+                blue_buffer[i] <= 0;
+            end
+        end
+		  
+		  if (ready_in && valid_in) begin
             // Shift the buffers left for red, green, and blue
-            for (int i = 0; i < (image_width*4 + 4); i++) begin
+            for (int i = 0; i < (image_width*4 + 6); i++) begin
                 red_buffer[i] <= red_buffer[i+1];
                 green_buffer[i] <= green_buffer[i+1];
                 blue_buffer[i] <= blue_buffer[i+1];
             end
             // Insert new data for each color component
-            red_buffer[(image_width*4 + 4)] <= red_in;
-            green_buffer[(image_width*4 + 4)] <= green_in;
-            blue_buffer[(image_width*4 + 4)] <= blue_in;
+            red_buffer[(image_width*4 + 6)] <= red_in;
+            green_buffer[(image_width*4 + 6)] <= green_in;
+            blue_buffer[(image_width*4 + 6)] <= blue_in;
+
+            if (col_count == 319) begin
+                col_count <= 0;
+                row_count <= row_count + 1;
+            end
+
+            else begin
+                col_count <= col_count + 1;
+            end
         end
     end
 
-    // Pipelined convolution for each color component
+    // Blur images and detect edges
+    always_ff @(posedge clk) begin : Convolution
+        // Reset variables for every pixel
+        conv_result_r = 0;
+        conv_result_g = 0;
+        conv_result_b = 0;
+        
+        TtoB_edge_result_r = 0;
+        TtoB_edge_result_g = 0;
+        TtoB_edge_result_b = 0;
+        LtoR_edge_result_r = 0;
+        LtoR_edge_result_g = 0;
+        LtoR_edge_result_b = 0;
 
-    // Stage 1: Load and multiply pixels for 3x3 kernel (RGB separately)
-    always_ff @(posedge clk) begin
-		  // Initialize partial sums
+        TtoB_grey_result = 0;
+        LtoR_grey_result = 0;
+
+        // Reset variables at the start of a new image
+        if ((row_count == 0) && (col_count == 0)) begin
+            blur_start <= 9'b0010100010;
+            blur_end <= 9'b0010100010;
+            head_detected <= 0;
+            finish_blur <= 0;
+            temp_blur_start <= 0;
+            temp_blur_end <= 0;
+            blur_pixels = 0;
+            face_ending <= 0;
+        end
+
+        // Convolute RGB
         for (int i = 0; i < 5; i++) begin
-            partial_sum_r_stage1[i] <= 0;
-            partial_sum_g_stage1[i] <= 0;
-            partial_sum_b_stage1[i] <= 0;
-        end
-	 
-        // 3x3 Kernel
-        if (freq_flag == 1) begin
-            // Red component
-            for (int i = 0; i < 3; i++) begin
-                partial_sum_r_stage1[i] <= red_buffer[(i * image_width)] * kernel[i+1][1];
-            end
-            // Green component
-            for (int i = 0; i < 3; i++) begin
-                partial_sum_g_stage1[i] <= green_buffer[(i * image_width)] * kernel[i+1][1];
-            end
-            // Blue component
-            for (int i = 0; i < 3; i++) begin
-                partial_sum_b_stage1[i] <= blue_buffer[(i * image_width)] * kernel[i+1][1];
+            for (int j = 0; j < 7; j++) begin
+                conv_result_r = conv_result_r + (red_buffer[(i * image_width) + j] << kernel_blur[((7 * i) + j)]);
+                conv_result_g = conv_result_g + (green_buffer[(i * image_width) + j] << kernel_blur[((7 * i) + j)]);
+                conv_result_b = conv_result_b + (blue_buffer[(i * image_width) + j] << kernel_blur[((7 * i) + j)]);
             end
         end
 
-        // 5x5 Kernel
-        else if (freq_flag == 2) begin
-            // Red component
-            for (int i = 0; i < 5; i++) begin
-                partial_sum_r_stage1[i] <= red_buffer[(i * image_width)] * kernel[i][0]
-                                        + red_buffer[(i * image_width) + 1] * kernel[i][1];
-            end
-            // Green component
-            for (int i = 0; i < 5; i++) begin
-                partial_sum_g_stage1[i] <= green_buffer[(i * image_width)] * kernel[i][0]
-                                        + green_buffer[(i * image_width) + 1] * kernel[i][1];
-            end
-            // Blue component
-            for (int i = 0; i < 5; i++) begin
-                partial_sum_b_stage1[i] <= blue_buffer[(i * image_width)] * kernel[i][0]
-                                        + blue_buffer[(i * image_width) + 1] * kernel[i][1];
-            end
-        end
-    end
-
-    // Stage 2: Complete row-wise multiplication for RGB components (3x3)
-    always_ff @(posedge clk) begin
-		  // Initialize partial sums
+        // Apply edge detection to RGB
         for (int i = 0; i < 5; i++) begin
-            partial_sum_r_stage2[i] <= 0;
-            partial_sum_g_stage2[i] <= 0;
-            partial_sum_b_stage2[i] <= 0;
-        end
-	 
-        if (freq_flag == 1) begin
-            // Red component
-            for (int i = 0; i < 3; i++) begin
-                partial_sum_r_stage2[i] <= partial_sum_r_stage1[i] 
-                    + red_buffer[(i * image_width) + 1] * kernel[i+1][2];
-            end
-            // Green component
-            for (int i = 0; i < 3; i++) begin
-                partial_sum_g_stage2[i] <= partial_sum_g_stage1[i] 
-                    + green_buffer[(i * image_width) + 1] * kernel[i+1][2];
-            end
-            // Blue component
-            for (int i = 0; i < 3; i++) begin
-                partial_sum_b_stage2[i] <= partial_sum_b_stage1[i] 
-                    + blue_buffer[(i * image_width) + 1] * kernel[i+1][2];
+            for (int j = 0; j < 5; j++) begin
+                // Top to bottom edge filter
+                if (i < 3) begin
+                    TtoB_edge_result_r = TtoB_edge_result_r + (red_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                    TtoB_edge_result_g = TtoB_edge_result_g + (green_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                    TtoB_edge_result_b = TtoB_edge_result_b + (blue_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                end
+                else begin
+                    TtoB_edge_result_r = TtoB_edge_result_r - (red_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                    TtoB_edge_result_g = TtoB_edge_result_g - (green_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                    TtoB_edge_result_b = TtoB_edge_result_b - (blue_buffer[(i * image_width) + j] << kernel_TtoB[((5 * i) + j)]);
+                end
+
+                // Left to right edge filter
+                if (j < 3) begin
+                    LtoR_edge_result_r = LtoR_edge_result_r + (red_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                    LtoR_edge_result_g = LtoR_edge_result_g + (green_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                    LtoR_edge_result_b = LtoR_edge_result_b + (blue_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                end
+                else begin
+                    LtoR_edge_result_r = LtoR_edge_result_r - (red_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                    LtoR_edge_result_g = LtoR_edge_result_g - (green_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                    LtoR_edge_result_b = LtoR_edge_result_b - (blue_buffer[(i * image_width) + j] << kernel_LtoR[((5 * i) + j)]);
+                end
             end
         end
 
-        else if (freq_flag == 2) begin
-            // Red component
-            for (int i = 0; i < 5; i++) begin
-                partial_sum_r_stage2[i] <= partial_sum_r_stage1[i]
-                    + red_buffer[(i * image_width) + 2] * kernel[i][2]
-                    + red_buffer[(i * image_width) + 3] * kernel[i][3];
-            end
-            // Green component
-            for (int i = 0; i < 5; i++) begin
-                partial_sum_g_stage2[i] <= partial_sum_g_stage1[i]
-                    + green_buffer[(i * image_width) + 1] * kernel[i][2]
-                    + green_buffer[(i * image_width) + 3] * kernel[i][3];
-            end
-            // Blue component
-            for (int i = 0; i < 5; i++) begin
-                partial_sum_b_stage2[i] <= partial_sum_g_stage1[i]
-                    + blue_buffer[(i * image_width) + 1] * kernel[i][2]
-                    + blue_buffer[(i * image_width) + 3] * kernel[i][3];
-            end
-        end
-    end
+        // Convert edge data from RGB to greyscale
+        TtoB_grey_result = (TtoB_edge_result_r << 5) // Multiply by 32
+                            + (TtoB_edge_result_g << 6) // Multiply by 64
+                            + (TtoB_edge_result_b << 4); // Multiply by 16
+        
+        LtoR_grey_result = (LtoR_edge_result_r << 5) // Multiply by 32
+                            + (LtoR_edge_result_g << 6) // Multiply by 64
+                            + (LtoR_edge_result_b << 4); // Multiply by 16
 
-    // Stage 3: Complete row-wise multiplication for RGB components (3x3)
-    always_ff @(posedge clk) begin
-		  // Initialize partial sums
-        for (int i = 0; i < 5; i++) begin
-            partial_sum_r_stage3[i] <= 0;
-            partial_sum_g_stage3[i] <= 0;
-            partial_sum_b_stage3[i] <= 0;
-        end
-		  
-        if (freq_flag == 1) begin
-            // Red component
-            for (int i = 0; i < 3; i++) begin
-                partial_sum_r_stage3[i] <= partial_sum_r_stage1[i]
-                    + red_buffer[(i * image_width) + 2] * kernel[i+1][3];
-            end
-            // Green component
-            for (int i = 0; i < 3; i++) begin
-                partial_sum_g_stage3[i] <= partial_sum_g_stage1[i]
-                    + green_buffer[(i * image_width) + 2] * kernel[i+1][3];
-            end
-            // Blue component
-            for (int i = 0; i < 3; i++) begin
-                partial_sum_b_stage3[i] <= partial_sum_b_stage1[i]
-                    + blue_buffer[(i * image_width) + 2] * kernel[i+1][3];
-            end
-        end
+        if (ready_in && valid_in) begin
+            if (is_underage) begin
+                // Reset variables at th start of a new line
+                if (col_count == 319) begin
+                    if ((temp_blur_start != 0) && (temp_blur_end != 0)) begin
+                        blur_start <= temp_blur_start;
+                        blur_end <= temp_blur_end;
+                    end
 
-        else if (freq_flag == 2) begin
-            // Red component
-            for (int i = 0; i < 5; i++) begin
-                partial_sum_r_stage2[i] <= partial_sum_r_stage1[i]
-                    + red_buffer[(i * image_width) + 4] * kernel[i][4];
+                    if ((head_detected) && (!face_ending))begin
+                        blur_start <= temp_blur_start - 5;
+                    end
+
+                    temp_blur_start <= 0;
+                    temp_blur_end <= 0;
+                end
+
+                // If the top of the head is detected at the middle of the image, raise a flag (must be past row 5 for valid convolution)
+                if (!head_detected) begin
+                    if (((TtoB_grey_result < 0) || (LtoR_grey_result < 0)) && (col_count == blur_start) && (row_count > 5)) begin
+                        head_detected <= 1;
+                        blur_pixels = 1;
+                        temp_blur_start <= col_count;
+                        temp_blur_end <= col_count;
+                    end
+
+                    // For no blur, pass through the data
+                    data_out <= data_in;
+                end
+
+                // Check if blurring is finished or if pixels are within blurring bounds
+                else begin
+                    if (finish_blur) begin
+                        // For no blur, pass through the data
+                        data_out <= data_in;
+                    end
+
+                    else begin
+                        // Check if pixel is not within dynamic blurring boundary (must be past column 5 for valid convolution)
+                        if ((col_count < blur_start - 5) || (col_count > (blur_end + 5)) || (col_count < 5)) begin
+                            // For no blur, pass through the data
+                            data_out <= data_in;
+                            blur_pixels = 0;
+                        end
+
+                        // Blur face and check for edges on face
+                        else begin
+                            // Check that pixel is edge
+                            if (((TtoB_grey_result < 0) || (LtoR_grey_result < 0)) || (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && (face_ending))) begin
+                                // Continuously check for the last edge in the image
+                                if (blur_pixels) begin
+                                    temp_blur_end <= col_count;
+
+                                    // If the face start pixel begins to move to the right
+                                    if (temp_blur_start > (blur_start + 4)) begin
+                                        face_ending <= 1;
+                                    end
+                                end
+
+                                // For first edge pixel on left side, raise a flag and set temp_blur_start
+                                else begin
+                                    temp_blur_start <= col_count;
+                                    temp_blur_end <= col_count;
+                                    blur_pixels = 1;
+                                end
+                            end
+
+                            // Where face edge not detected properly, assume face broadens out at 22.5 degrees
+                            if (!face_ending) begin
+                                if ((col_count > (blur_start + 10)) && (temp_blur_start == 0)) begin
+                                    if (col_count % 2 == 0) begin
+                                        temp_blur_start <= blur_start - 1;
+                                        blur_pixels = 1;
+                                    end
+                                    else begin
+                                        temp_blur_start <= blur_start;
+                                        blur_pixels = 1;
+                                    end
+                                end
+
+                                if ((col_count > (blur_end + 10)) && (temp_blur_end == 0)) begin
+                                    if (col_count % 2 == 0) begin
+                                        temp_blur_end <= blur_end + 1;
+                                        blur_pixels = 0;
+                                    end
+                                    else begin
+                                        temp_blur_end <= blur_end;
+                                        blur_pixels = 0;
+                                    end
+                                end
+                            end
+
+                            // If the face is ending, where face edge not detected properly, slowly narrow down until face is finished
+                            if (face_ending) begin
+                                if (temp_blur_start < blur_start) begin
+                                    if (col_count % 2 == 0) begin
+                                        temp_blur_start <= blur_start + 1;
+                                    end
+                                    else begin
+                                        temp_blur_start <= blur_start;
+                                    end
+                                end
+
+                                if ((temp_blur_end > blur_end) || (temp_blur_end < blur_end - 10)) begin
+                                    if (col_count % 2 == 0) begin
+                                        temp_blur_end <= blur_end - 1;
+                                    end
+                                    else begin
+                                        temp_blur_end <= blur_end;
+                                    end
+                                end
+
+                                if (blur_end - blur_start <= 5) begin
+                                    finish_blur <= 1;
+                                end
+                            end
+                        end
+                    end
+                end
+
+                // Blur the pixels
+                if (blur_pixels) begin 
+                    // Combine the normalized results for each color component
+                    data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
+                end
+
+                // Output the input pixel
+                else begin
+                    // For no blur, pass through the data
+                    data_out <= data_in;
+                end
             end
-            // Green component
-            for (int i = 0; i < 5; i++) begin
-                partial_sum_g_stage2[i] <= partial_sum_g_stage1[i] 
-                    + green_buffer[(i * image_width) + 4] * kernel[i][4];
+
+            else begin
+                // For no blur, pass through the data
+                data_out <= data_in;
             end
-            // Blue component
-            for (int i = 0; i < 5; i++) begin
-                partial_sum_b_stage2[i] <= partial_sum_g_stage1[i]
-                    + blue_buffer[(i * image_width) + 4] * kernel[i][4];
-            end
-        end
-    end
-
-    // Stage 4: Accumulate rows for the final convolution result (RGB)
-    always_ff @(posedge clk) begin
-		  // Initialize partial sums
-        for (int i = 0; i < 5; i++) begin
-            conv_result_r[i] <= 0;
-            conv_result_g[i] <= 0;
-            conv_result_b[i] <= 0;
-        end
-	 
-        // 3x3 Kernel
-        if (freq_flag == 1) begin
-            // Red component
-            conv_result_r <= partial_sum_r_stage3[0] 
-                + partial_sum_r_stage3[1] 
-                + partial_sum_r_stage3[2];
-            // Green component
-            conv_result_g <= partial_sum_g_stage3[0] 
-                + partial_sum_g_stage3[1] 
-                + partial_sum_g_stage3[2];
-            // Blue component
-            conv_result_b <= partial_sum_b_stage3[0] 
-                + partial_sum_b_stage3[1] 
-                + partial_sum_b_stage3[2];
-        end
-
-        // 5x5 Kernel
-        if (freq_flag == 2) begin
-            // Red component
-            conv_result_r <= partial_sum_r_stage3[0] 
-                + partial_sum_r_stage3[1] 
-                + partial_sum_r_stage3[2]
-                + partial_sum_r_stage3[3] 
-                + partial_sum_r_stage3[4];
-            // Green component
-            conv_result_g <= partial_sum_g_stage3[0] 
-                + partial_sum_g_stage3[1] 
-                + partial_sum_g_stage3[2]
-                + partial_sum_g_stage3[3] 
-                + partial_sum_g_stage3[4];
-            // Blue component
-            conv_result_b <= partial_sum_b_stage3[0] 
-                + partial_sum_b_stage3[1] 
-                + partial_sum_b_stage3[2]
-                + partial_sum_b_stage3[3] 
-                + partial_sum_b_stage3[4];
-        end
-    end
-
-    // Stage 5: Normalise and output the result (RGB)
-    always_ff @(posedge clk) begin
-		  startofpacket_out <= startofpacket_in;
-		  endofpacket_out <= endofpacket_in;
-
-        // 5x5 Kernel
-        if (freq_flag == 2) begin
-            // Combine the normalized results for each color component
-            data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
-        end
-
-        // 3x3 Kernel
-        else if (freq_flag == 1) begin
-            // Combine the normalized results for each color component
-            data_out <= {conv_result_r[8:5], conv_result_g[8:5], conv_result_b[8:5]};
-        end
-		  
-		  // For no blur, directly pass through the data
-		  else if (freq_flag == 0) begin
-            data_out <= data_in;
         end
     end
 
