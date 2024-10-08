@@ -31,8 +31,8 @@ def convert_to_rgb(image):
     return rgb_image
 
 # Read input and output image data
-input_image = read_image_data("input_image_data.txt")
-output_image = read_image_data("output_image_data.txt")
+input_image = read_image_data("Blurring/input_image_data.txt")
+output_image = read_image_data("Blurring/output_image_data.txt")
 
 # Convert to RGB format
 input_image_rgb = convert_to_rgb(input_image)

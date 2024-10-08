@@ -3,7 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 # Load the image (in grayscale)
-image = cv2.imread('chadho.png', cv2.IMREAD_GRAYSCALE)
+image = cv2.imread('Blurring/diamonds.png', cv2.IMREAD_GRAYSCALE)
+# image = cv2.imread('Blurring/chadho.png', cv2.IMREAD_GRAYSCALE)
 
 # Define the first 5x5 kernel (for vertical top/bottom edges)
 kernel1 = np.array([
