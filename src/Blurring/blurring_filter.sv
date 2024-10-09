@@ -58,10 +58,10 @@ module blurring_filter #(
     logic [W - 1:0] red_in, green_in, blue_in;
 
     // extract our bit values - pad them with zeroes on the start and the end
-    // to turn them into 14/7 fixed point computations
-    assign red_in   = {3'b000, data_in[11:8], 7'b0000000};  // Bits 11-8 for red
-    assign green_in = {3'b000, data_in[7:4],  7'b0000000};   // Bits 7-4 for green
-    assign blue_in  = {3'b000, data_in[3:0],  7'b0000000};   // Bits 3-0 for blue
+    // to turn them into 11/7 fixed point computations
+    assign red_in   = {data_in[11:8], 7'b0000000};  // Bits 11-8 for red
+    assign green_in = {data_in[7:4],  7'b0000000};   // Bits 7-4 for green
+    assign blue_in  = {data_in[3:0],  7'b0000000};   // Bits 3-0 for blue
 
 
     // Image buffer for RGB components
@@ -84,7 +84,7 @@ module blurring_filter #(
 
     // Just use a constant type of kernel to make life easy here
     logic [W - 1:0] kernel_value;
-    assign kernel_value = {7'b0000000, 7'b0000101};
+    assign kernel_value = {4'b0000, 7'b0000101};
 
     // Shift incoming data into separate RGB buffers
     always_ff @(posedge clk) begin : Shift_register
