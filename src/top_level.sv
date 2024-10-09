@@ -171,7 +171,7 @@ module top_level(
 	// Perhaps implement a fifo buffer here to buffer the pitch output data
 	
 	filter_select fs0(
-		.clk(clk_50),
+		.clk(clk_25_vga),
 		.reset(resend),
 		.freq_flag(freq_flag),
 		.filter_num(filter_type),

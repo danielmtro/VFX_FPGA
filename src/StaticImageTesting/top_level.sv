@@ -259,15 +259,15 @@ module top_level(
 			 .video_scaler_0_avalon_scaler_sink_endofpacket(filter_eop_out),   //                                          .endofpacket
 			 .video_scaler_0_avalon_scaler_sink_valid(1'b1),         //                                          .valid
 			.video_scaler_0_avalon_scaler_sink_ready(vga_ready),         //                                          .ready
-		   .video_scaler_0_avalon_scaler_sink_data(filtered_data),          //                                          .data
+		    .video_scaler_0_avalon_scaler_sink_data(filtered_data),          //                                          .data
 			.video_vga_controller_0_external_interface_CLK(vga_CLK),   // video_vga_controller_0_external_interface.CLK
 			.video_vga_controller_0_external_interface_HS(vga_hsync),    //                                          .HS
 			.video_vga_controller_0_external_interface_VS(vga_vsync),    //                                          .VS
 			.video_vga_controller_0_external_interface_BLANK(vga_blank_N), //                                          .BLANK
 			.video_vga_controller_0_external_interface_SYNC(vga_sync_N),  //                                          .SYNC
-		   .video_vga_controller_0_external_interface_R(vga_r),     //                                          .R
-		   .video_vga_controller_0_external_interface_G(vga_g),     //                                          .G
-		   .video_vga_controller_0_external_interface_B(vga_b)      //                                          .B
+		    .video_vga_controller_0_external_interface_R(vga_r),     //                                          .R
+		    .video_vga_controller_0_external_interface_G(vga_g),     //                                          .G
+		    .video_vga_controller_0_external_interface_B(vga_b)      //                                          .B
 	);
 
 

@@ -1197,8 +1197,8 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to vga_r
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to vga_sync_N
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to vga_vsync
 set_instance_assignment -name IO_STANDARD "2.5 V" -to led_config_finished
+set_global_assignment -name SYSTEMVERILOG_FILE Blurring/blurring_filter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE edge_filter.sv
-set_global_assignment -name SYSTEMVERILOG_FILE blurring_filter.sv
 set_global_assignment -name QSYS_FILE LCD/char_display.qsys
 set_global_assignment -name SYSTEMVERILOG_FILE LCD/lcd_inst_pkg.sv
 set_global_assignment -name SYSTEMVERILOG_FILE LCD/lcd_top_level.sv
