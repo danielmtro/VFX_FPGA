@@ -5,237 +5,117 @@ module blurring_filter_tb;
     localparam TCLK = 20; // Clock period: 20 ns
 
     // Camera image size
-    localparam IMG_WIDTH = 320;
-    localparam IMG_LENGTH = 240;
+   localparam IMG_WIDTH = 9;
+   localparam IMG_HEIGHT = 7;
+	
+	logic start;
 
-    logic clk = 0;
-    logic ready_in = 0;
+   // variables to go into the DUT
+   logic clk = 0;
+   logic ready_in = 0;
 	logic valid_in = 0;
 	logic startofpacket_in = 0;
 	logic endofpacket_in = 0;
-    logic is_underage; // Kernel size control
-    logic [11:0] data_in;
-    logic ready_out;
+   logic freq_flag = 0; // Kernel size control
+   logic [11:0] data_in;
+   logic ready_out;
 	logic valid_out;
 	logic startofpacket_out;
 	logic endofpacket_out;
-    logic [11:0] data_out;
+   logic [11:0] data_out;
+	logic [31:0] pixel_count;
 
     // Instantiate the blurring filter
-    blurring_filter DUT (
-        .clk(clk),
-        .ready_in(ready_in),
-		.valid_in(valid_in),
-		.startofpacket_in(startofpacket_in),
-		.endofpacket_in(endofpacket_in),
-        .is_underage(is_underage),
-        .data_in(data_in),
-        .ready_out(ready_out),
-		.valid_out(valid_out),
-		.startofpacket_out(startofpacket_out),
-		.endofpacket_out(endofpacket_out),
-        .data_out(data_out)
+    blurring_filter #(
+		.IMAGE_WIDTH(IMG_WIDTH),
+		.IMAGE_HEIGHT(IMG_HEIGHT)
+	 ) DUT (
+         .clk(clk),
+         .ready_in(ready_in),
+			.valid_in(valid_in),
+			.startofpacket_in(startofpacket_in),
+			.endofpacket_in(endofpacket_in),
+         .freq_flag(freq_flag),
+         .data_in(data_in),
+         .ready_out(ready_out),
+		   .valid_out(valid_out),
+		   .startofpacket_out(startofpacket_out),
+		   .endofpacket_out(endofpacket_out),
+         .data_out(data_out),
+			.pixel_count_out(pixel_count)
     );
 
     // Clock generation
     always #(TCLK / 2) clk = ~clk;
 
     // 15x15 image initialization (simple gradient for testing)
-    localparam LEN = IMG_LENGTH * IMG_WIDTH;
+    localparam LEN = IMG_HEIGHT * IMG_WIDTH;
     logic [11:0] image [0:LEN-1];
 
-    integer i, j;
+    integer i=0, j=0;
     
-    // Declare the file handle
-    integer image_file_in, image_file_out;
 
     initial begin
+        $dumpfile("waveform.vcd");
+        $dumpvars();
 
-        // Set variables to 0 to avoid red lines in testbench
-        is_underage = 0;
-        data_in = 0;
-        ready_out = 0;
-        data_out = 0;
-			startofpacket_out = 0;
-			endofpacket_out = 0;
 
-        // Initialize image with a pattern mimicking a face and outside noise
-        for (i = 0; i < IMG_LENGTH; i = i + 1) begin
-            for (j = 0; j < IMG_WIDTH; j = j + 1) begin
+        // set up blur test image
+        for(int i = 0; i < LEN; ++i) begin
+            image[i] = {12{1'b0}};
+        end
 
-                // Base colour for the image
-                image[(i * IMG_WIDTH) + j] = 12'b010101101010; // Base colour (grey)
-
-                // Add two vertical lines to simulate noise
-                if (((j > 7) && (j < 13)) || ((j > 307) && (j < 313))) begin
-                    image[(i * IMG_WIDTH) + j] = 12'b000000000000; // Simple colour (black)
-                end
-
-                // Add one horizontal line outside of blurring scope
-                if ((i > 227) && (i < 233)) begin
-                    image[(i * IMG_WIDTH) + j] = 12'b000000000000; // Simple colour (black)
-                end
-
-                // Make the outer and inner diamonds
-                if (i <= 120) begin
-
-                    // Outer diamond top left half
-                    if ((j >= 140 - i) && (j <= 140 - i + 5)) begin
-                        image[(i * IMG_WIDTH) + j] = 12'b000000001111;  // Left outer diamond colour (blue)
-                    end
-
-                    // Outer diamond top right half
-                    if ((j >= 180 + i) && (j <= 180 + i + 5)) begin
-                        image[(i * IMG_WIDTH) + j] = 12'b000000001111;  // Right outer diamond colour (blue)
-                    end
-
-                    // Top half of the inner diamond
-                    if ((j - 160) <= (i - 20)) begin
-                        if ((j - 160) >= (20 - i)) begin
-                            // Add a thick diagonal line every 40 pixels
-                            if ((i + j) % 40 < 5) begin  // This ensures a continuous 5-pixel thick diagonal line
-                                image[(i * IMG_WIDTH) + j] = 12'b111100000000;  // Diagonal colour (red)
-                            end
-                            else begin
-                                image[(i * IMG_WIDTH) + j] = 12'b111111111111;  // Diamond colour (white)
-                            end
-                        end
-                    end
-                end
-
-                
-                else begin
-
-                    // Outer diamond bottom left half
-                    if ((j >= i - 100) && (j <= i - 100 + 5)) begin
-                        image[(i * IMG_WIDTH) + j] = 12'b000000001111;  // Left outer diamond colour (blue)
-                    end
-
-                    // Outer diamond bottom right half
-                    if ((j >= 420 - i) && (j <= 420 - i + 5)) begin
-                        image[(i * IMG_WIDTH) + j] = 12'b000000001111;  // Right outer diamond colour (blue)
-                    end
-
-                    // Bottom half of the inner diamond
-                    if ((j - 160) <= (220 - i)) begin
-                        if ((j - 160) >= (i - 220)) begin
-                            // Bottom half of the inner diamond (create diagonal lines every 40 pixels)
-                            if ((80 + j - i) % 40 < 5) begin  // This ensures a continuous 5-pixel thick diagonal line
-                                image[(i * IMG_WIDTH) + j] = 12'b000011110000;  // Diagonal colour (green)
-                            end
-                            else begin
-                                image[(i * IMG_WIDTH) + j] = 12'b111111111111;  // Diamond colour (white)
-                            end
-                        end
-                    end
-                end
+        // set a white square in the middle of the image from row 3 to row 5
+        // with a width of 3 
+        for(int j = 1; j < 6; ++j) begin
+         for(int i=IMG_WIDTH * j + 2; i < IMG_WIDTH * j + 7; ++i) begin
+               image[i] = {12{1'b1}};
             end
         end
 
-        // Open the file for input writing (in write mode)
-        image_file_in = $fopen("input_image_data.txt", "w");
-        if (image_file_in == 0) begin
-            $display("Error opening file!");
-            $finish; // Exit simulation if file opening fails
-        end
-
-        // Initialize the image data
-        for (i = 0; i < IMG_LENGTH; i = i + 1) begin
-            for (j = 0; j < IMG_WIDTH; j = j + 1) begin
-                // Example: write the pixel data in binary format
-                $fwrite(image_file_in, "%b\n", image[(i * IMG_WIDTH) + j]);
-            end
-        end
-
-        // Close the file
-        $fclose(image_file_in);
-
-        // Open VCD file for waveform dumping
-        $dumpfile("blurring_filter_tb.vcd");
-        $dumpvars(0, blurring_filter_tb);
-/*
-        // Delay before entering each test
-        #100;
-        ready_in = 1;
-        valid_in = 1;
-
-        // Test no blur
-        $display("Testing with no blur");
-        is_underage = 0; // Set to no blur
-        run_test();
-        ready_in = 0;
-        valid_in = 0;
-*/
-        // Delay before entering each test
-        #100;
-        ready_in = 1;
-        valid_in = 1;
-
-        // Test blur
-        $display("Testing with blur");
-        is_underage = 1;
-        run_test();
-        ready_in = 0;
-        valid_in = 0;
-
-        #1000
-
-        // Finish simulation
-        $finish;
+        // set beginning parameters
+		  valid_in = 1;
+        #(TCLK*5);
+		  start = 1'b1;
+			
+        #(TCLK*250);
+        $finish();
     end
 
-    task run_test;
-        begin
-
-        // Open the file for output writing (in write mode)
-        image_file_out = $fopen("output_image_data.txt", "w");
-        if (image_file_out == 0) begin
-            $display("Error opening file!");
-            $finish; // Exit simulation if file opening fails
+	 
+    // Input Driver:
+	 always_ff @(posedge clk) begin
+		  if (start) begin
+				
+				// oscillate ready in to mimic the scaler
+				ready_in <= ~ready_in;
+				
+				// process the data that goes in
+				data_in <= image[i];
+            $display("input: %b, pixel_in: %d", data_in, i);
+				
+				// increment the index
+				if(ready_in) begin
+					i <= i < LEN ? i + 1 : LEN;
+				end
+				
+		  end
+	 end
+	 
+	 // always comb block to set SOP and EOP
+	 always_comb begin
+		startofpacket_in = (i == 0) ? 1'b1 : 1'b0;
+		endofpacket_in = (i == LEN - 1) ? 1'b1 : 1'b0;
+	 end
+		 
+		 
+	// Output Checking
+	always_ff @(posedge clk) begin
+	
+        if (start) begin
+            $display("output: %b, pixel count: %d", data_out, pixel_count);
         end
-
-            // Feed image data to the filter
-            for (i = 0; i < IMG_LENGTH; i = i + 1) begin
-                for (j = 0; j < IMG_WIDTH; j = j + 1) begin
-                    if ((i == 0) && (j == 0)) begin
-                        startofpacket_in = 1;
-                    end
-                    else begin
-                        startofpacket_in = 0;
-                    end
-                    
-                    if ((i == IMG_LENGTH-1) && (j == IMG_WIDTH-1)) begin
-                        endofpacket_in = 1;
-                    end
-                    else begin
-                        endofpacket_in = 0;
-                        
-                    end
-                    data_in = image[i * IMG_WIDTH + j];
-                    #TCLK; // Wait for processing
-
-                    // Test handshaking
-                    if ((i % 10 == 0) || (j % 10 == 0)) begin
-                        valid_in = 0;
-                        #100
-                        valid_in = 1;
-                    end
-
-                    if ((i % 15 == 0) || (j % 15 == 0)) begin
-                        ready_in = 0;
-                        #100
-                        ready_in = 1;
-                    end
-
-                    // Example: write the pixel data in binary format
-                    $fwrite(image_file_out, "%b\n", data_out);
-                end
-            end
-        end
-
-        // Close the file
-        $fclose(image_file_out);
-
-    endtask
+    end
+ 
 
 endmodule
