@@ -91,40 +91,40 @@ module top_level(
 	--------------------------------
 	*/
 
-	localparam W        = 16;   //NOTE: To change this, you must also change the Twiddle factor initialisations in r22sdf/Twiddle.v. You can use r22sdf/twiddle_gen.pl.
-   	
-	localparam NSamples = 1024; //NOTE: To change this, you must also change the SdfUnit instantiations in r22sdf/FFT.v accordingly.
-
-	logic adc_clk; adc_pll adc_pll_u (.areset(1'b0),.inclk0(clk_50),.c0(adc_clk)); // generate 18.432 MHz clock
-	logic i2c_clk; i2c_pll i2c_pll_u (.areset(1'b0),.inclk0(clk_50),.c0(i2c_clk)); // generate 20 kHz clock
-
-	set_audio_encoder set_codec_u (.i2c_clk(i2c_clk), .I2C_SCLK(I2C_SCLK), .I2C_SDAT(I2C_SDAT));
-
-	dstream #(.N(W))                audio_input ();
-   dstream #(.N($clog2(NSamples))) pitch_output ();
-	 
-	mic_load #(.N(W)) u_mic_load (
-    .adclrc(AUD_ADCLRCK),
-	 .bclk(AUD_BCLK),
-	 .adcdat(AUD_ADCDAT),
-    .sample_data(audio_input.data),
-	 .valid(audio_input.valid)
-   );
-			
-	assign AUD_XCK = adc_clk;
-	
-   fft_pitch_detect #(.W(W), .NSamples(NSamples)) DUT (
-	    .clk(adc_clk),
-		 .audio_clk(AUD_BCLK),
-		 .reset(~SW[1]),
-		 .audio_input(audio_input),
-		 .pitch_output(pitch_output)
-    );
-	
-	
-	// Visualise FFT output on LEDR 
-	assign LEDR[0] = pitch_output.data[0];
-	assign LEDR[1] = pitch_output.data[1];
+//	localparam W        = 16;   //NOTE: To change this, you must also change the Twiddle factor initialisations in r22sdf/Twiddle.v. You can use r22sdf/twiddle_gen.pl.
+//   	
+//	localparam NSamples = 1024; //NOTE: To change this, you must also change the SdfUnit instantiations in r22sdf/FFT.v accordingly.
+//
+//	logic adc_clk; adc_pll adc_pll_u (.areset(1'b0),.inclk0(clk_50),.c0(adc_clk)); // generate 18.432 MHz clock
+//	logic i2c_clk; i2c_pll i2c_pll_u (.areset(1'b0),.inclk0(clk_50),.c0(i2c_clk)); // generate 20 kHz clock
+//
+//	set_audio_encoder set_codec_u (.i2c_clk(i2c_clk), .I2C_SCLK(I2C_SCLK), .I2C_SDAT(I2C_SDAT));
+//
+//	dstream #(.N(W))                audio_input ();
+//   dstream #(.N($clog2(NSamples))) pitch_output ();
+//	 
+//	mic_load #(.N(W)) u_mic_load (
+//    .adclrc(AUD_ADCLRCK),
+//	 .bclk(AUD_BCLK),
+//	 .adcdat(AUD_ADCDAT),
+//    .sample_data(audio_input.data),
+//	 .valid(audio_input.valid)
+//   );
+//			
+//	assign AUD_XCK = adc_clk;
+//	
+//   fft_pitch_detect #(.W(W), .NSamples(NSamples)) DUT (
+//	    .clk(adc_clk),
+//		 .audio_clk(AUD_BCLK),
+//		 .reset(~SW[1]),
+//		 .audio_input(audio_input),
+//		 .pitch_output(pitch_output)
+//    );
+//	
+//	
+//	// Visualise FFT output on LEDR 
+//	assign LEDR[0] = pitch_output.data[0];
+//	assign LEDR[1] = pitch_output.data[1];
 	
 	
 	// Create FIFO interface for Clock Domain Crossing
@@ -133,13 +133,14 @@ module top_level(
 	
 	
 	logic [1:0] freq_flag; // this is the data to be passed on to the filters
+	assign freq_flag = 1'b1;
 	
-	// Use a synchroniser to avoid metastable regions in clock domain crossing
-	nbit_synchroniser nbs1(.clk(clk_50),
-						   .x_valid(pitch_output.valid),
-						   .x(pitch_output.data[1:0]),
-						   .y(freq_flag));
-	
+//	// Use a synchroniser to avoid metastable regions in clock domain crossing
+//	nbit_synchroniser nbs1(.clk(clk_50),
+//						   .x_valid(pitch_output.valid),
+//						   .x(pitch_output.data[1:0]),
+//						   .y(freq_flag));
+//	
 	/*
 	
 	
