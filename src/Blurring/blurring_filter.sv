@@ -1,6 +1,10 @@
 `timescale 1ns / 1ps
 
-module blurring_filter (
+module blurring_filter #(
+	parameter IMAGE_WIDTH = 320,
+	parameter IMAGE_HEIGHT = 240
+
+) (
     input logic clk,
     input logic ready_in,
     input logic valid_in,
@@ -12,7 +16,8 @@ module blurring_filter (
     output logic valid_out,
     output logic startofpacket_out,
     output logic endofpacket_out,
-    output logic [12-1:0] data_out
+    output logic [12-1:0] data_out,
+	 output logic[31:0] pixel_count_out
 );
 
     /*
@@ -33,29 +38,30 @@ module blurring_filter (
 
     to do this, the closest binary number to 1/25 is 0.0000101 which is
     about 0.39. This makes it obvious that i need 7 fractional bits. 
-    For symmetry I'll keep 7 integer bits as well
+    We then have 4 integer bits
 
     */
     localparam BITS_PER_COLOUR = 4;
     localparam KERNEL_WIDTH = 5;
     localparam KERNEL_SIZE = 25; 
-    localparam W = 14;
+    localparam W = 11;
     localparam W_FRAC = 7;
-    localparam IMAGE_WIDTH = 9'b101000000; // 320 wide image
-    localparam TOTAL_PIXELS = 320 * 240;
+    localparam TOTAL_PIXELS = IMAGE_WIDTH * IMAGE_HEIGHT;
 
     // size of the buffer required
-    localparam N = 320 * 4 + 5;
-	 localparam DELAY = 320*2 + 3;
+    localparam N = IMAGE_WIDTH * (KERNEL_WIDTH - 1) + KERNEL_WIDTH;
+	 
+	 // this should store 2 rows plus an additional 3
+	 localparam DELAY = IMAGE_WIDTH*2 + 3;
 
     // Extract RGB components from input data
     logic [W - 1:0] red_in, green_in, blue_in;
 
     // extract our bit values - pad them with zeroes on the start and the end
-    // to turn them into 14/7 fixed point computations
-    assign red_in   = {3'b000, data_in[11:8], 7'b0000000};  // Bits 11-8 for red
-    assign green_in = {3'b000, data_in[7:4],  7'b0000000};   // Bits 7-4 for green
-    assign blue_in  = {3'b000, data_in[3:0],  7'b0000000};   // Bits 3-0 for blue
+    // to turn them into 11/7 fixed point computations
+    assign red_in   = {data_in[11:8], 7'b0000000};  // Bits 11-8 for red
+    assign green_in = {data_in[7:4],  7'b0000000};   // Bits 7-4 for green
+    assign blue_in  = {data_in[3:0],  7'b0000000};   // Bits 3-0 for blue
 
 
     // Image buffer for RGB components
@@ -78,7 +84,7 @@ module blurring_filter (
 
     // Just use a constant type of kernel to make life easy here
     logic [W - 1:0] kernel_value;
-    assign kernel_value = {7'b0000000, 7'b0000101};
+    assign kernel_value = {4'b0000, 7'b0000101};
 
     // Shift incoming data into separate RGB buffers
     always_ff @(posedge clk) begin : Shift_register
@@ -137,14 +143,25 @@ module blurring_filter (
 
 
     logic overflow;
+	 
+	 logic [3:0] r_bits;
+	 logic [3:0] g_bits;
+	 logic [3:0] b_bits;
+	 
+	 // isolate just the bits that we are going to be keeping
+	 always_comb begin
+		r_bits = r_macc[BITS_PER_COLOUR -1 + 2 * W_FRAC:2 * W_FRAC];
+		g_bits = g_macc[BITS_PER_COLOUR -1 + 2 * W_FRAC:2 * W_FRAC];
+		b_bits = b_macc[BITS_PER_COLOUR -1 + 2 * W_FRAC:2 * W_FRAC];
+	 end
  
     always_ff @(posedge clk) begin : output_reg
         if (valid_in & ready_in) begin
 
             // extract the relevant information
-            data_out <= {r_macc[BITS_PER_COLOUR -1 + W_FRAC:W_FRAC], 
-                         g_macc[BITS_PER_COLOUR -1 + W_FRAC:W_FRAC], 
-                         b_macc[BITS_PER_COLOUR -1 + W_FRAC:W_FRAC]};
+            data_out <= {r_bits,
+								 g_bits,
+								 b_bits};
 
             // check if we have overflowed the buffers
             overflow <= (r_macc < 0 || g_macc < 0 || b_macc < 0) ? 1 : 0;
@@ -179,7 +196,6 @@ module blurring_filter (
 					pixel_count <= 0;
 				end
 				else if(pixel_delay_counter < DELAY && pixel_count == 0) begin
-					
 					pixel_count <= 0;
 				end
 				else begin
@@ -193,23 +209,33 @@ module blurring_filter (
     always_comb begin: output_setting
 
         // start of packet will occur when we reach the given delay count
-        startofpacket_out = 1'b0;
-        if(pixel_count == 0 && pixel_delay_counter == N - 1) begin
+        
+        if(pixel_count == 0 && pixel_delay_counter == DELAY) begin
             startofpacket_out = 1'b1;
         end
+		  else begin
+				startofpacket_out = 1'b0;
+		  end
 
         // end of packet will happen when we reach the end of all the pixels trying
         // to be counted
-        endofpacket_out = 1'b0;
+        
         if(pixel_count == TOTAL_PIXELS - 1) begin 
             endofpacket_out = 1'b1;
         end
+		  else begin
+				endofpacket_out = 1'b0;
+		  end
 
         // if we haven't reached the buffer region yet or we've finished 
         // outputting a frame then set valid to be low
-        if(pixel_delay_counter < N - 1 || pixel_count >= TOTAL_PIXELS) begin 
+        if(pixel_count >= TOTAL_PIXELS) begin 
             valid_out = 1'b0;
         end 
+		  else if(pixel_count == 0 && pixel_delay_counter < DELAY) begin
+				// check that if pixel count is at zero and the delay counter is not yet reached
+				valid_out = 1'b0;
+		  end
 		  else begin
 				valid_out = 1'b1;
 		  end
@@ -218,5 +244,6 @@ module blurring_filter (
 
      // Pass through ready signal
     assign ready_out = ready_in;
+	 assign pixel_count_out = pixel_count;
 
 endmodule
