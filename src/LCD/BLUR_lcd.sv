@@ -18,8 +18,8 @@ module BLUR_lcd (
     typedef enum logic [1:0] {IDLE, WRITE_OP} state_t;
     state_t current_state, next_state;
 
-    localparam N_INSTRS = 5; // Change this to the number of instructions you have below:
-    logic [8:0] instructions [N_INSTRS] = '{CLEAR_DISPLAY, _b, _l, _u, _r}; // Clear display then display "Colour".
+    localparam N_INSTRS = 10; // Change this to the number of instructions you have below:
+    logic [8:0] instructions [N_INSTRS] = '{CLEAR_DISPLAY, _b, _l, _u, _r, _SPACE, _f, _a, _c, _e}; // Clear display then display "Colour".
     // In the above array, **bit-8 is the 1-bit `address`** and bits 7 down-to 0 give the 8-bit data.
 
     integer instruction_index = 0; // You can use these to count.
