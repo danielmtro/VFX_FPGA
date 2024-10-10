@@ -114,11 +114,11 @@ module blurring_filter (
         */
 
     // Kernel for top to bottom edge detection
-        kernel_TtoB[0] = 1;
+        kernel_TtoB[0] = 0;
         kernel_TtoB[1] = 1;
         kernel_TtoB[2] = 2;
         kernel_TtoB[3] = 1;
-        kernel_TtoB[4] = 1;
+        kernel_TtoB[4] = 0;
 
         kernel_TtoB[5] = 0;
         kernel_TtoB[6] = 1;
@@ -132,11 +132,11 @@ module blurring_filter (
         kernel_TtoB[13] = 15;
         kernel_TtoB[14] = 15;
 
-        kernel_TtoB[15] = 0;
+        kernel_TtoB[15] = 1;
         kernel_TtoB[16] = 1;
         kernel_TtoB[17] = 1;
         kernel_TtoB[18] = 1;
-        kernel_TtoB[19] = 0;
+        kernel_TtoB[19] = 1;
 
         kernel_TtoB[20] = 1;
         kernel_TtoB[21] = 1;
@@ -145,15 +145,15 @@ module blurring_filter (
         kernel_TtoB[24] = 1;
 
         /*
-        2  2  4  2  2
+        1  2  4  2  1
         1  2  2  2  1
         0  0  0  0  0
-       -1 -2 -2 -2 -1
+       -2 -2 -2 -2 -2
        -2 -2 -4 -2 -2
         */
 
     // Kernel for left to right edge detection
-        kernel_LtoR[0] = 1;
+        kernel_LtoR[0] = 0;
         kernel_LtoR[1] = 0;
         kernel_LtoR[2] = 15;
         kernel_LtoR[3] = 1;
@@ -177,18 +177,18 @@ module blurring_filter (
         kernel_LtoR[18] = 1;
         kernel_LtoR[19] = 1;
 
-        kernel_LtoR[20] = 1;
+        kernel_LtoR[20] = 0;
         kernel_LtoR[21] = 0;
         kernel_LtoR[22] = 15;
         kernel_LtoR[23] = 1;
         kernel_LtoR[24] = 1;
 
        /*
-        2  1  0 -2 -2
+        1  1  0 -2 -2
         2  2  0 -2 -2
         4  2  0 -2 -4
         2  2  0 -2 -2
-        2  1  0 -2 -2
+        1  1  0 -2 -2
         */
 
     end
@@ -306,7 +306,13 @@ module blurring_filter (
                             + (LtoR_edge_result_b << 4); // Multiply by 16
 
         if (ready_in && valid_in) begin
-            if (is_underage) begin
+            if ((col_count > 7) && (row_count > 5)) begin
+                data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
+            end
+            else begin
+                data_out <= data_in;
+            end
+            /*if (is_underage) begin
                 // Reset variables at th start of a new line
                 if (col_count == 319) begin
                     if ((temp_blur_start != 0) && (temp_blur_end != 0)) begin
@@ -324,7 +330,7 @@ module blurring_filter (
 
                 // If the top of the head is detected at the middle of the image, raise a flag (must be past row 5 for valid convolution)
                 if (!head_detected) begin
-                    if (((TtoB_grey_result < 0) || (LtoR_grey_result < 0)) && (col_count == blur_start) && (row_count > 5)) begin
+                    if (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && (col_count == blur_start) && (row_count > 5)) begin
                         head_detected <= 1;
                         blur_pixels = 1;
                         temp_blur_start <= col_count;
@@ -353,7 +359,7 @@ module blurring_filter (
                         // Blur face and check for edges on face
                         else begin
                             // Check that pixel is edge
-                            if (((TtoB_grey_result < 0) || (LtoR_grey_result < 0)) || (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && (face_ending))) begin
+                            if ((((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && (!face_ending)) || (((TtoB_grey_result < 0) || (LtoR_grey_result < 0)) && (face_ending))) begin
                                 // Continuously check for the last edge in the image
                                 if (blur_pixels) begin
                                     temp_blur_end <= col_count;
@@ -441,7 +447,7 @@ module blurring_filter (
             else begin
                 // For no blur, pass through the data
                 data_out <= data_in;
-            end
+            end*/
         end
     end
 
