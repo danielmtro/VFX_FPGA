@@ -62,23 +62,22 @@ module filter_select(
 		.valid_out(inv_valid_out)
 	 );
 	 
-	 brightness_filter bright_filt(
-		.clk(clk),
-		.reset(reset),
-		.freq_flag(freq_flag),
-		
-		.data_in(data_in),
-		.sop_in(sop_in),
-		.eop_in(eop_in),
-		.valid_in(valid_in),
-		.ready_in(bri_ready_in),
-		
-		.ready_out(bri_ready_out),
-		.data_out(bri_data),
-		.sop_out(bri_sop_out),
-		.eop_out(bri_eop_out),
-		.valid_out(bri_valid_out)	
-	);
+	 brightness_filter bright_filt (
+    .clk(clk),
+    .freq_flag(freq_flag),  // Pitch input: 0 for 1x1, 1 for 3x3, 2 for 5x5
+	 
+    .ready_in(bri_ready_in),
+	 .valid_in(valid_in),
+	 .startofpacket_in(sop_in),
+	 .endofpacket_in(eop_in),
+	 .data_in(data_in),
+	 
+	 .ready_out(bri_ready_out),
+	 .valid_out(bri_valid_out),
+	 .startofpacket_out(bri_sop_out),
+	 .endofpacket_out(bri_eop_out),
+    .data_out(bri_data)
+);
 	
 	blurring_filter blur_filt (
     .clk(clk),
