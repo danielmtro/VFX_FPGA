@@ -18,8 +18,8 @@ module BRIGHTNESS_lcd (
     typedef enum logic [1:0] {IDLE, WRITE_OP} state_t;
     state_t current_state, next_state;
 
-    localparam N_INSTRS = 11; // Change this to the number of instructions you have below:
-    logic [8:0] instructions [N_INSTRS] = '{CLEAR_DISPLAY, _b, _r, _i, _g, _h, _t, _n, _e, _s, _s}; // Clear display then display "Colour".
+    localparam N_INSTRS = 9; // Change this to the number of instructions you have below:
+    logic [8:0] instructions [N_INSTRS] = '{CLEAR_DISPLAY, _b, _l, _u, _r, _SPACE, _a, _l, _l}; // Clear display then display "blur all".
     // In the above array, **bit-8 is the 1-bit `address`** and bits 7 down-to 0 give the 8-bit data.
 
     integer instruction_index = 0; // You can use these to count.
