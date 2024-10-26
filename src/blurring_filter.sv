@@ -1,12 +1,12 @@
 `timescale 1ns / 1ps
 
-module blurring_filter (
+module edge_filter (
     input logic clk,
+    input logic [2:0] freq_flag,  // Kernel size: 0 for 1x1, 1 for 3x3, 2 for 5x5
     input logic ready_in,
     input logic valid_in,
     input logic startofpacket_in,
     input logic endofpacket_in,
-    input logic [1:0]freq_flag,
     input logic [12-1:0] data_in,
     output logic ready_out,
     output logic valid_out,
@@ -36,9 +36,6 @@ module blurring_filter (
 
     logic [9:0] col_count;
     logic [8:0] row_count;
-	 
-	 logic [9:0] x_center = 162;
-    logic [8:0] y_center;
 
     logic head_detected;
     logic finish_blur;
@@ -163,8 +160,8 @@ module blurring_filter (
         kernel_LtoR[4] = 1;
 
         kernel_LtoR[5] = 1;
-        kernel_LtoR[6] = 0;
-        kernel_LtoR[7] = 0;
+        kernel_LtoR[6] = 1;
+        kernel_LtoR[7] = 15;
         kernel_LtoR[8] = 1;
         kernel_LtoR[9] = 1;
 
@@ -175,8 +172,8 @@ module blurring_filter (
         kernel_LtoR[14] = 2;
 
         kernel_LtoR[15] = 1;
-        kernel_LtoR[16] = 0;
-        kernel_LtoR[17] = 0;
+        kernel_LtoR[16] = 1;
+        kernel_LtoR[17] = 15;
         kernel_LtoR[18] = 1;
         kernel_LtoR[19] = 1;
 
@@ -188,9 +185,9 @@ module blurring_filter (
 
        /*
         1  1  0 -2 -2
-        2  1  0 -2 -2
+        2  2  0 -2 -2
         4  2  0 -2 -4
-        2  1  0 -2 -2
+        2  2  0 -2 -2
         1  1  0 -2 -2
         */
 
@@ -248,8 +245,6 @@ module blurring_filter (
 
         TtoB_grey_result = 0;
         LtoR_grey_result = 0;
-		  
-		  blur_pixels = 0;
 
         // Reset variables at the start of a new image
         if ((row_count == 0) && (col_count == 0)) begin
@@ -261,7 +256,6 @@ module blurring_filter (
             temp_blur_end <= 0;
             blur_pixels = 0;
             face_ending <= 0;
-				y_center <= 0;
         end
 
         // Convolute RGB
@@ -310,49 +304,14 @@ module blurring_filter (
         LtoR_grey_result = (LtoR_edge_result_r << 5) // Multiply by 32
                             + (LtoR_edge_result_g << 6) // Multiply by 64
                             + (LtoR_edge_result_b << 4); // Multiply by 16
-
+									 
         if (ready_in && valid_in) begin
-//            if (is_underage) begin
-                // If the top of the head is detected at the middle of the image, raise a flag (must be past row 5 for valid convolution)
-                if (!head_detected) begin
-                    if (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && (col_count == blur_start) && (row_count > 5)) begin
-                        head_detected <= 1;
-                        blur_pixels = 1;
-                        y_center <= row_count + 50;
-                    end
-
-                    // For no blur, pass through the data
-                    data_out <= data_in;
-                end
-
-                // Check if pixels are within blurring bounds
-                else begin
-                    if (((row_count - y_center) * (row_count - y_center)) + ((col_count - x_center) * (col_count - x_center)) <= 2500) begin
-								blur_pixels = 1;
-						  end
-                end
-					 
-					 if (blur_pixels && !head_detected) begin
-						data_out <= 12'b111100000000;
-					end
-
-                // Blur the pixels
-                else if (blur_pixels) begin 
-                    // Combine the normalized results for each color component
-                    data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
-                end
-
-                // Output the input pixel
-                else begin
-                    // For no blur, pass through the data
-                    data_out <= data_in;
-                end
-/*            end
-
-            else begin
-                // For no blur, pass through the data
-                data_out <= data_in;
-            end*/
+				if (((row_count > 5) && (col_count > 7)) && ((TtoB_grey_result > 0) || (LtoR_grey_result > 0))) begin
+					data_out <= 12'b111111111111;
+				end
+				else begin
+					data_out <= 12'b000000000000;
+				end
         end
     end
 
