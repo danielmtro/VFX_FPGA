@@ -121,9 +121,9 @@ module blurring_filter (
         kernel_TtoB[4] = 0;
 
         kernel_TtoB[5] = 0;
-        kernel_TtoB[6] = 1;
+        kernel_TtoB[6] = 0;
         kernel_TtoB[7] = 1;
-        kernel_TtoB[8] = 1;
+        kernel_TtoB[8] = 0;
         kernel_TtoB[9] = 0;
 
         kernel_TtoB[10] = 15;
@@ -146,7 +146,7 @@ module blurring_filter (
 
         /*
         1  2  4  2  1
-        1  2  2  2  1
+        1  1  2  1  1
         0  0  0  0  0
        -2 -2 -2 -2 -2
        -2 -2 -4 -2 -2
@@ -160,7 +160,7 @@ module blurring_filter (
         kernel_LtoR[4] = 1;
 
         kernel_LtoR[5] = 1;
-        kernel_LtoR[6] = 1;
+        kernel_LtoR[6] = 0;
         kernel_LtoR[7] = 0;
         kernel_LtoR[8] = 1;
         kernel_LtoR[9] = 1;
@@ -172,7 +172,7 @@ module blurring_filter (
         kernel_LtoR[14] = 2;
 
         kernel_LtoR[15] = 1;
-        kernel_LtoR[16] = 1;
+        kernel_LtoR[16] = 0;
         kernel_LtoR[17] = 0;
         kernel_LtoR[18] = 1;
         kernel_LtoR[19] = 1;
@@ -185,9 +185,9 @@ module blurring_filter (
 
        /*
         1  1  0 -2 -2
-        2  2  0 -2 -2
+        2  1  0 -2 -2
         4  2  0 -2 -4
-        2  2  0 -2 -2
+        2  1  0 -2 -2
         1  1  0 -2 -2
         */
 
@@ -306,13 +306,7 @@ module blurring_filter (
                             + (LtoR_edge_result_b << 4); // Multiply by 16
 
         if (ready_in && valid_in) begin
-            if ((col_count > 7) && (row_count > 5)) begin
-                data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
-            end
-            else begin
-                data_out <= data_in;
-            end
-            /*if (is_underage) begin
+//            if (is_underage) begin
                 // Reset variables at th start of a new line
                 if (col_count == 319) begin
                     if ((temp_blur_start != 0) && (temp_blur_end != 0)) begin
@@ -350,7 +344,7 @@ module blurring_filter (
 
                     else begin
                         // Check if pixel is not within dynamic blurring boundary (must be past column 5 for valid convolution)
-                        if ((col_count < blur_start - 5) || (col_count > (blur_end + 5)) || (col_count < 5)) begin
+                        if ((col_count < blur_start - 5) || (col_count > (blur_end + 5)) || (col_count < 7)) begin
                             // For no blur, pass through the data
                             data_out <= data_in;
                             blur_pixels = 0;
@@ -359,7 +353,7 @@ module blurring_filter (
                         // Blur face and check for edges on face
                         else begin
                             // Check that pixel is edge
-                            if ((((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && (!face_ending)) || (((TtoB_grey_result < 0) || (LtoR_grey_result < 0)) && (face_ending))) begin
+                            if ((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) begin
                                 // Continuously check for the last edge in the image
                                 if (blur_pixels) begin
                                     temp_blur_end <= col_count;
@@ -442,7 +436,7 @@ module blurring_filter (
                     // For no blur, pass through the data
                     data_out <= data_in;
                 end
-            end
+/*            end
 
             else begin
                 // For no blur, pass through the data
