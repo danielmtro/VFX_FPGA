@@ -160,8 +160,8 @@ module edge_filter (
         kernel_LtoR[4] = 1;
 
         kernel_LtoR[5] = 1;
-        kernel_LtoR[6] = 0;
-        kernel_LtoR[7] = 0;
+        kernel_LtoR[6] = 1;
+        kernel_LtoR[7] = 15;
         kernel_LtoR[8] = 1;
         kernel_LtoR[9] = 1;
 
@@ -172,8 +172,8 @@ module edge_filter (
         kernel_LtoR[14] = 2;
 
         kernel_LtoR[15] = 1;
-        kernel_LtoR[16] = 0;
-        kernel_LtoR[17] = 0;
+        kernel_LtoR[16] = 1;
+        kernel_LtoR[17] = 15;
         kernel_LtoR[18] = 1;
         kernel_LtoR[19] = 1;
 
@@ -185,9 +185,9 @@ module edge_filter (
 
        /*
         1  1  0 -2 -2
-        2  1  0 -2 -2
+        2  2  0 -2 -2
         4  2  0 -2 -4
-        2  1  0 -2 -2
+        2  2  0 -2 -2
         1  1  0 -2 -2
         */
 
@@ -304,9 +304,9 @@ module edge_filter (
         LtoR_grey_result = (LtoR_edge_result_r << 5) // Multiply by 32
                             + (LtoR_edge_result_g << 6) // Multiply by 64
                             + (LtoR_edge_result_b << 4); // Multiply by 16
-
+									 
         if (ready_in && valid_in) begin
-				if (((row_count > 5) && (col_count > 5)) && ((TtoB_grey_result > 0) || (LtoR_grey_result > 0))) begin
+				if (((row_count > 5) && (col_count > 7)) && ((TtoB_grey_result > 0) || (LtoR_grey_result > 0))) begin
 					data_out <= 12'b111111111111;
 				end
 				else begin
