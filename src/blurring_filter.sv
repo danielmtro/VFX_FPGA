@@ -115,16 +115,16 @@ module blurring_filter (
 
     // Kernel for top to bottom edge detection
         kernel_TtoB[0] = 0;
-        kernel_TtoB[1] = 1;
-        kernel_TtoB[2] = 2;
+        kernel_TtoB[1] = 0;
+        kernel_TtoB[2] = 1;
         kernel_TtoB[3] = 1;
-        kernel_TtoB[4] = 0;
+        kernel_TtoB[4] = 2;
 
         kernel_TtoB[5] = 0;
         kernel_TtoB[6] = 0;
         kernel_TtoB[7] = 1;
-        kernel_TtoB[8] = 0;
-        kernel_TtoB[9] = 0;
+        kernel_TtoB[8] = 1;
+        kernel_TtoB[9] = 1;
 
         kernel_TtoB[10] = 15;
         kernel_TtoB[11] = 15;
@@ -140,16 +140,16 @@ module blurring_filter (
 
         kernel_TtoB[20] = 1;
         kernel_TtoB[21] = 1;
-        kernel_TtoB[22] = 2;
+        kernel_TtoB[22] = 1;
         kernel_TtoB[23] = 1;
-        kernel_TtoB[24] = 1;
+        kernel_TtoB[24] = 2;
 
         /*
-        1  2  4  2  1
-        1  1  2  1  1
+        1  1  2  2  4
+        1  1  2  2  2
         0  0  0  0  0
        -2 -2 -2 -2 -2
-       -2 -2 -4 -2 -2
+       -2 -2 -2 -2 -4
         */
 
     // Kernel for left to right edge detection
@@ -159,17 +159,17 @@ module blurring_filter (
         kernel_LtoR[3] = 1;
         kernel_LtoR[4] = 1;
 
-        kernel_LtoR[5] = 1;
-        kernel_LtoR[6] = 1;
+        kernel_LtoR[5] = 0;
+        kernel_LtoR[6] = 0;
         kernel_LtoR[7] = 15;
         kernel_LtoR[8] = 1;
         kernel_LtoR[9] = 1;
 
-        kernel_LtoR[10] = 2;
+        kernel_LtoR[10] = 1;
         kernel_LtoR[11] = 1;
         kernel_LtoR[12] = 15;
         kernel_LtoR[13] = 1;
-        kernel_LtoR[14] = 2;
+        kernel_LtoR[14] = 1;
 
         kernel_LtoR[15] = 1;
         kernel_LtoR[16] = 1;
@@ -177,18 +177,18 @@ module blurring_filter (
         kernel_LtoR[18] = 1;
         kernel_LtoR[19] = 1;
 
-        kernel_LtoR[20] = 0;
-        kernel_LtoR[21] = 0;
+        kernel_LtoR[20] = 2;
+        kernel_LtoR[21] = 1;
         kernel_LtoR[22] = 15;
         kernel_LtoR[23] = 1;
-        kernel_LtoR[24] = 1;
+        kernel_LtoR[24] = 2;
 
        /*
         1  1  0 -2 -2
+        1  1  0 -2 -2
+        2  2  0 -2 -2
         2  2  0 -2 -2
         4  2  0 -2 -4
-        2  2  0 -2 -2
-        1  1  0 -2 -2
         */
 
     end
@@ -306,147 +306,140 @@ module blurring_filter (
                             + (LtoR_edge_result_b << 4); // Multiply by 16
 
         if (ready_in && valid_in) begin
-//            if (is_underage) begin
-                // Reset variables at th start of a new line
-                if (col_count == 319) begin
-                    if ((temp_blur_start != 0) && (temp_blur_end != 0)) begin
-                        blur_start <= temp_blur_start;
-                        blur_end <= temp_blur_end;
-                    end
+				 // Reset variables at th start of a new line
+				 if (col_count == 319) begin
+					  if ((temp_blur_start != 0) && (temp_blur_end != 0)) begin
+							blur_start <= temp_blur_start;
+							blur_end <= temp_blur_end;
+					  end
 
-                    if ((head_detected) && (!face_ending))begin
-                        blur_start <= temp_blur_start - 5;
-                    end
+					  if ((head_detected) && (!face_ending))begin
+							blur_start <= temp_blur_start - 5;
+					  end
 
-                    temp_blur_start <= 0;
-                    temp_blur_end <= 0;
-                end
+					  temp_blur_start <= 0;
+					  temp_blur_end <= 0;
+				 end
 
-                // If the top of the head is detected at the middle of the image, raise a flag (must be past row 5 for valid convolution)
-                if (!head_detected) begin
-                    if (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && (col_count == blur_start) && (row_count > 5)) begin
-                        head_detected <= 1;
-                        blur_pixels = 1;
-                        temp_blur_start <= col_count;
-                        temp_blur_end <= col_count;
-                    end
+				 // If the top of the head is detected at the middle of the image, raise a flag (must be past row 5 for valid convolution)
+				 if (!head_detected) begin
+					  if (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && ((col_count >= blur_start - 20) && (col_count <= blur_start + 20)) && (row_count > 5)) begin
+							head_detected <= 1;
+							blur_pixels = 1;
+							temp_blur_start <= col_count;
+							temp_blur_end <= col_count;
+					  end
 
-                    // For no blur, pass through the data
-                    data_out <= data_in;
-                end
+					  // For no blur, pass through the data
+					  data_out <= data_in;
+				 end
 
-                // Check if blurring is finished or if pixels are within blurring bounds
-                else begin
-                    if (finish_blur) begin
-                        // For no blur, pass through the data
-                        data_out <= data_in;
-                    end
+				 // Check if blurring is finished or if pixels are within blurring bounds
+				 else begin
+					  if (finish_blur) begin
+							// For no blur, pass through the data
+							data_out <= data_in;
+					  end
 
-                    else begin
-                        // Check if pixel is not within dynamic blurring boundary (must be past column 5 for valid convolution)
-                        if ((col_count < blur_start - 5) || (col_count > (blur_end + 5)) || (col_count < 7)) begin
-                            // For no blur, pass through the data
-                            data_out <= data_in;
-                            blur_pixels = 0;
-                        end
-
-                        // Blur face and check for edges on face
-                        else begin
-                            // Check that pixel is edge
-                            if ((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) begin
-                                // Continuously check for the last edge in the image
-                                if (blur_pixels) begin
-                                    temp_blur_end <= col_count;
-
-                                    // If the face start pixel begins to move to the right
-                                    if (temp_blur_start > (blur_start + 5)) begin
-                                        face_ending <= 1;
-                                    end
-                                end
-
-                                // For first edge pixel on left side, raise a flag and set temp_blur_start
-                                else begin
-                                    temp_blur_start <= col_count;
-                                    temp_blur_end <= col_count;
-                                    blur_pixels = 1;
-                                end
-                            end
-
-                            // Where face edge not detected properly, assume face broadens out at 22.5 degrees
-                            if (!face_ending) begin
-                                if ((col_count > (blur_start + 10)) && (temp_blur_start == 0)) begin
-                                    if (col_count % 2 == 0) begin
-                                        temp_blur_start <= blur_start - 1;
-                                        blur_pixels = 1;
-                                    end
-                                    else begin
-                                        temp_blur_start <= blur_start;
-                                        blur_pixels = 1;
-                                    end
-                                end
-
-                                if ((col_count > (blur_end + 10)) && (temp_blur_end == 0)) begin
-                                    if (col_count % 2 == 0) begin
-                                        temp_blur_end <= blur_end + 1;
-                                        blur_pixels = 0;
-                                    end
-                                    else begin
-                                        temp_blur_end <= blur_end;
-                                        blur_pixels = 0;
-                                    end
-                                end
-                            end
-
-                            // If the face is ending, where face edge not detected properly, slowly narrow down until face is finished
-                            if (face_ending) begin
-                                if (temp_blur_start < blur_start) begin
-                                    if (col_count % 2 == 0) begin
-                                        temp_blur_start <= blur_start + 1;
-                                    end
-                                    else begin
-                                        temp_blur_start <= blur_start;
-                                    end
-                                end
-
-                                if ((temp_blur_end > blur_end) || (temp_blur_end < blur_end - 10)) begin
-                                    if (col_count % 2 == 0) begin
-                                        temp_blur_end <= blur_end - 1;
-                                    end
-                                    else begin
-                                        temp_blur_end <= blur_end;
-                                    end
-                                end
-
-                                if (blur_end - blur_start <= 5) begin
-                                    finish_blur <= 1;
-                                end
-                            end
-                        end
-                    end
-                end
-					 
-                // Blur the pixels
-                if (blur_pixels) begin
-							if ((conv_result_r[9:6] > 10) && (conv_result_g[9:6] > 10) && (conv_result_b[9:6] > 10)) begin
-								conv_result_r[9:6] = (conv_result_r[9:6]+red_in) >> 1;
-								conv_result_g[9:6] = (conv_result_g[9:6]+green_in) >> 1;
-								conv_result_b[9:6] = (conv_result_b[9:6]+blue_in) >> 1;
+					  else begin
+							// Check if pixel is not within dynamic blurring boundary (must be past column 5 for valid convolution)
+							if ((col_count < blur_start - 5) || (col_count > (blur_end + 5)) || (col_count < 7)) begin
+								 // For no blur, pass through the data
+								 data_out <= data_in;
+								 blur_pixels = 0;
 							end
-                    // Combine the normalized results for each color component
-						  data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
-                end
-					 
-                // Output the input pixel
-                else begin
-                    // For no blur, pass through the data
-                    data_out <= data_in;
-                end
-/*            end
 
-            else begin
-                // For no blur, pass through the data
-                data_out <= data_in;
-            end*/
+							// Blur face and check for edges on face
+							else begin
+								 // Check that pixel is edge
+								 if ((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) begin
+									  // Continuously check for the last edge in the image
+									  if (blur_pixels) begin
+											temp_blur_end <= col_count;
+
+											// If the face start pixel begins to move to the right
+											if (temp_blur_start > (blur_start + 5)) begin
+												 face_ending <= 1;
+											end
+									  end
+
+									  // For first edge pixel on left side, raise a flag and set temp_blur_start
+									  else begin
+											temp_blur_start <= col_count;
+											temp_blur_end <= col_count;
+											blur_pixels = 1;
+									  end
+								 end
+
+								 // Where face edge not detected properly, assume face broadens out at 22.5 degrees
+								 if (!face_ending) begin
+									  if ((col_count > (blur_start + 10)) && (temp_blur_start == 0)) begin
+											if (col_count % 2 == 0) begin
+												 temp_blur_start <= blur_start - 1;
+												 blur_pixels = 1;
+											end
+											else begin
+												 temp_blur_start <= blur_start;
+												 blur_pixels = 1;
+											end
+									  end
+
+									  if ((col_count > (blur_end + 10)) && (temp_blur_end == 0)) begin
+											if (col_count % 2 == 0) begin
+												 temp_blur_end <= blur_end + 1;
+												 blur_pixels = 0;
+											end
+											else begin
+												 temp_blur_end <= blur_end;
+												 blur_pixels = 0;
+											end
+									  end
+								 end
+
+								 // If the face is ending, where face edge not detected properly, slowly narrow down until face is finished
+								 if (face_ending) begin
+									  if (temp_blur_start < blur_start) begin
+											if (col_count % 2 == 0) begin
+												 temp_blur_start <= blur_start + 1;
+											end
+											else begin
+												 temp_blur_start <= blur_start;
+											end
+									  end
+
+									  if ((temp_blur_end > blur_end) || (temp_blur_end < blur_end - 10)) begin
+											if (col_count % 2 == 0) begin
+												 temp_blur_end <= blur_end - 1;
+											end
+											else begin
+												 temp_blur_end <= blur_end;
+											end
+									  end
+
+									  if (blur_end - blur_start <= 5) begin
+											finish_blur <= 1;
+									  end
+								 end
+							end
+					  end
+				 end
+				 
+				 // Blur the pixels
+				 if (blur_pixels) begin
+						if ((conv_result_r[9:6] > 10) && (conv_result_g[9:6] > 10) && (conv_result_b[9:6] > 10)) begin
+							conv_result_r[9:6] = (conv_result_r[9:6]+red_in) >> 1;
+							conv_result_g[9:6] = (conv_result_g[9:6]+green_in) >> 1;
+							conv_result_b[9:6] = (conv_result_b[9:6]+blue_in) >> 1;
+						end
+					  // Combine the normalized results for each color component
+					  data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
+				 end
+				 
+				 // Output the input pixel
+				 else begin
+					  // For no blur, pass through the data
+					  data_out <= data_in;
+				 end
         end
     end
 
