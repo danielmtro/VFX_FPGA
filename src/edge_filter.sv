@@ -115,16 +115,16 @@ module edge_filter (
 
     // Kernel for top to bottom edge detection
         kernel_TtoB[0] = 0;
-        kernel_TtoB[1] = 1;
-        kernel_TtoB[2] = 2;
+        kernel_TtoB[1] = 0;
+        kernel_TtoB[2] = 1;
         kernel_TtoB[3] = 1;
-        kernel_TtoB[4] = 0;
+        kernel_TtoB[4] = 2;
 
         kernel_TtoB[5] = 0;
         kernel_TtoB[6] = 0;
         kernel_TtoB[7] = 1;
-        kernel_TtoB[8] = 0;
-        kernel_TtoB[9] = 0;
+        kernel_TtoB[8] = 1;
+        kernel_TtoB[9] = 1;
 
         kernel_TtoB[10] = 15;
         kernel_TtoB[11] = 15;
@@ -140,16 +140,16 @@ module edge_filter (
 
         kernel_TtoB[20] = 1;
         kernel_TtoB[21] = 1;
-        kernel_TtoB[22] = 2;
+        kernel_TtoB[22] = 1;
         kernel_TtoB[23] = 1;
-        kernel_TtoB[24] = 1;
+        kernel_TtoB[24] = 2;
 
         /*
-        1  2  4  2  1
-        1  1  2  1  1
+        1  1  2  2  4
+        1  1  2  2  2
         0  0  0  0  0
        -2 -2 -2 -2 -2
-       -2 -2 -4 -2 -2
+       -2 -2 -2 -2 -4
         */
 
     // Kernel for left to right edge detection
@@ -159,17 +159,17 @@ module edge_filter (
         kernel_LtoR[3] = 1;
         kernel_LtoR[4] = 1;
 
-        kernel_LtoR[5] = 1;
-        kernel_LtoR[6] = 1;
+        kernel_LtoR[5] = 0;
+        kernel_LtoR[6] = 0;
         kernel_LtoR[7] = 15;
         kernel_LtoR[8] = 1;
         kernel_LtoR[9] = 1;
 
-        kernel_LtoR[10] = 2;
+        kernel_LtoR[10] = 1;
         kernel_LtoR[11] = 1;
         kernel_LtoR[12] = 15;
         kernel_LtoR[13] = 1;
-        kernel_LtoR[14] = 2;
+        kernel_LtoR[14] = 1;
 
         kernel_LtoR[15] = 1;
         kernel_LtoR[16] = 1;
@@ -177,18 +177,18 @@ module edge_filter (
         kernel_LtoR[18] = 1;
         kernel_LtoR[19] = 1;
 
-        kernel_LtoR[20] = 0;
-        kernel_LtoR[21] = 0;
+        kernel_LtoR[20] = 2;
+        kernel_LtoR[21] = 1;
         kernel_LtoR[22] = 15;
         kernel_LtoR[23] = 1;
-        kernel_LtoR[24] = 1;
+        kernel_LtoR[24] = 2;
 
        /*
         1  1  0 -2 -2
+        1  1  0 -2 -2
+        2  2  0 -2 -2
         2  2  0 -2 -2
         4  2  0 -2 -4
-        2  2  0 -2 -2
-        1  1  0 -2 -2
         */
 
     end
