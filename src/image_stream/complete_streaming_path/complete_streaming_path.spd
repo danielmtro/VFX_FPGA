@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<simPackage>
- <file path="simulation/complete_streaming_path.v" type="VERILOG" />
- <topLevel name="complete_streaming_path" />
- <deviceFamily name="cycloneive" />
-</simPackage>
